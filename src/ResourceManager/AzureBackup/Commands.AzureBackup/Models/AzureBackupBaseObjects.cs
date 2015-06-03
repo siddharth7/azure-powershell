@@ -12,6 +12,7 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
+using Microsoft.Azure.Management.BackupServices.Models;
 namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 {
     public class AzureBackupVaultContextObject
@@ -53,6 +54,27 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
         /// Id of the Azure Backup Container
         /// </summary>
         public string ContainerId { get; set; }
+
+        public AzureBackupContainerContextObject()
+            : base()
+        {
+        }
+
+        public AzureBackupContainerContextObject(AzureBackupContainerContextObject azureBackupContainer)
+            : base(azureBackupContainer.ResourceGroupName, azureBackupContainer.ResourceName)
+        {
+            ContainerType = azureBackupContainer.ContainerType;
+            ContainerName = azureBackupContainer.ContainerName;
+            ContainerId = azureBackupContainer.ContainerId;
+        }
+
+        public AzureBackupContainerContextObject(AzureBackupContainer azureBackupContainer)
+            : base(azureBackupContainer.ResourceGroupName, azureBackupContainer.ResourceName)
+        {
+            ContainerType = azureBackupContainer.ContainerType;
+            ContainerName = azureBackupContainer.ContainerName;
+            ContainerId = azureBackupContainer.ContainerId;
+        }
     }
 
     public class AzureBackupItemContextObject : AzureBackupContainerContextObject
@@ -66,5 +88,30 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
         /// DataSourceId of Azure Backup Item
         /// </summary>
         public string DataSourceType { get; set; }
+
+        public AzureBackupItemContextObject()
+            : base()
+        {
+        }
+
+        public AzureBackupItemContextObject(AzureBackupItemContextObject azureBackupItemContextObject)
+            : base(azureBackupItemContextObject)
+        {
+            DataSourceId = azureBackupItemContextObject.DataSourceId;
+            DataSourceType = azureBackupItemContextObject.DataSourceType;
+        }
+
+        public AzureBackupItemContextObject(DataSourceInfo item, AzureBackupContainer azureBackupContainer)
+            : base(azureBackupContainer)
+        {
+            DataSourceId = item.InstanceId;
+            DataSourceType = item.Type;
+        }
+
+        public AzureBackupItemContextObject(ProtectableObjectInfo item, AzureBackupContainer azureBackupContainer)
+            : base(azureBackupContainer)
+        {
+            DataSourceType = item.Type;
+        }
     }
 }
