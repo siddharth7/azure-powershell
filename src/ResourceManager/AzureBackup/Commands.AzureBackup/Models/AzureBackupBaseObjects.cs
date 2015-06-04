@@ -60,14 +60,13 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
         {
         }
 
-        public AzureBackupContainerContextObject(AzureBackupContainerContextObject azureBackupContainer)
-            : base(azureBackupContainer.ResourceGroupName, azureBackupContainer.ResourceName)
+        public AzureBackupContainerContextObject(AzureBackupContainerContextObject azureBackupContainerContextObject)
+            : base(azureBackupContainerContextObject.ResourceGroupName, azureBackupContainerContextObject.ResourceName)
         {
-            ContainerType = azureBackupContainer.ContainerType;
-            ContainerName = azureBackupContainer.ContainerName;
-            ContainerId = azureBackupContainer.ContainerId;
+            ContainerType = azureBackupContainerContextObject.ContainerType;
+            ContainerName = azureBackupContainerContextObject.ContainerName;
+            ContainerId = azureBackupContainerContextObject.ContainerId;
         }
-
         public AzureBackupContainerContextObject(AzureBackupContainer azureBackupContainer)
             : base(azureBackupContainer.ResourceGroupName, azureBackupContainer.ResourceName)
         {
