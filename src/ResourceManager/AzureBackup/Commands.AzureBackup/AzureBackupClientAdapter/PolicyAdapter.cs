@@ -85,7 +85,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
         }
 
         /// <summary>
-        /// Gets protection policies of matching name
+        /// Check protection policy name availability
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
