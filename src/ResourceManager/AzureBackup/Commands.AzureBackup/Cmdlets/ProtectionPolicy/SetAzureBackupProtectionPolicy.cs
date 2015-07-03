@@ -74,8 +74,13 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 
                 var policyInfo = ProtectionPolicyHelpers.GetCmdletPolicy(vault, response);
 
+                if (policyInfo == null)
+                {
+                    throw new ArgumentException(String.Format("Protection policy {0} not found", ProtectionPolicy.Name));
+                }
+
                 // TODO: Make the below function work with AzureBackupProtectionPolicy
-                FillRemainingValuesForSetPolicyRequest(policyInfo);
+                FillRemainingValuesForSetPolicyRequest(policyInfo, this.NewName);
 
                 var backupSchedule = ProtectionPolicyHelpers.FillBackupSchedule(BackupType, policyInfo.ScheduleType, ScheduleRunTimes,
                    RetentionType, RetentionDuration, policyInfo.ScheduleRunDays.ToArray<string>());
@@ -85,68 +90,66 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 updateProtectionPolicyRequest.PolicyName = this.NewName;
                 updateProtectionPolicyRequest.Schedule = backupSchedule;
 
-                if (policyInfo != null)
+                var operationId = AzureBackupClient.UpdateProtectionPolicy(policyInfo.InstanceId, updateProtectionPolicyRequest);
+
+                if (operationId != Guid.Empty)
                 {
-                    // TODO: Add Async handling
-                    // BUG: Update API in hydra doesn't return OperationResponse rather than AzureOperationResponse
-                    var operationId = AzureBackupClient.UpdateProtectionPolicy(policyInfo.InstanceId, updateProtectionPolicyRequest);
-
-                    if(operationId != Guid.Empty)
-                    {
-                        var operationStatus = GetOperationStatus(operationId);
-                        WriteDebug("Protection Policy successfully updated and created job(s) to re-configure protection on associated items");
-                        WriteObject(operationStatus.Jobs);                        
-                    }
-
-                    else
-                    {
-                        WriteDebug("Protection Policy successfully updated");
-                    }
-
+                    var operationStatus = GetOperationStatus(operationId);
+                    WriteDebug("Protection Policy successfully updated and created job(s) to re-configure protection on associated items");
+                    WriteObject(operationStatus.Jobs);
                 }
+
                 else
                 {
-                    // TODO: Validate proper error message is delivered to user.
-                    throw new ArgumentException(String.Format("Protection policy {0} not found", ProtectionPolicy.Name));
+                    WriteDebug("Protection Policy successfully updated");
                 }
+                
             });
         }
 
-        private void FillRemainingValuesForSetPolicyRequest(AzureBackupProtectionPolicy policy)
+        private void FillRemainingValuesForSetPolicyRequest(AzureBackupProtectionPolicy policy, string newName)
         {
-            if(string.IsNullOrEmpty(BackupType))
+            if (newName != null && NewName != policy.Name)
             {
-                BackupType = policy.BackupType;
+                ProtectionPolicyHelpers.ValidateProtectionPolicyName(this.NewName);
+                AzureBackupClient.CheckProtectionPolicyNameAvailability(this.NewName);
             }
 
-            if (ScheduleRunTimes == null || ScheduleRunTimes == DateTime.MinValue)
-            {
-                ScheduleRunTimes = policy.ScheduleRunTimes;
-            }
+            BackupType = (string.IsNullOrEmpty(BackupType)) ? policy.BackupType : BackupType;
 
-            if (string.IsNullOrEmpty(RetentionType))
-            {
-                RetentionType = policy.RetentionType;
-            }
-
-            if (RetentionDuration == 0)
-            {
-                RetentionDuration = policy.RetentionDuration;
-            }
+            ScheduleRunTimes = (ScheduleRunTimes == DateTime.MinValue) ? policy.ScheduleRunTimes : 
+                                ScheduleRunTimes;
+            
+            RetentionType = (string.IsNullOrEmpty(RetentionType)) ? policy.RetentionType : RetentionType ;
+            
+            RetentionDuration = (RetentionDuration == 0) ? policy.RetentionDuration : RetentionDuration;
+            
+            WriteDebug("ParameterSetName = " + this.ParameterSetName.ToString());
 
             if (this.ParameterSetName != NoScheduleParamSet )
             {
-                if (ScheduleRunDays != null && ScheduleRunDays.Length > 0)
+                if (ScheduleRunDays != null && ScheduleRunDays.Length > 0 && 
+                    this.ParameterSetName == WeeklyScheduleParamSet)
                 {
                     policy.ScheduleType = ScheduleType.Weekly.ToString();
                     policy.ScheduleRunDays = ScheduleRunDays.ToList<string>();
                 }
-                else
+                else if (this.ParameterSetName == DailyScheduleParamSet && 
+                    (ScheduleRunDays == null || ScheduleRunDays.Length <= 0))
                 {
                     policy.ScheduleType = ScheduleType.Daily.ToString();
                     policy.ScheduleRunDays = new List<string>();
-                }          
-                
+                }
+                else
+                {
+                    policy.ScheduleType = ProtectionPolicyHelpers.GetScheduleType(ScheduleRunDays, this.ParameterSetName,
+                    DailyScheduleParamSet, WeeklyScheduleParamSet);
+
+                }                
+            }
+            else if(ScheduleRunDays != null && ScheduleRunDays.Length > 0)
+            {
+                throw new ArgumentException("For Schedule Run Days, weekly switch param is required");
             }
         }
     }

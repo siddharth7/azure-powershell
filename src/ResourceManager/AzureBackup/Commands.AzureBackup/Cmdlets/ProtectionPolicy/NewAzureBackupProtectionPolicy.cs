@@ -31,38 +31,38 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
     {
         protected const string WeeklyScheduleParamSet = "WeeklyScheduleParamSet";
         protected const string DailyScheduleParamSet = "DailyScheduleParamSet";
-        protected const string NoScheduleParamSet = "DailyScheduleParamSet";
+        protected const string NoScheduleParamSet = "NoScheduleParamSet";
 
-        [Parameter(Position = 3, Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.PolicyName)]
+        [Parameter(Position = 1, Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.PolicyName)]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
 
-        [Parameter(Position = 4, Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.WorkloadType, ValueFromPipelineByPropertyName = true)]
+        [Parameter(Position = 2, Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.WorkloadType, ValueFromPipelineByPropertyName = true)]
         [ValidateSet("VM", IgnoreCase = true)]
         public string WorkloadType { get; set; }
 
-        [Parameter(Position = 5, Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.BackupType, ValueFromPipelineByPropertyName = true)]
+        [Parameter(Position = 3, Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.BackupType, ValueFromPipelineByPropertyName = true)]
         [ValidateSet("Full", IgnoreCase = true)]
         public string BackupType { get; set; }
 
-        [Parameter(ParameterSetName = DailyScheduleParamSet, Position = 6, Mandatory = false, HelpMessage = AzureBackupCmdletHelpMessage.DailyScheduleType)]
+        [Parameter(ParameterSetName = DailyScheduleParamSet, Position = 4, Mandatory = false, HelpMessage = AzureBackupCmdletHelpMessage.DailyScheduleType)]
         public SwitchParameter Daily { get; set; }
 
-        [Parameter(ParameterSetName = WeeklyScheduleParamSet, Position = 7, Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.WeeklyScheduleType)]
+        [Parameter(ParameterSetName = WeeklyScheduleParamSet, Position = 5, Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.WeeklyScheduleType)]
         public SwitchParameter Weekly { get; set; }
 
-        [Parameter(Position = 8, Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.ScheduleRunTimes, ValueFromPipelineByPropertyName = true)]
+        [Parameter(Position = 6, Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.ScheduleRunTimes, ValueFromPipelineByPropertyName = true)]
         public DateTime ScheduleRunTimes { get; set; }
 
-        [Parameter(Position = 9, Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.RetentionType, ValueFromPipelineByPropertyName = true)]
+        [Parameter(Position = 7, Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.RetentionType, ValueFromPipelineByPropertyName = true)]
         [ValidateSet("Days", "Weeks", IgnoreCase = true)]
         public string RetentionType { get; set; }
 
-        [Parameter(Position = 10, Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.RententionDuration, ValueFromPipelineByPropertyName = true)]
+        [Parameter(Position = 8, Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.RententionDuration, ValueFromPipelineByPropertyName = true)]
         public int RetentionDuration { get; set; }
 
-        [Parameter(ParameterSetName = WeeklyScheduleParamSet, Position = 11, Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.ScheduleRunDays, ValueFromPipelineByPropertyName = true)]
-        [Parameter(ParameterSetName = NoScheduleParamSet, Position = 11, Mandatory = false, HelpMessage = AzureBackupCmdletHelpMessage.ScheduleRunDays, ValueFromPipelineByPropertyName = true)]
+        [Parameter(ParameterSetName = WeeklyScheduleParamSet, Position = 9, Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.ScheduleRunDays, ValueFromPipelineByPropertyName = true)]
+        [Parameter(ParameterSetName = NoScheduleParamSet, Position = 9, Mandatory = false, HelpMessage = AzureBackupCmdletHelpMessage.ScheduleRunDays, ValueFromPipelineByPropertyName = true)]
         [AllowEmptyCollection]
         [ValidateSet("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", IgnoreCase = true)]
         public string[] ScheduleRunDays { get; set; }
@@ -74,7 +74,11 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 base.ExecuteCmdlet();
                 WriteDebug("Making client call");
 
-                var ScheduleType = GetScheduleType(ScheduleRunDays);
+                ProtectionPolicyHelpers.ValidateProtectionPolicyName(Name);
+                AzureBackupClient.CheckProtectionPolicyNameAvailability(this.Name);
+
+                var ScheduleType = ProtectionPolicyHelpers.GetScheduleType(ScheduleRunDays, this.ParameterSetName, 
+                                    DailyScheduleParamSet, WeeklyScheduleParamSet);
 
                 var backupSchedule = ProtectionPolicyHelpers.FillBackupSchedule(BackupType, ScheduleType, ScheduleRunTimes,
                    RetentionType, RetentionDuration, ScheduleRunDays);
@@ -90,20 +94,6 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 var policyInfo = AzureBackupClient.GetProtectionPolicyByName(Name);
                 WriteObject(ProtectionPolicyHelpers.GetCmdletPolicy(Vault, policyInfo));
             });
-        }
-
-        private string GetScheduleType(string[] ScheduleRunDays)
-        {
-            WriteDebug("ParameterSetName = " + this.ParameterSetName.ToString());
-
-            if (ScheduleRunDays != null && ScheduleRunDays.Length > 0)
-            {
-                return ScheduleType.Weekly.ToString();
-            }
-            else
-            {
-                return ScheduleType.Daily.ToString();
-            }      
         }
     }
 }

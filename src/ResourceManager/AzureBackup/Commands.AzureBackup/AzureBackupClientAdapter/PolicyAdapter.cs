@@ -83,5 +83,20 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
            var response = AzureBackupClient.ProtectionPolicy.UpdateAsync(policyId, request, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
            return response.OperationId;
         }
+
+        /// <summary>
+        /// Check protection policy name availability
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public void CheckProtectionPolicyNameAvailability(string name)
+        {
+            var policy = GetProtectionPolicyByName(name);
+            if (policy != null)
+            {
+                var exception = new ArgumentException("A protection policy with the specified name already exists.");
+                throw exception;
+            }
+        }
     }
 }
