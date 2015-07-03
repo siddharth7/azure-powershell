@@ -30,6 +30,7 @@ using Microsoft.Azure.Commands.AzureBackup.Models;
 using CmdletModel = Microsoft.Azure.Commands.AzureBackup.Models;
 using System.Collections.Specialized;
 using System.Web;
+using System.Text.RegularExpressions;
 
 namespace Microsoft.Azure.Commands.AzureBackup.Helpers
 {
@@ -39,6 +40,9 @@ namespace Microsoft.Azure.Commands.AzureBackup.Helpers
         public const int MaxRetentionInDays = 30;
         public const int MinRetentionInWeeks = 1;
         public const int MaxRetentionInWeeks = 4;
+        public const int MinPolicyNameLength = 3;
+        public const int MaxPolicyNameLength = 150;
+        public static Regex rgx = new Regex(@"^[A-Za-z][-A-Za-z0-9]*[A-Za-z0-9]$");            
 
         public static AzureBackupProtectionPolicy GetCmdletPolicy(CmdletModel.AzurePSBackupVault vault, ProtectionPolicyInfo sourcePolicy)
         {
@@ -50,7 +54,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Helpers
             return new AzureBackupProtectionPolicy(vault, sourcePolicy);
         }
 
-        public static List<AzureBackupProtectionPolicy> GetCmdletPolicies(CmdletModel.AzurePSBackupVault vault, IEnumerable<ProtectionPolicyInfo> sourcePolicyList)
+        public static IEnumerable<AzureBackupProtectionPolicy> GetCmdletPolicies(CmdletModel.AzurePSBackupVault vault, IEnumerable<ProtectionPolicyInfo> sourcePolicyList)
         {
             if (sourcePolicyList == null)
             {
@@ -88,6 +92,48 @@ namespace Microsoft.Azure.Commands.AzureBackup.Helpers
             backupSchedule.ScheduleRunTimes = new List<DateTime> { scheduleRunTime };
 
             return backupSchedule;
+        }
+
+        public static void ValidateProtectionPolicyName(string policyName)
+        {
+            if(policyName.Length < MinPolicyNameLength || policyName.Length > MaxPolicyNameLength)
+            {
+                var exception = new ArgumentException("The protection policy name must contain between 3 and 150 characters.");
+                throw exception;
+            }
+           
+            if(!rgx.IsMatch(policyName))
+            {
+                var exception = new ArgumentException("The protection policy name should contain alphanumeric characters and cannot start with a number.");
+                throw exception;
+            }
+        }
+
+        public static string GetScheduleType(string[] ScheduleRunDays, string parameterSetName,
+            string dailyParameterSet, string weeklyParameterSet)
+        {
+            if (ScheduleRunDays != null && ScheduleRunDays.Length > 0)
+            {
+                if (parameterSetName == dailyParameterSet)
+                {
+                    throw new ArgumentException("For daily schedule, protection policy cannot have scheduleRundays");
+                }
+                else
+                {
+                    return ScheduleType.Weekly.ToString();
+                }
+            }
+            else
+            {
+                if (parameterSetName == weeklyParameterSet)
+                {
+                    throw new ArgumentException("For weekly schedule, ScheduleRundays param cannot be empty");
+                }
+                else
+                {
+                    return ScheduleType.Daily.ToString();
+                }                
+            }  
         }
 
         private static RetentionPolicy FillRetentionPolicy(string retentionType, int retentionDuration)
