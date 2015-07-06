@@ -30,23 +30,19 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
     /// Get list of containers
     /// </summary>
     [Cmdlet(VerbsLifecycle.Unregister, "AzureBackupContainer"), OutputType(typeof(string))]
-    public class UnregisterAzureBackupContainer : AzureBackupVaultCmdletBase
+    public class UnregisterAzureBackupContainer : AzureBackupContainerCmdletBase
     {
-        [Parameter(Position = 1, Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.AzureBackupContainerToUnregister, ValueFromPipeline = true)]
-        [ValidateNotNullOrEmpty]
-        public AzureBackupContainer AzureBackupContainer { get; set; }
-
         public override void ExecuteCmdlet()
         {
             ExecutionBlock(() =>
             {
                 base.ExecuteCmdlet();
 
-                string containerUniqueName = AzureBackupContainer.ContainerUniqueName;
+                string containerUniqueName = Container.ContainerUniqueName;
                 UnregisterContainerRequestInput unregRequest = new UnregisterContainerRequestInput(containerUniqueName, AzureBackupContainerType.IaasVMContainer.ToString());
                 var operationId = AzureBackupClient.UnRegisterContainer(unregRequest);
 
-                WriteObject(GetCreatedJobs(Vault, GetOperationStatus(operationId).Jobs).FirstOrDefault());
+                WriteObject(GetCreatedJobs(new Models.AzurePSBackupVault(Container.ResourceGroupName, Container.ResourceName, Container.Location), GetOperationStatus(operationId).Jobs).FirstOrDefault());
             });
         }
     }
