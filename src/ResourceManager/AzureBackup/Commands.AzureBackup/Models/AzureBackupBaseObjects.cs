@@ -12,6 +12,7 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
+using Microsoft.Azure.Management.BackupServices.Models;
 namespace Microsoft.Azure.Commands.AzureBackup.Models
 {
     public class AzureBackupVaultContextObject
