@@ -101,10 +101,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 
                 //Container is discovered. Register the container
                 WriteDebug(String.Format("Going to register VM {0}", vmName));
-                List<string> containerNameList = new List<string>();
-                containerNameList.Add(container.Name);
-                RegisterContainerRequestInput registrationRequest = new RegisterContainerRequestInput(containerNameList, AzureBackupContainerType.IaasVMContainer.ToString());
-                var operationId = AzureBackupClient.RegisterContainer(registrationRequest);
+                var operationId = AzureBackupClient.RegisterContainer(container.Name);
 
                 var operationStatus = GetOperationStatus(operationId);
                 WriteObject(GetCreatedJobs(Vault, operationStatus.Jobs).FirstOrDefault());
@@ -178,9 +175,8 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 
             else
             {
-                //We can have multiple container with same friendly name.
-                //Look for resourceGroup name in the container unoque name                
-                container = containers.Where(c => c.ParentContainerFriendlyName.ToLower().Equals(rgName.ToLower())).FirstOrDefault();
+                //We can have multiple container with same friendly name. 
+                container = containers.Where(c => ContainerHelpers.GetRGNameFromId(c.ParentContainerId).Equals(rgName.ToLower())).FirstOrDefault(); //TODO need to change.
                 if (container == null)
                 {
                     //Container is not in list of registered container

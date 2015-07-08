@@ -46,22 +46,22 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
         /// <summary>
         /// Register container
         /// </summary>
-        /// <param name="request"></param>
+        /// <param name="containerName"></param>
         /// <returns></returns>
-        public Guid RegisterContainer(RegisterContainerRequestInput request)
+        public Guid RegisterContainer(string containerName)
         {
-            var response = AzureBackupClient.Container.RegisterAsync(request, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
+            var response = AzureBackupClient.Container.RegisterAsync(containerName, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
             return response.OperationId;
         }
 
         /// <summary>
         /// UnRegister container
         /// </summary>
-        /// <param name="request"></param>
+        /// <param name="containerName"></param>
         /// <returns></returns>
-        public Guid UnRegisterContainer(UnregisterContainerRequestInput request)
+        public Guid UnRegisterContainer(string containerName)
         {
-            var response = AzureBackupClient.Container.UnregisterAsync(request, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
+            var response = AzureBackupClient.Container.UnregisterAsync(containerName, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
             return response.OperationId;
         }
 
