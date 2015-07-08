@@ -48,13 +48,14 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
 
         public AzureBackupContainer() : base() { }
 
-        public AzureBackupContainer(AzurePSBackupVault vault, ContainerInfo containerInfo)
+        public AzureBackupContainer(AzurePSBackupVault vault, CSMContainerResponse containerInfo)
             : base(vault, containerInfo)
         {
-            ManagedResourceGroupName = containerInfo.ParentContainerFriendlyName;
-            ManagedResourceName = containerInfo.FriendlyName;
-            HealthStatus = containerInfo.HealthStatus;
-            RegistrationStatus = containerInfo.RegistrationStatus;
+            // TODO: Parse ManagedResourceGroupName from ParentContainerId by getting the last segment
+            //ManagedResourceGroupName = containerInfo.Properties.ParentContainerId;
+            ManagedResourceName = containerInfo.Properties.FriendlyName;
+            HealthStatus = containerInfo.Properties.HealthStatus;
+            RegistrationStatus = containerInfo.Properties.Status;
         }
     }
 }

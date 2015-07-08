@@ -79,10 +79,10 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
             ContainerUniqueName = azureBackupContainer.ContainerUniqueName;
         }
 
-        public AzureBackupContainerContextObject(AzurePSBackupVault vault, ContainerInfo containerInfo)
+        public AzureBackupContainerContextObject(AzurePSBackupVault vault, CSMContainerResponse containerInfo)
             : base(vault.ResourceGroupName, vault.Name, vault.Region)
         {
-            ContainerType = containerInfo.ContainerType;
+            ContainerType = containerInfo.Properties.ContainerType;
             ContainerUniqueName = containerInfo.Name;
         }
     }

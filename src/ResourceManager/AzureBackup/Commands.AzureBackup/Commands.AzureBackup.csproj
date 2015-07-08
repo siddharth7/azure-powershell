@@ -131,7 +131,6 @@
     <Compile Include="AzureBackupCmdletHelpMessage.cs" />
     <Compile Include="Cmdlets\Backup\TriggerBackUp.cs" />
     <Compile Include="Cmdlets\Container\GetAzureBackupContainer.cs" />
-    <Compile Include="Cmdlets\Container\RegisterAzureBackupContainer.cs" />
     <Compile Include="Cmdlets\Container\UnregisterAzureBackupContainer.cs" />
     <Compile Include="Cmdlets\Item\Disable-AzureBackupProtection .cs" />
     <Compile Include="Cmdlets\Item\Enable-AzureBackupProtection .cs" />
