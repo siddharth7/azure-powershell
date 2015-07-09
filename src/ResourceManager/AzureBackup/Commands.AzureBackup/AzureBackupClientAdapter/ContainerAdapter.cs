@@ -37,10 +37,10 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        public IEnumerable<ContainerInfo> ListContainers(string filter)
+        public IEnumerable<CSMContainerResponse> ListContainers(string filter)
         {
-            var listResponse = AzureBackupClient.Container.ListAsync(filter, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
-            return listResponse.Objects;
+            CSMContainerListOperationResponse listResponse = AzureBackupClient.Container.ListAsync(filter, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
+            return listResponse.CSMContainerListResponse.Value;
         }
 
         /// <summary>

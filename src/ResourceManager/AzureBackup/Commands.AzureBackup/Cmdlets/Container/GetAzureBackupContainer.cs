@@ -59,7 +59,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 
                 WriteDebug(string.Format("Fetched {0} containers", containerList.Count()));
 
-                List<ContainerInfo> containerInfos = containerList.ToList();
+                List<CSMContainerResponse> containerInfos = containerList.ToList();
 
                 // When resource group name is specified, remove all containers whose resource group name
                 // doesn't match the given resource group name
@@ -67,7 +67,8 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 {
                     containerInfos.RemoveAll(containerInfo =>
                     {
-                        return containerInfo.ParentContainerName != ManagedResourceGroupName;
+                        string rgName = ContainerHelpers.GetRGNameFromId(containerInfo.Properties.ParentContainerId);
+                        return rgName != ManagedResourceGroupName;
                     });
                     WriteDebug(string.Format("Count of containers after resource group filter = {0}", containerInfos.Count));                
                 }

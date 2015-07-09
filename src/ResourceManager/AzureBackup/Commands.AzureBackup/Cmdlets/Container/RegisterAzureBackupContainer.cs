@@ -83,7 +83,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 Guid jobId = Guid.Empty;
                 bool isDiscoveryNeed = false;
 
-                ContainerInfo container = null;
+                CSMContainerResponse container = null;
                 isDiscoveryNeed = IsDiscoveryNeeded(vmName, rgName, out container);
                 if(isDiscoveryNeed)
                 {
@@ -153,7 +153,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
             return isRetryNeeded;         
         }
 
-        private bool IsDiscoveryNeeded(string vmName, string rgName, out ContainerInfo container)
+        private bool IsDiscoveryNeeded(string vmName, string rgName, out CSMContainerResponse container)
         {
             bool isDiscoveryNeed = false;
             //First check if container is discoverd or not
@@ -176,7 +176,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
             else
             {
                 //We can have multiple container with same friendly name. 
-                container = containers.Where(c => ContainerHelpers.GetRGNameFromId(c.ParentContainerId).Equals(rgName.ToLower())).FirstOrDefault(); //TODO need to change.
+                container = containers.Where(c => ContainerHelpers.GetRGNameFromId(c.Properties.ParentContainerId).Equals(rgName.ToLower())).FirstOrDefault(); //TODO need to change.
                 if (container == null)
                 {
                     //Container is not in list of registered container
