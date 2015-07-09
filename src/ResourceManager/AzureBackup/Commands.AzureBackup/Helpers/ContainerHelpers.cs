@@ -30,11 +30,14 @@ using Microsoft.Azure.Commands.AzureBackup.Models;
 using CmdletModel = Microsoft.Azure.Commands.AzureBackup.Models;
 using System.Collections.Specialized;
 using System.Web;
+using System.Text.RegularExpressions;
 
 namespace Microsoft.Azure.Commands.AzureBackup.Helpers
 {
     internal class ContainerHelpers
     {
+        private static readonly Regex ResourceGroupRegex =
+            new Regex(@"/resourceGroups/(?<resourceGroupName>.+)/providers/", RegexOptions.Compiled);
         internal static string GetQueryFilter(ListContainerQueryParameter queryParams)
         {
             NameValueCollection collection = new NameValueCollection();
@@ -58,10 +61,41 @@ namespace Microsoft.Azure.Commands.AzureBackup.Helpers
                 return String.Empty;
             }
 
-            var httpValueCollection = HttpUtility.ParseQueryString(String.Empty);
-            httpValueCollection.Add(collection);
+            return CreateQueryString(collection);
+        }
 
-            return "&" + httpValueCollection.ToString();
+        internal static string GetRGNameFromId(string id)
+        {
+            var match = ResourceGroupRegex.Match(id);
+            if (match.Success)
+            {
+                var resourceGroupNameGroup = match.Groups["resourceGroupName"];
+                if (resourceGroupNameGroup != null && resourceGroupNameGroup.Success)
+                {
+                    return resourceGroupNameGroup.Value;
+                }
+            }
+
+            return null;
+        }
+        private static string CreateQueryString(NameValueCollection collection)
+        {
+            string filterValue = string.Empty;
+
+            if (collection == null)
+            {
+                throw new ArgumentNullException("collection");
+            }
+
+            if (collection.Count > 0)
+            {
+                foreach (string key in collection.Keys)
+                {
+                    filterValue += key + " eq '" + collection[key] + "' and ";
+                }
+                filterValue = filterValue.Remove(filterValue.Length - 5);
+            }
+            return filterValue; 
         }
     }
 }

@@ -67,8 +67,8 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 {
                     containerInfos.RemoveAll(containerInfo =>
                     {
-                        // TODO: Parse ManagedResourceGroupName from ParentContainerId by getting the last segment
-                        return containerInfo.Properties.ParentContainerId != ManagedResourceGroupName;
+                        string rgName = ContainerHelpers.GetRGNameFromId(containerInfo.Properties.ParentContainerId);
+                        return rgName != ManagedResourceGroupName;
                     });
                     WriteDebug(string.Format("Count of containers after resource group filter = {0}", containerInfos.Count));                
                 }

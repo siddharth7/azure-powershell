@@ -12,6 +12,7 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
+using Microsoft.Azure.Commands.AzureBackup.Helpers;
 using Microsoft.Azure.Management.BackupServices.Models;
 using System;
 using System.Collections.Generic;
@@ -51,8 +52,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
         public AzureBackupContainer(AzurePSBackupVault vault, CSMContainerResponse containerInfo)
             : base(vault, containerInfo)
         {
-            // TODO: Parse ManagedResourceGroupName from ParentContainerId by getting the last segment
-            //ManagedResourceGroupName = containerInfo.Properties.ParentContainerId;
+            ManagedResourceGroupName = ContainerHelpers.GetRGNameFromId(containerInfo.Properties.ParentContainerId);
             ManagedResourceName = containerInfo.Properties.FriendlyName;
             HealthStatus = containerInfo.Properties.HealthStatus;
             RegistrationStatus = containerInfo.Properties.Status;

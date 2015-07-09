@@ -39,8 +39,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 base.ExecuteCmdlet();
 
                 string containerUniqueName = Container.ContainerUniqueName;
-                UnregisterContainerRequestInput unregRequest = new UnregisterContainerRequestInput(containerUniqueName, AzureBackupContainerType.IaasVMContainer.ToString());
-                var operationId = AzureBackupClient.UnRegisterContainer(unregRequest);
+                var operationId = AzureBackupClient.UnRegisterContainer(containerUniqueName);
 
                 WriteObject(GetCreatedJobs(new Models.AzurePSBackupVault(Container.ResourceGroupName, Container.ResourceName, Container.Location), GetOperationStatus(operationId).Jobs).FirstOrDefault());
             });
