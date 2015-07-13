@@ -18,7 +18,7 @@ using CmdletModel = Microsoft.Azure.Commands.AzureBackup.Models;
 
 namespace Microsoft.Azure.Commands.AzureBackup.Helpers
 {
-    public static class VaultHelpers
+    internal static class VaultHelpers
     {
         /// <summary>
         /// Gets CmdletModel of backup vault from Client model
@@ -34,7 +34,6 @@ namespace Microsoft.Azure.Commands.AzureBackup.Helpers
                 Name = vault.Name,
                 Region = vault.Location,
                 ResourceGroupName = GetResourceGroup(vault.Id),
-                Sku = (vault.Properties != null) ? vault.Properties.Sku.Name : null,
                 Storage = storageType,
             };
 

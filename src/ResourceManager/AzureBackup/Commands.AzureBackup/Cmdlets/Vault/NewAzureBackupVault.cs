@@ -20,7 +20,7 @@ using System.Management.Automation;
 namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 {
     /// <summary>
-    /// API to create an azure backup vault in a subscription
+    /// Command to create an azure backup vault in a subscription
     /// </summary>
     [Cmdlet(VerbsCommon.New, "AzureBackupVault"), OutputType(typeof(AzurePSBackupVault))]
     public class NewAzureBackupVault : AzureBackupCmdletBase
@@ -38,18 +38,12 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
         public string Region { get; set; }
 
         [Parameter(Position = 3, Mandatory = false, HelpMessage = AzureBackupCmdletHelpMessage.StorageType)]
-        public AzureBackupVaultStorageType? Storage { get; set; }
-
-        [Parameter(Position = 4, Mandatory = false, HelpMessage = AzureBackupCmdletHelpMessage.Sku)]
-        [ValidateSet("standard")]
-        public string Sku { get; set; }
+        public AzureBackupVaultStorageType Storage { get; set; }
 
         // TODO: Add support for tags
         //[Alias("Tags")]
         //[Parameter(Mandatory = false, HelpMessage = AzureBackupCmdletHelpMessage.ResourceTags)]
-        //public Hashtable[] Tag { get; set; }
-
-        private string DefaultSKU = "standard";
+        //public Hashtable[] Tag { get; set; }        
 
         public override void ExecuteCmdlet()
         {
@@ -58,12 +52,11 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 base.ExecuteCmdlet();
                 InitializeAzureBackupCmdlet(ResourceGroupName, Name);
 
-                string skuParam = Sku ?? DefaultSKU;
                 WriteDebug(String.Format("Creating backup vault with ResourceGroupName: {0}, ResourceName: {1}", ResourceGroupName, Name));
 
-                var createdVault = AzureBackupClient.CreateOrUpdateAzureBackupVault(ResourceGroupName, Name, Region, skuParam);
+                var createdVault = AzureBackupClient.CreateOrUpdateAzureBackupVault(ResourceGroupName, Name, Region);
 
-                if (Storage.HasValue)
+                if (Storage != 0)
                 {
                     WriteDebug(String.Format("Setting storage type for the resource, Type: {0}", Storage));
 

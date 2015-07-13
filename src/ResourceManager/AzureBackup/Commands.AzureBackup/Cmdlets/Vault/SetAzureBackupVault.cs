@@ -21,17 +21,13 @@ using CmdletModel = Microsoft.Azure.Commands.AzureBackup.Models;
 namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 {
     /// <summary>
-    /// API to update an azure backup vault in a subscription.
+    /// Command to update an azure backup vault in a subscription.
     /// </summary>
     [Cmdlet(VerbsCommon.Set, "AzureBackupVault"), OutputType(typeof(CmdletModel.AzurePSBackupVault))]
     public class SetAzureBackupVault : AzureBackupVaultCmdletBase
     {
         [Parameter(Position = 1, Mandatory = false, HelpMessage = AzureBackupCmdletHelpMessage.StorageType)]
-        public AzureBackupVaultStorageType? Storage { get; set; }
-
-        [Parameter(Position = 2, Mandatory = false, HelpMessage = AzureBackupCmdletHelpMessage.Sku)]
-        [ValidateSet("standard")]
-        public string Sku { get; set; }
+        public AzureBackupVaultStorageType Storage { get; set; }
 
         // TODO: Add support for tags
         //[Alias("Tags")]
@@ -44,13 +40,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 
             ExecutionBlock(() =>
             {
-                if (Sku != null)
-                {
-                    WriteDebug(String.Format("Updating Sku, Sku: {0}", Sku));
-                    AzureBackupClient.CreateOrUpdateAzureBackupVault(Vault.ResourceGroupName, Vault.Name, Vault.Region, Sku);
-                }
-
-                if (Storage.HasValue)
+                if (Storage != 0)
                 {
                     WriteDebug(String.Format("Setting storage type for the resource, Type: {0}", Storage));
 

@@ -21,6 +21,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
     public partial class AzureBackupClientAdapter
     {
         public const int defaultTop = 100;
+        private const string defaultSKU = "standard";
 
         /// <summary>
         /// Creates or updates the vault identified by client
@@ -28,7 +29,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
         /// <param name="location"></param>
         /// <param name="skuParam"></param>
         /// <returns></returns>
-        public AzureBackupVault CreateOrUpdateAzureBackupVault(string resourceGroupName, string vaultName, string location, string skuParam)
+        public AzureBackupVault CreateOrUpdateAzureBackupVault(string resourceGroupName, string vaultName, string location)
         {
             var createResourceParameters = new AzureBackupVaultCreateOrUpdateParameters()
             {
@@ -37,12 +38,12 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
                 {
                     Sku = new SkuProperties()
                     {
-                        Name = skuParam,
+                        Name = defaultSKU,
                     },
                 },
             };
 
-            var response = AzureBackupClient.Vault.CreateOrUpdateAsync(resourceGroupName, vaultName, createResourceParameters, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
+            var response = AzureBackupVaultClient.Vault.CreateOrUpdateAsync(resourceGroupName, vaultName, createResourceParameters, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
             return response.Vault;
         }
 
@@ -60,7 +61,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
                 },
             };
 
-            AzureBackupClient.Vault.UpdateStorageTypeAsync(updateVaultStorageTypeRequest, GetCustomRequestHeaders(), CmdletCancellationToken).Wait();
+            AzureBackupVaultClient.Vault.UpdateStorageTypeAsync(updateVaultStorageTypeRequest, GetCustomRequestHeaders(), CmdletCancellationToken).Wait();
         }
 
         /// <summary>
@@ -72,7 +73,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
             string storageType = String.Empty;
             try
             {
-                var response = AzureBackupClient.Vault.GetResourceStorageConfigAsync(resourceGroupName, vaultName, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
+                var response = AzureBackupVaultClient.Vault.GetResourceStorageConfigAsync(resourceGroupName, vaultName, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
                 storageType = (response != null) ? response.StorageDetails.StorageType : null;
             }
             catch (Exception) { }
@@ -86,7 +87,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
         /// <returns></returns>
         public AzureBackupVault GetVault(string resourceGroupName, string vaultName)
         {
-            var getResponse = AzureBackupClient.Vault.GetAsync(resourceGroupName, vaultName, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
+            var getResponse = AzureBackupVaultClient.Vault.GetAsync(resourceGroupName, vaultName, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
             return (getResponse != null) ? getResponse.Vault : null;
         }
 
@@ -96,7 +97,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
         /// <returns></returns>
         public IEnumerable<AzureBackupVault> GetVaults()
         {
-            var listResponse = AzureBackupClient.Vault.ListAsync(defaultTop, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
+            var listResponse = AzureBackupVaultClient.Vault.ListAsync(defaultTop, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
             return (listResponse != null) ? listResponse.Vaults : null;
         }
 
@@ -107,7 +108,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
         /// <returns></returns>
         public IEnumerable<AzureBackupVault> GetVaultsInResourceGroup(string resourceGroupName)
         {
-            var listResponse = AzureBackupClient.Vault.ListByResourceGroupAsync(resourceGroupName, defaultTop, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
+            var listResponse = AzureBackupVaultClient.Vault.ListByResourceGroupAsync(resourceGroupName, defaultTop, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
             return (listResponse != null) ? listResponse.Vaults : null;
         }
 
@@ -118,12 +119,12 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
         /// <param name="vaultName"></param>
         public void DeleteVault(string resourceGroupName, string vaultName)
         {
-            AzureBackupClient.Vault.DeleteAsync(resourceGroupName, vaultName, GetCustomRequestHeaders(), CmdletCancellationToken).Wait();
+            AzureBackupVaultClient.Vault.DeleteAsync(resourceGroupName, vaultName, GetCustomRequestHeaders(), CmdletCancellationToken).Wait();
         }
 
         public VaultCredUploadCertResponse UploadCertificate(string certName, VaultCredUploadCertRequest request)
         {
-            return AzureBackupClient.Vault.UploadCertificateAsync(certName, request, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
+            return AzureBackupVaultClient.Vault.UploadCertificateAsync(certName, request, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
         }
     }
 }

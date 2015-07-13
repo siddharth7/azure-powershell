@@ -51,6 +51,11 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
         /// <summary>
         /// Azure backup client.
         /// </summary>
+        private BackupVaultServicesManagementClient azureBackupVaultClient;
+
+        /// <summary>
+        /// Azure backup client.
+        /// </summary>
         private BackupServicesManagementClient azureBackupClient;
 
         /// <summary>
@@ -58,6 +63,22 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
         /// </summary>
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private CancellationToken CmdletCancellationToken;
+
+        /// <summary>
+        /// Get Azure backup client.
+        /// </summary>
+        private BackupVaultServicesManagementClient AzureBackupVaultClient
+        {
+            get
+            {
+                if (this.azureBackupVaultClient == null)
+                {
+                    this.azureBackupVaultClient = AzureSession.ClientFactory.CreateCustomClient<BackupVaultServicesManagementClient>(resourceName, resourceGroupName, cloudCreds, baseURI);
+                }
+
+                return this.azureBackupVaultClient;
+            }
+        }
 
         /// <summary>
         /// Get Azure backup client.
