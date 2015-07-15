@@ -87,8 +87,9 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
         /// <returns></returns>
         public Guid TriggerBackup(string containerName, string dsType, string dsId)
         {
+            return Guid.NewGuid();
             var response = AzureBackupClient.BackUp.TriggerBackUpAsync(GetCustomRequestHeaders(), containerName, dsType, dsId, CmdletCancellationToken).Result;
-            return response.OperationId;              
+            //return response.OperationId;              
         }
 
         /// <summary>
@@ -100,8 +101,9 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
         /// <returns></returns>
         public IEnumerable<RecoveryPointInfo> ListRecoveryPoints(string containerName, string dsType, string dsId)
         {
-            var response = AzureBackupClient.RecoveryPoint.ListAsync(GetCustomRequestHeaders(), containerName, dsType, dsId, CmdletCancellationToken).Result;
-            return (response != null) ? response.RecoveryPoints.Objects : null;
+            return null;
+            //var response = AzureBackupClient.RecoveryPoint.ListAsync(GetCustomRequestHeaders(), containerName, dsType, dsId, CmdletCancellationToken).Result;
+            //return (response != null) ? response.RecoveryPoints.Objects : null;
         }
     }
 }
