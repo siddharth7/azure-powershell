@@ -19,6 +19,7 @@ using System.Xml;
 using System.Linq;
 using Microsoft.Azure.Management.BackupServices.Models;
 using MBS = Microsoft.Azure.Management.BackupServices;
+using System.Web.Script.Serialization;
 
 namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 {
@@ -41,7 +42,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 WriteVerbose("Making client call");
                 Guid jobId = Guid.NewGuid();
                 WriteDebug("Triggered Restore. Converting response");
-                /*
+
                 AzureIaaSVMRecoveryInputsCSMObject azureIaaSVMRecoveryInputsCSMObject = new AzureIaaSVMRecoveryInputsCSMObject()
                 {
                     CloudServiceName = string.Empty,
@@ -70,7 +71,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 
                 var operationStatus = TrackOperation(operationId);
                 WriteObject(GetCreatedJobs(new Models.AzurePSBackupVault(RecoveryPoint.ResourceGroupName, RecoveryPoint.ResourceName, RecoveryPoint.Location), operationStatus.Jobs).FirstOrDefault());
-                 * */
+
             });
         }
     }

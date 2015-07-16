@@ -82,28 +82,37 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
         /// Trigger backup on a DS
         /// </summary>
         /// <param name="containerName"></param>
-        /// <param name="dsType"></param>
-        /// <param name="dsId"></param>
+        /// <param name="itemName"></param>
         /// <returns></returns>
-        public Guid TriggerBackup(string containerName, string dsType, string dsId)
+        public Guid TriggerBackup(string containerName, string itemName)
         {
-            return Guid.NewGuid();
-            var response = AzureBackupClient.BackUp.TriggerBackUpAsync(GetCustomRequestHeaders(), containerName, dsType, dsId, CmdletCancellationToken).Result;
-            //return response.OperationId;              
+            var response = AzureBackupClient.BackUp.TriggerBackUpAsync(GetCustomRequestHeaders(), containerName, itemName, CmdletCancellationToken).Result;
+            return response.OperationId;              
         }
 
         /// <summary>
         /// Lists recovery points for specified item
         /// </summary>
         /// <param name="containerName"></param>
-        /// <param name="dsType"></param>
-        /// <param name="dsId"></param>
+        /// <param name="itemName"></param>
         /// <returns></returns>
-        public IEnumerable<RecoveryPointInfo> ListRecoveryPoints(string containerName, string dsType, string dsId)
+        public IEnumerable<CSMRecoveryPointResponse> ListRecoveryPoints(string containerName, string itemName)
         {
-            return null;
-            //var response = AzureBackupClient.RecoveryPoint.ListAsync(GetCustomRequestHeaders(), containerName, dsType, dsId, CmdletCancellationToken).Result;
-            //return (response != null) ? response.RecoveryPoints.Objects : null;
+            var response = AzureBackupClient.RecoveryPoint.ListAsync(GetCustomRequestHeaders(), containerName, itemName, CmdletCancellationToken).Result;
+            return (response != null) ? response.CSMRecoveryPointListResponse.Value : null;
+        }
+
+        /// <summary>
+        /// Lists recovery points for specified item
+        /// </summary>
+        /// <param name="containerName"></param>
+        /// <param name="itemName"></param>
+        /// <param name="recoveryPointName"></param>
+        /// <returns></returns>
+        public Guid TriggerRestore(string containerName, string itemName, string recoveryPointName, CSMRestoreRequest csmRestoreRequest)
+        {
+            var response = AzureBackupClient.Restore.TriggerResotreAsync(GetCustomRequestHeaders(), containerName, itemName, recoveryPointName, csmRestoreRequest, CmdletCancellationToken).Result;
+            return response.OperationId;
         }
     }
 }

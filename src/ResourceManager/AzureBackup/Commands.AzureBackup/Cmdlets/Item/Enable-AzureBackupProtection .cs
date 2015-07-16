@@ -47,7 +47,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 if (Item.GetType() == typeof(AzureBackupItem))
                 {
                     input.ProtectableObjectType = (Item as AzureBackupItem).Type;
-                    input.ProtectableObjects.Add((Item as AzureBackupItem).Name);
+                    input.ProtectableObjects.Add((Item as AzureBackupItem).ItemName);
                 }
                 else if (Item.GetType() == typeof(AzureBackupContainer))
                 {
