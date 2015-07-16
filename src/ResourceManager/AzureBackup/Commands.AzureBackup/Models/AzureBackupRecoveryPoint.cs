@@ -26,17 +26,17 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
         /// <summary>
         /// RecoveryPointId of Azure Backup Item
         /// </summary>
-        public string RecoveryPointId { get; set; }
+        public string RecoveryPointName { get; set; }
 
         public AzureBackupRecoveryPointContextObject()
             : base()
         {            
         }
 
-        public AzureBackupRecoveryPointContextObject(RecoveryPointInfo recoveryPointInfo, AzureBackupItem azureBackupItem)
+        public AzureBackupRecoveryPointContextObject(CSMRecoveryPointResponse recoveryPointInfo, AzureBackupItem azureBackupItem)
             : base(azureBackupItem)
         {
-            RecoveryPointId = recoveryPointInfo.InstanceId;
+            RecoveryPointName = recoveryPointInfo.Name;
         }
     }
 
@@ -60,11 +60,11 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
         {            
         }
 
-        public AzureBackupRecoveryPoint(RecoveryPointInfo recoveryPointInfo, AzureBackupItem azureBackupItem)
+        public AzureBackupRecoveryPoint(CSMRecoveryPointResponse recoveryPointInfo, AzureBackupItem azureBackupItem)
             : base(recoveryPointInfo, azureBackupItem)
         {
-            RecoveryPointTime = recoveryPointInfo.RecoveryPointTime;
-            RecoveryPointType = recoveryPointInfo.RecoveryPointType;
+            RecoveryPointTime = recoveryPointInfo.Properties.RecoveryPointTime;
+            RecoveryPointType = recoveryPointInfo.Properties.RecoveryPointType;
         }
     }
 }

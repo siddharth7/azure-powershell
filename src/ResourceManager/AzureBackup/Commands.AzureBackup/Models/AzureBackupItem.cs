@@ -37,9 +37,14 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
         public string ProtectionStatus { get; set; }
 
         /// <summary>
-        /// Protectable Object Name for the Azure Backup Item
+        /// DataSourceId of Azure Backup Item
         /// </summary>
-        public string Name { get; set; }
+        public string DataSourceId { get; set; }
+
+        /// <summary>
+        /// DataSourceId of Azure Backup Item
+        /// </summary>
+        public string Type { get; set; }
 
         /// <summary>
         /// Protection Policy Name for the Azure Backup Item
@@ -66,17 +71,19 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
         {
             DataSourceStatus = datasource.Status;
             ProtectionStatus = datasource.ProtectionStatus;
-            Name = datasource.Name;
             ProtectionPolicyName = datasource.ProtectionPolicyName;
             ProtectionPolicyId = datasource.ProtectionPolicyId;
             RecoveryPointsCount = datasource.RecoveryPointsCount;
+            DataSourceId = datasource.InstanceId;
+            Type = datasource.Type;
         }
 
         public AzureBackupItem(ProtectableObjectInfo pPOItem, AzureBackupContainer azureBackupContainer)
             : base(pPOItem, azureBackupContainer)
         {
             ProtectionStatus = pPOItem.ProtectionStatus;
-            Name = pPOItem.Name;
+            DataSourceId = pPOItem.InstanceId;
+            Type = pPOItem.Type;
         }
     }
 }

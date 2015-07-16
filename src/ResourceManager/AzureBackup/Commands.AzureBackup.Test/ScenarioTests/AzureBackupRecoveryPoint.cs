@@ -36,7 +36,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
         public AzureBackupRecoveryPointContextObject(RecoveryPointInfo recoveryPointInfo, AzureBackupItem azureBackupItem)
             : base(azureBackupItem)
         {
-            RecoveryPointId = recoveryPointInfo.InstanceId;
+            RecoveryPointName = recoveryPointInfo.InstanceId;
         }
     }
 
