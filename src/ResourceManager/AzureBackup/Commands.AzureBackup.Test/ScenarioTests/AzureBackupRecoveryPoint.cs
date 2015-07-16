@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Azure.Commands.AzureBackup.Models
 {
+    /*
     public class AzureBackupRecoveryPointContextObject : AzureBackupItemContextObject
     {
         /// <summary>
@@ -67,4 +68,5 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
             RecoveryPointType = recoveryPointInfo.RecoveryPointType;
         }
     }
+    */
 }
