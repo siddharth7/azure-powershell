@@ -40,33 +40,33 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
             {
                 WriteDebug("Making client call");
 
-                var recoveryPointListResponse = AzureBackupClient.ListRecoveryPoints(Item.ContainerUniqueName, Item.ItemName);
-
-                if (recoveryPointListResponse != null)
+                if (Id != null)
                 {
-                    WriteDebug("Received recovery point response");
-
-                    IEnumerable<CSMRecoveryPointResponse> recoveryPointObjects = null;
-                    if (Id != null)
+                    CSMRecoveryPointResponse recoveryPointObject = AzureBackupClient.GetRecoveryPoint(Item.ContainerUniqueName, Item.ItemName, Id);
+                    if (recoveryPointObject != null)
                     {
-                        CSMRecoveryPointResponse recoveryPointObject = null;
-                        recoveryPointObjects = recoveryPointListResponse.Where(x => x.Name.Equals(Id, System.StringComparison.InvariantCultureIgnoreCase));
-                        if (recoveryPointObjects != null && recoveryPointObjects.Any<CSMRecoveryPointResponse>())
-                        {
-                            WriteDebug("Converting response");
-                            recoveryPointObject = recoveryPointObjects.FirstOrDefault<CSMRecoveryPointResponse>();
-                            WriteAzureBackupRecoveryPoint(recoveryPointObject, Item);
-                        }
-                        else
-                        {
-                            WriteDebug(string.Format("{0}{1}", "No recovery point exist with Id := ", Id));
-                        }
+                        WriteAzureBackupRecoveryPoint(recoveryPointObject, Item);
                     }
                     else
                     {
-                        WriteDebug("Converting response");
-                        recoveryPointObjects = recoveryPointListResponse.OrderByDescending(x => x.Properties.RecoveryPointTime);
-                        WriteAzureBackupRecoveryPoint(recoveryPointObjects, Item);
+                        WriteDebug(string.Format("{0}{1}", "No recovery point exist with Id := ", Id));
+                    }
+                }
+                else
+                {
+                    IEnumerable<CSMRecoveryPointResponse> recoveryPointListResponse = AzureBackupClient.ListRecoveryPoints(Item.ContainerUniqueName, Item.ItemName);
+                    if (recoveryPointListResponse != null &&
+                        recoveryPointListResponse.Count<CSMRecoveryPointResponse>() > 0)
+                    {
+                        IEnumerable<CSMRecoveryPointResponse> recoveryPointObjects = recoveryPointListResponse.OrderByDescending(x => x.Properties.RecoveryPointTime);
+                        if (recoveryPointObjects.Count<CSMRecoveryPointResponse>() > 1)
+                        {
+                            WriteAzureBackupRecoveryPoint(recoveryPointObjects, Item);
+                        }
+                        else
+                        {
+                            WriteAzureBackupRecoveryPoint(recoveryPointObjects.FirstOrDefault<CSMRecoveryPointResponse>(), Item);
+                        }
                     }
                 }
             });
