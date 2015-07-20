@@ -107,6 +107,18 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
         /// </summary>
         /// <param name="containerName"></param>
         /// <param name="itemName"></param>
+        /// <returns></returns>
+        public CSMRecoveryPointResponse GetRecoveryPoint(string containerName, string itemName, string recoveryPointName)
+        {
+            var response = AzureBackupClient.RecoveryPoint.GetAsync(GetCustomRequestHeaders(), containerName, itemName, recoveryPointName, CmdletCancellationToken).Result;
+            return (response != null) ? response.Value : null;
+        }
+
+        /// <summary>
+        /// Lists recovery points for specified item
+        /// </summary>
+        /// <param name="containerName"></param>
+        /// <param name="itemName"></param>
         /// <param name="recoveryPointName"></param>
         /// <returns></returns>
         public Guid TriggerRestore(string containerName, string itemName, string recoveryPointName, CSMRestoreRequest csmRestoreRequest)
