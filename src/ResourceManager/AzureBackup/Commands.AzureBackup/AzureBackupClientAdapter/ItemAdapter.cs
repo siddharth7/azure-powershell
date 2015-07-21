@@ -38,8 +38,9 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
         /// <returns></returns>
         public IEnumerable<DataSourceInfo> ListDataSources(DataSourceQueryParameter query)
         {
-            var response = AzureBackupClient.DataSource.ListAsync(query, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
-            return (response != null) ? response.DataSources.Objects : null;
+            return null;
+            //var response = AzureBackupClient.DataSource.ListAsync(query, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
+            //return (response != null) ? response.DataSources.Objects : null;
         }
 
         /// <summary>
@@ -49,8 +50,9 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
         /// <returns></returns>
         public IEnumerable<ProtectableObjectInfo> ListProtectableObjects(POQueryParameter query)
         {
-            var response = AzureBackupClient.ProtectableObject.ListAsync(query, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
-            return (response != null) ? response.ProtectableObject.Objects : null;
+            return null;
+            //var response = AzureBackupClient.ProtectableObject.ListAsync(query, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
+            //return (response != null) ? response.ProtectableObject.Objects : null;
         }
 
         /// <summary>
@@ -63,8 +65,9 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
         /// <returns></returns>
         public Guid DisableProtection(string containerName, string dsType, string dsId, RemoveProtectionRequestInput request)
         {
-            var response = AzureBackupClient.DataSource.DisableProtectionAsync(GetCustomRequestHeaders(), containerName, dsType, dsId, request, CmdletCancellationToken).Result;
-            return response.OperationId;
+            return Guid.Empty;
+            //var response = AzureBackupClient.DataSource.DisableProtectionAsync(GetCustomRequestHeaders(), containerName, dsType, dsId, request, CmdletCancellationToken).Result;
+            //return response.OperationId;
         }
 
         /// <summary>
@@ -74,8 +77,9 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
         /// <returns></returns>
         public Guid EnableProtection(SetProtectionRequestInput request)
         {
-            var response = AzureBackupClient.DataSource.EnableProtectionAsync(GetCustomRequestHeaders(), request, CmdletCancellationToken).Result;
-            return response.OperationId;
+            return Guid.Empty;
+            //var response = AzureBackupClient.DataSource.EnableProtectionAsync(GetCustomRequestHeaders(), request, CmdletCancellationToken).Result;
+            //return response.OperationId;
         }
 
         /// <summary>
