@@ -43,10 +43,10 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 WriteDebug("Making client call");
                 Guid operationId = AzureBackupClient.TriggerBackup(Item.ContainerUniqueName, Item.ItemName);
 
-                WriteDebug("Triggered backup. Converting response");
+                WriteDebug(string.Format("Triggered backup. Converting response {0}", operationId));
 
-                var operationStatus = TrackOperation(operationId);
-                WriteObject(GetCreatedJobs(new Models.AzurePSBackupVault(Item.ResourceGroupName, Item.ResourceName, Item.Location), operationStatus.Jobs).FirstOrDefault());
+                //var operationStatus = TrackOperation(operationId);
+                //WriteObject(GetCreatedJobs(new Models.AzurePSBackupVault(Item.ResourceGroupName, Item.ResourceName, Item.Location), operationStatus.Jobs).FirstOrDefault());
             });
         }
     }

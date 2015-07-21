@@ -33,7 +33,8 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
     {
         public OperationResultResponse GetOperationStatus(string operationId)
         {
-            return AzureBackupClient.OperationStatus.GetAsync(operationId, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
+            return null;//
+            //return AzureBackupClient.OperationStatus.GetAsync(operationId, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
         }
     }
 }

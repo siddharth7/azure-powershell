@@ -67,10 +67,10 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 };
 
                 Guid operationId = AzureBackupClient.TriggerRestore(RecoveryPoint.ContainerUniqueName, RecoveryPoint.ItemName, RecoveryPoint.RecoveryPointName, csmRestoreRequest);
-                WriteDebug("Triggered Restore. Converting response");
+                WriteDebug(string.Format("Triggered Restore. Converting response {0}", operationId));
 
-                var operationStatus = TrackOperation(operationId);
-                WriteObject(GetCreatedJobs(new Models.AzurePSBackupVault(RecoveryPoint.ResourceGroupName, RecoveryPoint.ResourceName, RecoveryPoint.Location), operationStatus.Jobs).FirstOrDefault());
+                //var operationStatus = TrackOperation(operationId);
+                //WriteObject(GetCreatedJobs(new Models.AzurePSBackupVault(RecoveryPoint.ResourceGroupName, RecoveryPoint.ResourceName, RecoveryPoint.Location), operationStatus.Jobs).FirstOrDefault());
 
             });
         }
