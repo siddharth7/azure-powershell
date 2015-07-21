@@ -21,7 +21,7 @@ using Xunit;
 
 namespace Microsoft.Azure.Commands.AzureBackup.Test.ScenarioTests
 {
-    public class AzureBackupContainerTests : AzureBackupTestsBase
+    public class AzureBackupScenarioTests : AzureBackupTestsBase
     {
         [Fact]
         public void AzureBackupEndToEndTests()
