@@ -183,7 +183,8 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 
             foreach (string jobId in jobIds)
             {
-                jobs.Add(new AzureBackupJob(vault, AzureBackupClient.GetJobDetails(jobId).JobDetailedProperties, jobId));
+                CSMJobDetailsResponse job = AzureBackupClient.GetJobDetails(jobId);
+                jobs.Add(new AzureBackupJob(vault, job.JobDetailedProperties, job.Name));
             }
 
             return jobs;
