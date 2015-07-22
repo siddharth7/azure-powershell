@@ -37,9 +37,14 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
         public string ProtectionStatus { get; set; }
 
         /// <summary>
-        /// Protectable Object Name for the Azure Backup Item
+        /// DataSourceId of Azure Backup Item
         /// </summary>
-        public string Name { get; set; }
+        public string DataSourceId { get; set; }
+
+        /// <summary>
+        /// DataSourceId of Azure Backup Item
+        /// </summary>
+        public string Type { get; set; }
 
         /// <summary>
         /// Protection Policy Name for the Azure Backup Item

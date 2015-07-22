@@ -23,22 +23,25 @@ using System.Threading;
 using Hyak.Common;
 using Microsoft.Azure.Commands.AzureBackup.Properties;
 using System.Net;
-using Microsoft.WindowsAzure.Management.Scheduler;
-using Microsoft.Azure.Management.BackupServices;
-using Microsoft.Azure.Management.BackupServices.Models;
+using Microsoft.Azure.Commands.AzureBackup.Models;
+using Microsoft.Azure.Commands.AzureBackup.Cmdlets;
 
-namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
+namespace Microsoft.Azure.Commands.AzureBackup
 {
-    public partial class AzureBackupClientAdapter
+    public abstract class AzureBackupRestoreBase : AzureBackupCmdletBase
     {
-        public CSMOperationResult GetOperationStatus(string operationId)
+        // ToDO:
+        // Correct Help message and other attributes related to paameters
+        [Parameter(Position = 0, Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.AzureBackUpRecoveryPoint, ValueFromPipeline = true)]
+        [ValidateNotNullOrEmpty]
+        public AzureBackupRecoveryPoint RecoveryPoint { get; set; }
+
+        public override void ExecuteCmdlet()
         {
-<<<<<<< HEAD
-            return AzureBackupClient.OperationStatus.CSMGetAsync(operationId, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
-=======
-            return null;//
-            //return AzureBackupClient.OperationStatus.GetAsync(operationId, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
->>>>>>> csm-master
+            base.ExecuteCmdlet();
+
+            WriteDebug(String.Format("Cmdlet called for ResourceGroupName: {0}, ResourceName: {1}", RecoveryPoint.ResourceGroupName, RecoveryPoint.ResourceName));
+            InitializeAzureBackupCmdlet(RecoveryPoint.ResourceGroupName, RecoveryPoint.ResourceName);
         }
     }
 }

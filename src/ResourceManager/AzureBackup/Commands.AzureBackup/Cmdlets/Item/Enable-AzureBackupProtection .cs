@@ -47,7 +47,12 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 input.Properties.PolicyId = Policy.InstanceId;
                 if (Item.GetType() == typeof(AzureBackupItem))
                 {
+<<<<<<< HEAD
                     itemName = (Item as AzureBackupItem).Name;
+=======
+                    input.ProtectableObjectType = (Item as AzureBackupItem).Type;
+                    input.ProtectableObjects.Add((Item as AzureBackupItem).ItemName);
+>>>>>>> csm-master
                 }
                 else if (Item.GetType() == typeof(AzureBackupContainer))
                 {

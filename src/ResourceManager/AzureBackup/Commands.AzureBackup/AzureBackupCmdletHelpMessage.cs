@@ -20,7 +20,6 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
         public const string ResourceGroupName = "The ResourceGroup name.";
         public const string ResourceName = "The Resource name.";
         public const string Location = "The resource location.";
-        public const string Sku = "The SKU of the backup vault instance.";
         public const string TargetLocation = "The directory where the credentials file will be saved. This must be an absolute path.";
         public const string StorageType = "The vault back-end storage type.";
 
@@ -58,6 +57,8 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
         public const string ProtectionStatus = "Protection Status of the azure backup item.";
         public const string AzureBackUpItem = "Azure BackUp Item.";
         public const string RecoveryPointId = "Recovery Point Id.";
+        public const string StorageAccountName = "Storage Account Name.";
+        public const string AzureBackUpRecoveryPoint = "Recovery Point.";
         public const string Type = "Type of Azure Backup Item.";
         public const string Status = "Status of Azure Backup Item";
         public const string AzureBackupContainer = "Azure Backup Container for Azure Backup Item.";

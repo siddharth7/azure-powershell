@@ -40,19 +40,11 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
             {
                 WriteDebug("Making client call");
 
-                var recoveryPointListResponse = AzureBackupClient.ListRecoveryPoints(Item.ContainerUniqueName, Item.Type, Item.DataSourceId);
-
-                WriteDebug("Received recovery point response");
-                
-                IEnumerable<RecoveryPointInfo> recoveryPointObjects = null;
                 if (Id != null)
                 {
-                    RecoveryPointInfo recoveryPointObject = null;
-                    recoveryPointObjects = recoveryPointListResponse.Where(x => x.InstanceId.Equals(Id, System.StringComparison.InvariantCultureIgnoreCase));
-                    if (recoveryPointObjects != null && recoveryPointObjects.Any<RecoveryPointInfo>())
+                    CSMRecoveryPointResponse recoveryPointObject = AzureBackupClient.GetRecoveryPoint(Item.ContainerUniqueName, Item.ItemName, Id);
+                    if (recoveryPointObject != null)
                     {
-                        WriteDebug("Converting response");
-                        recoveryPointObject = recoveryPointObjects.FirstOrDefault<RecoveryPointInfo>();
                         WriteAzureBackupRecoveryPoint(recoveryPointObject, Item);
                     }
                     else
@@ -62,19 +54,30 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 }
                 else
                 {
-                    WriteDebug("Converting response");
-                    recoveryPointObjects = recoveryPointListResponse.OrderByDescending(x => x.RecoveryPointTime);
-                    WriteAzureBackupRecoveryPoint(recoveryPointObjects, Item);
-                }                
+                    IEnumerable<CSMRecoveryPointResponse> recoveryPointListResponse = AzureBackupClient.ListRecoveryPoints(Item.ContainerUniqueName, Item.ItemName);
+                    if (recoveryPointListResponse != null &&
+                        recoveryPointListResponse.Count<CSMRecoveryPointResponse>() > 0)
+                    {
+                        IEnumerable<CSMRecoveryPointResponse> recoveryPointObjects = recoveryPointListResponse.OrderByDescending(x => x.Properties.RecoveryPointTime);
+                        if (recoveryPointObjects.Count<CSMRecoveryPointResponse>() > 1)
+                        {
+                            WriteAzureBackupRecoveryPoint(recoveryPointObjects, Item);
+                        }
+                        else
+                        {
+                            WriteAzureBackupRecoveryPoint(recoveryPointObjects.FirstOrDefault<CSMRecoveryPointResponse>(), Item);
+                        }
+                    }
+                }
             });
         }
 
-        public void WriteAzureBackupRecoveryPoint(RecoveryPointInfo sourceRecoverPoint, AzureBackupItem azureBackupItem)
+        public void WriteAzureBackupRecoveryPoint(CSMRecoveryPointResponse sourceRecoverPoint, AzureBackupItem azureBackupItem)
         {
             this.WriteObject(new AzureBackupRecoveryPoint(sourceRecoverPoint, azureBackupItem));
         }
 
-        public void WriteAzureBackupRecoveryPoint(IEnumerable<RecoveryPointInfo> sourceRecoverPointList, AzureBackupItem azureBackupItem)
+        public void WriteAzureBackupRecoveryPoint(IEnumerable<CSMRecoveryPointResponse> sourceRecoverPointList, AzureBackupItem azureBackupItem)
         {
             List<AzureBackupRecoveryPoint> targetList = new List<AzureBackupRecoveryPoint>();
 

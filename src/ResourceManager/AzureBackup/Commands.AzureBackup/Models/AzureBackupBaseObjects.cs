@@ -92,12 +92,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
         /// <summary>
         /// DataSourceId of Azure Backup Item
         /// </summary>
-        public string DataSourceId { get; set; }
-
-        /// <summary>
-        /// DataSourceId of Azure Backup Item
-        /// </summary>
-        public string Type { get; set; }
+        public string ItemName { get; set; }
 
         public AzureBackupItemContextObject()
             : base()
@@ -107,20 +102,19 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
         public AzureBackupItemContextObject(AzureBackupItemContextObject azureBackupItemContextObject)
             : base(azureBackupItemContextObject)
         {
-            DataSourceId = azureBackupItemContextObject.DataSourceId;
-            Type = azureBackupItemContextObject.Type;
+            ItemName = azureBackupItemContextObject.ItemName;
         }
 
-        public AzureBackupItemContextObject(CSMProtectedItemResponse item, AzureBackupContainer azureBackupContainer)
+        public AzureBackupItemContextObject(DataSourceInfo item, AzureBackupContainer azureBackupContainer)
             : base(azureBackupContainer)
         {
-            Type = item.Type;
+            ItemName = item.Name;
         }
 
-        public AzureBackupItemContextObject(CSMItemResponse item, AzureBackupContainer azureBackupContainer)
+        public AzureBackupItemContextObject(ProtectableObjectInfo item, AzureBackupContainer azureBackupContainer)
             : base(azureBackupContainer)
         {
-            Type = item.Type;
+            ItemName = item.Name;
         }
     }
 }
