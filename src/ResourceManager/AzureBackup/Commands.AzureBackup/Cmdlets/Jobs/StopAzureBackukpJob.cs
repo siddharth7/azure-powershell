@@ -27,7 +27,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
     /// <summary>
     /// Stop a running cancellable job
     /// </summary>
-    [Cmdlet("Stop", "AzureBackupJob"), OutputType(typeof(Mgmt.Job))]
+    [Cmdlet("Stop", "AzureBackupJob")]
     public class StopAzureBackupJob : AzureBackupCmdletBase
     {
         [Parameter(Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.Vault, ParameterSetName = "IdFiltersSet")]

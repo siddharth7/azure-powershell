@@ -25,7 +25,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
     /// <summary>
     /// Get full details of a job
     /// </summary>
-    [Cmdlet(VerbsCommon.Get, "AzureBackupJobDetails", DefaultParameterSetName = "IdFiltersSet"), OutputType(typeof(Mgmt.JobProperties))]
+    [Cmdlet(VerbsCommon.Get, "AzureBackupJobDetails", DefaultParameterSetName = "IdFiltersSet"), OutputType(typeof(AzureBackupJobDetails))]
     public class GetAzureBackupJobDetils : AzureBackupCmdletBase
     {
         [Parameter(Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.Vault, ParameterSetName = "IdFiltersSet")]
@@ -57,8 +57,8 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 
                 WriteDebug("JobID filter is: " + JobID);
 
-                Mgmt.JobProperties serviceJobProperties = AzureBackupClient.GetJobDetails(JobID).Job;
-                AzureBackupJobDetails jobDetails = new AzureBackupJobDetails(Vault, serviceJobProperties);
+                Mgmt.CSMJobDetailsResponse serviceJobProperties = AzureBackupClient.GetJobDetails(JobID);
+                AzureBackupJobDetails jobDetails = new AzureBackupJobDetails(Vault, serviceJobProperties.JobDetailedProperties, serviceJobProperties.Name);
 
                 WriteDebug("Retrieved JobDetails from service.");
                 WriteObject(jobDetails);
