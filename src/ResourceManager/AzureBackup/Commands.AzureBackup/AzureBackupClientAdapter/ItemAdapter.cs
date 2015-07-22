@@ -115,7 +115,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
         public CSMRecoveryPointResponse GetRecoveryPoint(string containerName, string itemName, string recoveryPointName)
         {
             var response = AzureBackupClient.RecoveryPoint.GetAsync(GetCustomRequestHeaders(), containerName, itemName, recoveryPointName, CmdletCancellationToken).Result;
-            return (response != null) ? response.Value : null;
+            return (response != null) ? response.CSMRecoveryPointResponse : null;
         }
 
         /// <summary>
