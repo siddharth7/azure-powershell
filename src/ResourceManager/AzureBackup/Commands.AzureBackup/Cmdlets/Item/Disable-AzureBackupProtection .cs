@@ -50,17 +50,24 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets.DataSource
             ExecutionBlock(() =>
             {
                 base.ExecuteCmdlet();
-
+                Guid operationId = Guid.Empty;
                 WriteDebug("Making client call");
-                RemoveProtectionRequestInput input = new RemoveProtectionRequestInput()
-                {
-                    RemoveProtectionOption = this.DeleteBackupData ? RemoveProtectionOptions.DeleteBackupData.ToString() : RemoveProtectionOptions.RetainBackupData.ToString(),
-                    Reason = this.Reason != null ? this.Reason : String.Empty,
-                    Comments = this.Comments != null ? this.Comments : String.Empty,
-                };
 
-                WriteDebug("RemoveProtectionOption is = " + input.RemoveProtectionOption);
-                var operationId = AzureBackupClient.DisableProtection(Item.ContainerUniqueName, Item.Name);
+                if(!this.DeleteBackupData)
+                {
+                    CSMUpdateProtectionRequest input = new CSMUpdateProtectionRequest()
+                    {
+                        Properties = new CSMUpdateProtectionRequestProperties(string.Empty)
+                    };
+
+                    operationId = AzureBackupClient.UpdateProtection(Item.ContainerUniqueName, Item.ItemName, input);
+                }
+
+                else
+                {
+                    operationId = AzureBackupClient.DisableProtection(Item.ContainerUniqueName, Item.ItemName);
+                }
+
 
                 WriteDebug("Received disable azure backup protection response");
                 var operationStatus = GetOperationStatus(operationId);

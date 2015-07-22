@@ -105,13 +105,13 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
             ItemName = azureBackupItemContextObject.ItemName;
         }
 
-        public AzureBackupItemContextObject(DataSourceInfo item, AzureBackupContainer azureBackupContainer)
+        public AzureBackupItemContextObject(CSMProtectedItemResponse item, AzureBackupContainer azureBackupContainer)
             : base(azureBackupContainer)
         {
             ItemName = item.Name;
         }
 
-        public AzureBackupItemContextObject(ProtectableObjectInfo item, AzureBackupContainer azureBackupContainer)
+        public AzureBackupItemContextObject(CSMItemResponse item, AzureBackupContainer azureBackupContainer)
             : base(azureBackupContainer)
         {
             ItemName = item.Name;

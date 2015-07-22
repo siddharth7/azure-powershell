@@ -33,12 +33,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
     {
         public CSMOperationResult GetOperationStatus(string operationId)
         {
-<<<<<<< HEAD
             return AzureBackupClient.OperationStatus.CSMGetAsync(operationId, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
-=======
-            return null;//
-            //return AzureBackupClient.OperationStatus.GetAsync(operationId, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
->>>>>>> csm-master
         }
     }
 }

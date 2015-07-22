@@ -71,7 +71,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
         {
             DataSourceStatus = datasource.Properties.ProtectionStatus;
             ProtectionStatus = datasource.Properties.Status;
-            Name = datasource.Name;
+            ItemName = datasource.Name;
             ProtectionPolicyName = datasource.Properties.ProtectionPolicyId;
             ProtectionPolicyId = datasource.Properties.ProtectionPolicyId;
             RecoveryPointsCount = datasource.Properties.RecoveryPointsCount;
@@ -81,7 +81,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
             : base(pPOItem, azureBackupContainer)
         {
             ProtectionStatus = pPOItem.Properties.Status;
-            Name = pPOItem.Name;
+            ItemName = pPOItem.Name;
         }
     }
 }

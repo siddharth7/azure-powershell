@@ -104,7 +104,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 var operationId = AzureBackupClient.RegisterContainer(container.Name);
 
                 var operationStatus = GetOperationStatus(operationId);
-                WriteObject(GetCreatedJobs(Vault, operationStatus.Jobs).FirstOrDefault());
+                WriteObject(GetCreatedJobs(Vault, operationStatus.JobList).FirstOrDefault());
             });
         }
 
@@ -137,13 +137,13 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 
             isDiscoverySuccessful = true;
             //If operation fails check if retry is needed or not
-            if (status.OperationResult != AzureBackupOperationResult.Succeeded.ToString())
+            if (status.Status != CSMAzureBackupOperationStatus.Succeeded.ToString())
             {
                 isDiscoverySuccessful = false;
-                errorMessage = status.Message;
-                WriteDebug(String.Format("Discovery operation failed with ErrorCode: {0}", status.ErrorCode));
-                if ((status.ErrorCode == AzureBackupOperationErrorCode.DiscoveryInProgress.ToString() ||
-                    (status.ErrorCode == AzureBackupOperationErrorCode.BMSUserErrorObjectLocked.ToString())))
+                errorMessage = status.Error.Message;
+                WriteDebug(String.Format("Discovery operation failed with ErrorCode: {0}", status.Error.Code));
+                if ((status.Error.Code == AzureBackupOperationErrorCode.DiscoveryInProgress.ToString() ||
+                    (status.Error.Code == AzureBackupOperationErrorCode.BMSUserErrorObjectLocked.ToString())))
                 {
                     //Need to retry for this errors
                     isRetryNeeded = true;
