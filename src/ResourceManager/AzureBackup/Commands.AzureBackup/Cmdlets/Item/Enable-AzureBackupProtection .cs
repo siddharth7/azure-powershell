@@ -42,21 +42,19 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 base.ExecuteCmdlet();
 
                 WriteDebug("Making client call");
-                SetProtectionRequestInput input = new SetProtectionRequestInput();
-                input.PolicyId = Policy.InstanceId;
+                string itemName = string.Empty;
+                CSMSetProtectionRequest input = new CSMSetProtectionRequest();
+                input.Properties.PolicyId = Policy.InstanceId;
                 if (Item.GetType() == typeof(AzureBackupItem))
                 {
-                    input.ProtectableObjectType = (Item as AzureBackupItem).Type;
-                    input.ProtectableObjects.Add((Item as AzureBackupItem).Name);
+                    itemName = (Item as AzureBackupItem).Name;
                 }
                 else if (Item.GetType() == typeof(AzureBackupContainer))
                 {
                     WriteDebug("Input is container Type = " + Item.GetType());
                     if ((Item as AzureBackupContainer).ContainerType == AzureBackupContainerType.IaasVMContainer.ToString())
                     {
-                        WriteDebug("container Type = " + (Item as AzureBackupContainer).ContainerType);
-                        input.ProtectableObjectType = DataSourceType.VM.ToString();
-                        input.ProtectableObjects.Add((Item as AzureBackupContainer).ContainerUniqueName);
+                        itemName = (Item as AzureBackupContainer).ContainerUniqueName;
                     }
                     else
                     {
@@ -68,11 +66,11 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                     throw new Exception("Uknown item type");
                 }
 
-                var operationId = AzureBackupClient.EnableProtection(input);
+                var operationId = AzureBackupClient.EnableProtection(Item.ContainerUniqueName,itemName, input);
                 WriteDebug("Received enable azure backup protection response");
 
                 var operationStatus = GetOperationStatus(operationId);
-                this.WriteObject(GetCreatedJobs(new Models.AzurePSBackupVault(Item.ResourceGroupName, Item.ResourceName, Item.Location), operationStatus.Jobs).FirstOrDefault());
+                this.WriteObject(GetCreatedJobs(new Models.AzurePSBackupVault(Item.ResourceGroupName, Item.ResourceName, Item.Location), operationStatus.JobList).FirstOrDefault());
             });
         }
     }

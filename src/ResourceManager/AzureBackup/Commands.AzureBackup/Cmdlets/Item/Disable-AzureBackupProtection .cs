@@ -12,6 +12,7 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
+using Microsoft.Azure.Commands.AzureBackup.Models;
 using Microsoft.Azure.Management.BackupServices;
 using Microsoft.Azure.Management.BackupServices.Models;
 using System;
@@ -59,21 +60,12 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets.DataSource
                 };
 
                 WriteDebug("RemoveProtectionOption is = " + input.RemoveProtectionOption);
-                var operationId = AzureBackupClient.DisableProtection(Item.ContainerUniqueName, Item.Type, Item.DataSourceId, input);
+                var operationId = AzureBackupClient.DisableProtection(Item.ContainerUniqueName, Item.Name);
 
                 WriteDebug("Received disable azure backup protection response");
                 var operationStatus = GetOperationStatus(operationId);
-                this.WriteObject(GetCreatedJobs(new Models.AzurePSBackupVault(Item.ResourceGroupName, Item.ResourceName, Item.Location), operationStatus.Jobs).FirstOrDefault());
+                this.WriteObject(GetCreatedJobs(new Models.AzurePSBackupVault(Item.ResourceGroupName, Item.ResourceName, Item.Location), operationStatus.JobList).FirstOrDefault());
             });
         }
-
-        public enum RemoveProtectionOptions
-        {
-            [EnumMember]
-            DeleteBackupData,
-
-            [EnumMember]
-            RetainBackupData
-        };
     }
 }

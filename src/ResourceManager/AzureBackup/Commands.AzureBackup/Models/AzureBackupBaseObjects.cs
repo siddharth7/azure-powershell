@@ -111,17 +111,15 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
             Type = azureBackupItemContextObject.Type;
         }
 
-        public AzureBackupItemContextObject(DataSourceInfo item, AzureBackupContainer azureBackupContainer)
+        public AzureBackupItemContextObject(CSMProtectedItemResponse item, AzureBackupContainer azureBackupContainer)
             : base(azureBackupContainer)
         {
-            DataSourceId = item.InstanceId;
             Type = item.Type;
         }
 
-        public AzureBackupItemContextObject(ProtectableObjectInfo item, AzureBackupContainer azureBackupContainer)
+        public AzureBackupItemContextObject(CSMItemResponse item, AzureBackupContainer azureBackupContainer)
             : base(azureBackupContainer)
         {
-            DataSourceId = "-1";
             Type = item.Type;
         }
     }

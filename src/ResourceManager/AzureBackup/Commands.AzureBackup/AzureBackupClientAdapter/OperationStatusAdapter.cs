@@ -31,9 +31,9 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
 {
     public partial class AzureBackupClientAdapter
     {
-        public OperationResultResponse GetOperationStatus(string operationId)
+        public CSMOperationResult GetOperationStatus(string operationId)
         {
-            return AzureBackupClient.OperationStatus.GetAsync(operationId, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
+            return AzureBackupClient.OperationStatus.CSMGetAsync(operationId, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
         }
     }
 }
