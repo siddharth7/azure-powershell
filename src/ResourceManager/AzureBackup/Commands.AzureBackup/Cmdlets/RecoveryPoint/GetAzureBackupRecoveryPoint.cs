@@ -68,6 +68,10 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                             WriteAzureBackupRecoveryPoint(recoveryPointObjects.FirstOrDefault<CSMRecoveryPointResponse>(), Item);
                         }
                     }
+                    else
+                    {
+                        WriteDebug("No recovery point found");
+                    }
                 }
             });
         }
