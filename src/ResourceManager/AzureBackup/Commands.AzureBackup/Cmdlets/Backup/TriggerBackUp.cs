@@ -22,12 +22,6 @@ using MBS = Microsoft.Azure.Management.BackupServices;
 
 namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 {
-    // ToDo:
-    // Correct the Commandlet
-    // Correct the OperationResponse
-    // Get Tracking API from Piyush and Get JobResponse
-    // Get JobResponse Object from Aditya
-
     /// <summary>
     /// Get list of containers
     /// </summary>
@@ -45,8 +39,8 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 
                 WriteDebug(string.Format("Triggered backup. Converting response {0}", operationId));
 
-                //var operationStatus = TrackOperation(operationId);
-                //WriteObject(GetCreatedJobs(new Models.AzurePSBackupVault(Item.ResourceGroupName, Item.ResourceName, Item.Location), operationStatus.Jobs).FirstOrDefault());
+                var operationStatus = TrackOperation(operationId);
+                WriteObject(GetCreatedJobs(new Models.AzurePSBackupVault(Item.ResourceGroupName, Item.ResourceName, Item.Location), operationStatus.JobList).FirstOrDefault());
             });
         }
     }

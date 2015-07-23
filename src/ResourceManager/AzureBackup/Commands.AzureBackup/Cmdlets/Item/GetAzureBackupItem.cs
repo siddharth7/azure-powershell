@@ -49,30 +49,30 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
             {
                 base.ExecuteCmdlet();
 
-                List<DataSourceInfo> azureBackupDatasourceObjects = null;
-                List<ProtectableObjectInfo> azureBackupPOObjects = null;
+                List<CSMProtectedItemResponse> azureBackupDatasourceObjects = null;
+                List<CSMItemResponse> azureBackupPOObjects = null;
 
                 WriteDebug("Making client call");
-                DataSourceQueryParameter DSQueryParam = new DataSourceQueryParameter()
+                CSMProtectedItemQueryObject DSQueryParam = new CSMProtectedItemQueryObject()
                 {
-                    ProtectionStatus = this.ProtectionStatus,
-                    Status = this.Status,
+                    ProtectionStatus = this.Status,
+                    Status = this.ProtectionStatus,
                     Type = this.Type
                 };
 
-                POQueryParameter POQueryParam = new POQueryParameter()
+                CSMItemQueryObject POQueryParam = new CSMItemQueryObject()
                 {
                     Status = this.ProtectionStatus,
                     Type = this.Type
                 };
 
                 var azureBackupDatasourceListResponse = AzureBackupClient.ListDataSources(DSQueryParam);
-                azureBackupDatasourceObjects = azureBackupDatasourceListResponse.Where(x => x.ContainerName.Equals(Container.ContainerUniqueName, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
+                azureBackupDatasourceObjects = azureBackupDatasourceListResponse.Where(x => x.Properties.ContainerId.Equals(Container.ContainerUniqueName, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
 
                 if (this.Status == null)
                 {
                     var azureBackupPOListResponse = AzureBackupClient.ListProtectableObjects(POQueryParam);
-                    azureBackupPOObjects = azureBackupPOListResponse.Where(x => x.ContainerName.Equals(Container.ContainerUniqueName, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
+                    azureBackupPOObjects = azureBackupPOListResponse.Where(x => x.Properties.ContainerId.Equals(Container.ContainerUniqueName, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
                 }
 
                 WriteDebug("Received azure backup item response");
@@ -80,12 +80,12 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
             });
         }
 
-        public void WriteAzureBackupItem(DataSourceInfo sourceItem, AzureBackupContainer azureBackupItem)
+        public void WriteAzureBackupItem(CSMProtectedItemResponse sourceItem, AzureBackupContainer azureBackupItem)
         {
             this.WriteObject(new AzureBackupItem(sourceItem, azureBackupItem));
         }
 
-        public void WriteAzureBackupItem(List<DataSourceInfo> sourceDataSourceList, List<ProtectableObjectInfo> sourcePOList, AzureBackupContainer azureBackupContainer)
+        public void WriteAzureBackupItem(List<CSMProtectedItemResponse> sourceDataSourceList, List<CSMItemResponse> sourcePOList, AzureBackupContainer azureBackupContainer)
         {
             List<AzureBackupItem> targetList = new List<AzureBackupItem>();
 

@@ -12,6 +12,7 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
+using Microsoft.Azure.Commands.AzureBackup.Models;
 using Microsoft.Azure.Management.BackupServices;
 using Microsoft.Azure.Management.BackupServices.Models;
 using System;
@@ -49,31 +50,29 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets.DataSource
             ExecutionBlock(() =>
             {
                 base.ExecuteCmdlet();
-
+                Guid operationId = Guid.Empty;
                 WriteDebug("Making client call");
-                RemoveProtectionRequestInput input = new RemoveProtectionRequestInput()
-                {
-                    RemoveProtectionOption = this.DeleteBackupData ? RemoveProtectionOptions.DeleteBackupData.ToString() : RemoveProtectionOptions.RetainBackupData.ToString(),
-                    Reason = this.Reason != null ? this.Reason : String.Empty,
-                    Comments = this.Comments != null ? this.Comments : String.Empty,
-                };
 
-                WriteDebug("RemoveProtectionOption is = " + input.RemoveProtectionOption);
-                var operationId = AzureBackupClient.DisableProtection(Item.ContainerUniqueName, Item.Type, Item.DataSourceId, input);
+                if(!this.DeleteBackupData)
+                {
+                    CSMUpdateProtectionRequest input = new CSMUpdateProtectionRequest()
+                    {
+                        Properties = new CSMUpdateProtectionRequestProperties(string.Empty)
+                    };
+
+                    operationId = AzureBackupClient.UpdateProtection(Item.ContainerUniqueName, Item.ItemName, input);
+                }
+
+                else
+                {
+                    operationId = AzureBackupClient.DisableProtection(Item.ContainerUniqueName, Item.ItemName);
+                }
+
 
                 WriteDebug("Received disable azure backup protection response");
                 var operationStatus = GetOperationStatus(operationId);
-                this.WriteObject(GetCreatedJobs(new Models.AzurePSBackupVault(Item.ResourceGroupName, Item.ResourceName, Item.Location), operationStatus.Jobs).FirstOrDefault());
+                this.WriteObject(GetCreatedJobs(new Models.AzurePSBackupVault(Item.ResourceGroupName, Item.ResourceName, Item.Location), operationStatus.JobList).FirstOrDefault());
             });
         }
-
-        public enum RemoveProtectionOptions
-        {
-            [EnumMember]
-            DeleteBackupData,
-
-            [EnumMember]
-            RetainBackupData
-        };
     }
 }
