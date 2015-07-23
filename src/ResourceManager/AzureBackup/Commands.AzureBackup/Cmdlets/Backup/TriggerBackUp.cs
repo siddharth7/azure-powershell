@@ -19,13 +19,14 @@ using System.Xml;
 using System.Linq;
 using Microsoft.Azure.Management.BackupServices.Models;
 using MBS = Microsoft.Azure.Management.BackupServices;
+using Microsoft.Azure.Commands.AzureBackup.Models;
 
 namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 {
     /// <summary>
     /// Get list of containers
     /// </summary>
-    [Cmdlet(VerbsData.Backup, "AzureBackupItem"), OutputType(typeof(Guid))]
+    [Cmdlet(VerbsData.Backup, "AzureBackupItem"), OutputType(typeof(AzureBackupJob))]
     public class TriggerAzureBackup : AzureBackupDSCmdletBase
     {
         public override void ExecuteCmdlet()

@@ -32,16 +32,16 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
 {
     public partial class AzureBackupClientAdapter
     {
-        public IEnumerable<Mgmt.Job> ListJobs(JobQueryParameter queryParams)
+        public IEnumerable<Mgmt.CSMJobResponse> ListJobs(CSMJobQueryObject queryParams)
         {
             var response = AzureBackupClient.Job.ListAsync(queryParams, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
-            return response.Jobs.Objects;
+            return response.List.Value;
         }
 
-        public Mgmt.JobByIdResponse GetJobDetails(string jobId)
+        public Mgmt.CSMJobDetailsResponse GetJobDetails(string jobId)
         {
             var response = AzureBackupClient.Job.GetAsync(jobId, GetCustomRequestHeaders(), CmdletCancellationToken).Result;
-            return response;
+            return response.Value;
         }
 
         public Guid TriggerCancelJob(string jobId)

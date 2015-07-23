@@ -67,6 +67,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 };
 
                 var azureBackupDatasourceListResponse = AzureBackupClient.ListDataSources(DSQueryParam);
+
                 azureBackupDatasourceObjects = azureBackupDatasourceListResponse.Where(x => x.Properties.ContainerId.Split('/').Last().Equals(Container.ContainerUniqueName, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
 
                 if (this.Status == null)
