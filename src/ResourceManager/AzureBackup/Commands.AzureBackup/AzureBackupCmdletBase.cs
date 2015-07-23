@@ -19,6 +19,7 @@ using Microsoft.Azure.Commands.AzureBackup.Properties;
 using Microsoft.Azure.Common.Authentication;
 using Microsoft.Azure.Common.Authentication.Models;
 using Microsoft.Azure.Management.BackupServices;
+using Microsoft.Azure.Management.BackupServices.Models;
 using Microsoft.WindowsAzure.Commands.Utilities.Common;
 using Microsoft.WindowsAzure.Management.Scheduler;
 using System;
@@ -145,7 +146,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
         /// </summary>
         /// <param name="operationId"></param>
         /// <returns></returns>
-        internal OperationResultResponse GetOperationStatus(Guid operationId)
+        internal CSMOperationResult GetOperationStatus(Guid operationId)
         {
             return AzureBackupClient.GetOperationStatus(operationId.ToString());
         }
@@ -158,15 +159,15 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
         /// <param name="operationId"></param>
         /// <param name="checkFrequency">In Millisec</param>
         /// <returns></returns>
-        internal OperationResultResponse TrackOperation(Guid operationId, int checkFrequency = defaultOperationStatusRetryTimeInMilliSec)
+        internal CSMOperationResult TrackOperation(Guid operationId, int checkFrequency = defaultOperationStatusRetryTimeInMilliSec)
         {
-            OperationResultResponse response = null;
+            CSMOperationResult response = null;
 
             while (true)
             {
                 response = GetOperationStatus(operationId);
 
-                if (response.OperationStatus == AzureBackupOperationStatus.Completed.ToString())
+                if (response.Status == CSMAzureBackupOperationStatus.Succeeded.ToString())
                 {
                     break;
                 }

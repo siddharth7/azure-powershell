@@ -66,24 +66,22 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
         {
         }
 
-        public AzureBackupItem(DataSourceInfo datasource, AzureBackupContainer azureBackupContainer)
+        public AzureBackupItem(CSMProtectedItemResponse datasource, AzureBackupContainer azureBackupContainer)
             : base(datasource, azureBackupContainer)
         {
-            DataSourceStatus = datasource.Status;
-            ProtectionStatus = datasource.ProtectionStatus;
-            ProtectionPolicyName = datasource.ProtectionPolicyName;
-            ProtectionPolicyId = datasource.ProtectionPolicyId;
-            RecoveryPointsCount = datasource.RecoveryPointsCount;
-            DataSourceId = datasource.InstanceId;
-            Type = datasource.Type;
+            DataSourceStatus = datasource.Properties.ProtectionStatus;
+            ProtectionStatus = datasource.Properties.Status;
+            ItemName = datasource.Name;
+            ProtectionPolicyName = datasource.Properties.ProtectionPolicyId;
+            ProtectionPolicyId = datasource.Properties.ProtectionPolicyId;
+            RecoveryPointsCount = datasource.Properties.RecoveryPointsCount;
         }
 
-        public AzureBackupItem(ProtectableObjectInfo pPOItem, AzureBackupContainer azureBackupContainer)
+        public AzureBackupItem(CSMItemResponse pPOItem, AzureBackupContainer azureBackupContainer)
             : base(pPOItem, azureBackupContainer)
         {
-            ProtectionStatus = pPOItem.ProtectionStatus;
-            DataSourceId = pPOItem.InstanceId;
-            Type = pPOItem.Type;
+            ProtectionStatus = pPOItem.Properties.Status;
+            ItemName = pPOItem.Name;
         }
     }
 }

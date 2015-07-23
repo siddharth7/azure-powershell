@@ -111,8 +111,8 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 // if user hasn't specified any filters, then default filter fetches
                 // all jobs that were created in last 24 hours.
                 if (From == DateTime.MinValue && To == DateTime.MinValue &&
-                    Operation == string.Empty && Status == string.Empty &&
-                    Type == string.Empty && JobId == string.Empty)
+                    string.IsNullOrEmpty(Operation) && string.IsNullOrEmpty(Status) &&
+                    string.IsNullOrEmpty(Type) && string.IsNullOrEmpty(JobId))
                 {
                     From = DateTime.UtcNow.AddDays(-1);
                     To = DateTime.UtcNow;
