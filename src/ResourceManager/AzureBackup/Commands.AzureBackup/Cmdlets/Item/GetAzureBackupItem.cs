@@ -67,12 +67,12 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 };
 
                 var azureBackupDatasourceListResponse = AzureBackupClient.ListDataSources(DSQueryParam);
-                azureBackupDatasourceObjects = azureBackupDatasourceListResponse.Where(x => x.Properties.ContainerId.Equals(Container.ContainerUniqueName, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
+                azureBackupDatasourceObjects = azureBackupDatasourceListResponse.Where(x => x.Properties.ContainerId.Split('/').Last().Equals(Container.ContainerUniqueName, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
 
                 if (this.Status == null)
                 {
                     var azureBackupPOListResponse = AzureBackupClient.ListProtectableObjects(POQueryParam);
-                    azureBackupPOObjects = azureBackupPOListResponse.Where(x => x.Properties.ContainerId.Equals(Container.ContainerUniqueName, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
+                    azureBackupPOObjects = azureBackupPOListResponse.Where(x => x.Properties.ContainerId.Split('/').Last().Equals(Container.ContainerUniqueName, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
                 }
 
                 WriteDebug("Received azure backup item response");
