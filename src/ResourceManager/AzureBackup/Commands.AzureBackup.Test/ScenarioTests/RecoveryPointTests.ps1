@@ -19,9 +19,6 @@ function Test-GetAzureRecoveryPoints
 	$azureBackUpItem.ResourceName = $ResourceGroupName
 	$azureBackUpItem.Location = $Location
 	$azureBackUpItem.ContainerUniqueName = $ContainerName
-	$azureBackUpItem.ContainerType = $ContainerType
-	$azureBackUpItem.DataSourceId = $DataSourceId
-	$azureBackUpItem.Type = $DataSourceType
 	$azureBackUpItem.ItemName = $ItemName
 	$recoveryPoints = Get-AzureBackupRecoveryPoint -Item $azureBackUpItem
 	if (!($recoveryPoints -eq $null))
@@ -42,9 +39,6 @@ function Test-GetAzureRecoveryPoint
 	$azureBackUpItem.ResourceName = $ResourceGroupName
 	$azureBackUpItem.Location = $Location
 	$azureBackUpItem.ContainerUniqueName = $ContainerName
-	$azureBackUpItem.ContainerType = $ContainerType
-	$azureBackUpItem.DataSourceId = $DataSourceId
-	$azureBackUpItem.Type = $DataSourceType
 	$azureBackUpItem.ItemName = $ItemName
 	$recoveryPoint = Get-AzureBackupRecoveryPoint -Item $azureBackUpItem -Id $RecoveryPointName
 	if (!($recoveryPoint -eq $null))
