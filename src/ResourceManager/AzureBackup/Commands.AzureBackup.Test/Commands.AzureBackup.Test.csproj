@@ -124,12 +124,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ScenarioTests\AzureBackupContainerTests.cs" />
-    <Compile Include="ScenarioTests\AzureBackupItem.cs" />
     <Compile Include="ScenarioTests\AzureBackupItemTestCases.cs" />
-    <Compile Include="ScenarioTests\AzureBackupJobHelper.cs" />
     <Compile Include="ScenarioTests\AzureBackupJobTests.cs" />
     <Compile Include="ScenarioTests\AzureBackupPolicyTests.cs" />
-    <Compile Include="ScenarioTests\AzureBackupRecoveryPoint.cs" />
     <Compile Include="ScenarioTests\AzureBackupScenarioTests.cs" />
     <Compile Include="ScenarioTests\AzureBackupTestBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

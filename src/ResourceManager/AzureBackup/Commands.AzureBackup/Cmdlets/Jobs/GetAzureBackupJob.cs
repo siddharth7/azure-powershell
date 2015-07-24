@@ -27,7 +27,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
     /// <summary>
     /// Get list of jobs pertaining to the filters specified. Gets list of all jobs created in the last 24 hours if no filters are specified.
     /// </summary>
-    [Cmdlet(VerbsCommon.Get, "AzureBackupJob", DefaultParameterSetName = "FiltersSet"), OutputType(typeof(List<Mgmt.Job>), typeof(Mgmt.Job))]
+    [Cmdlet(VerbsCommon.Get, "AzureBackupJob", DefaultParameterSetName = "FiltersSet"), OutputType(typeof(List<AzureBackupJob>), typeof(AzureBackupJob))]
     public class GetAzureBackupJob : AzureBackupCmdletBase
     {
         [Parameter(Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.Vault, ParameterSetName = "FiltersSet", ValueFromPipeline = true)]
@@ -111,8 +111,8 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 // if user hasn't specified any filters, then default filter fetches
                 // all jobs that were created in last 24 hours.
                 if (From == DateTime.MinValue && To == DateTime.MinValue &&
-                    Operation == string.Empty && Status == string.Empty &&
-                    Type == string.Empty && JobId == string.Empty)
+                    string.IsNullOrEmpty(Operation) && string.IsNullOrEmpty(Status) &&
+                    string.IsNullOrEmpty(Type) && string.IsNullOrEmpty(JobId))
                 {
                     From = DateTime.UtcNow.AddDays(-1);
                     To = DateTime.UtcNow;
@@ -125,23 +125,23 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 WriteDebug("Type filter is: " + Type);
                 WriteDebug("JobID filter is: " + JobId);
 
-                JobQueryParameter queryParams = new JobQueryParameter()
+                Mgmt.CSMJobQueryObject queryParams = new Mgmt.CSMJobQueryObject()
                 {
                     StartTime = From.Value.ToString("yyyy-MM-dd hh:mm:ss tt"),
                     EndTime = To.Value.ToString("yyyy-MM-dd hh:mm:ss tt"),
                     Operation = Operation,
                     Status = Status,
-                    Type = Type,
-                    JobId = JobId
+                    WorkloadType = Type,
+                    Name = JobId
                 };
 
                 var jobsList = AzureBackupClient.ListJobs(queryParams);
                 List<AzureBackupJob> retrievedJobs = new List<AzureBackupJob>();
 
-                foreach (Mgmt.Job serviceJob in jobsList)
+                foreach (Mgmt.CSMJobResponse serviceJob in jobsList)
                 {
                     // TODO: Initialize vault from Job object when vault is made optional
-                    retrievedJobs.Add(new AzureBackupJob(Vault, serviceJob));
+                    retrievedJobs.Add(new AzureBackupJob(Vault, serviceJob.Properties, serviceJob.Name));
                 }
 
                 WriteDebug("Successfully retrieved all jobs. Number of jobs retrieved: " + retrievedJobs.Count());

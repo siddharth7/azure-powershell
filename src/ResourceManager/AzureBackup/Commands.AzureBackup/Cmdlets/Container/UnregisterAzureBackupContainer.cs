@@ -29,7 +29,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
     /// <summary>
     /// Get list of containers
     /// </summary>
-    [Cmdlet(VerbsLifecycle.Unregister, "AzureBackupContainer"), OutputType(typeof(string))]
+    [Cmdlet(VerbsLifecycle.Unregister, "AzureBackupContainer"), OutputType(typeof(AzureBackupJob))]
     public class UnregisterAzureBackupContainer : AzureBackupContainerCmdletBase
     {
         public override void ExecuteCmdlet()

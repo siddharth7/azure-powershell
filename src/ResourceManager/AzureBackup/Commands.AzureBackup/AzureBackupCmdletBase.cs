@@ -19,6 +19,7 @@ using Microsoft.Azure.Commands.AzureBackup.Properties;
 using Microsoft.Azure.Common.Authentication;
 using Microsoft.Azure.Common.Authentication.Models;
 using Microsoft.Azure.Management.BackupServices;
+using Microsoft.Azure.Management.BackupServices.Models;
 using Microsoft.WindowsAzure.Commands.Utilities.Common;
 using Microsoft.WindowsAzure.Management.Scheduler;
 using System;
@@ -183,7 +184,8 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 
             foreach (string jobId in jobIds)
             {
-                jobs.Add(new AzureBackupJob(vault, AzureBackupClient.GetJobDetails(jobId).Job));
+                CSMJobDetailsResponse job = AzureBackupClient.GetJobDetails(jobId);
+                jobs.Add(new AzureBackupJob(vault, job.JobDetailedProperties, job.Name));
             }
 
             return jobs;

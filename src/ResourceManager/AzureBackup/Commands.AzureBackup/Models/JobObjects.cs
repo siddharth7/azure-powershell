@@ -19,6 +19,7 @@ using System.Xml;
 using System.Linq;
 using System.Web;
 using Microsoft.Azure.Management.BackupServices;
+using Microsoft.Azure.Management.BackupServices;
 using Mgmt = Microsoft.Azure.Management.BackupServices.Models;
 
 namespace Microsoft.Azure.Commands.AzureBackup.Models
@@ -47,11 +48,11 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
 
         public List<ErrorInfo> ErrorDetails { get; set; }
 
-        public AzureBackupJob(AzurePSBackupVault vault, Mgmt.Job serviceJob)
+        public AzureBackupJob(AzurePSBackupVault vault, Mgmt.CSMJobProperties serviceJob, string jobName)
             : base(vault)
         {
-            this.InstanceId = serviceJob.InstanceId;
-            this.WorkloadType = serviceJob.Type;
+            this.InstanceId = jobName;
+            this.WorkloadType = serviceJob.WorkloadType;
             this.WorkloadName = serviceJob.EntityFriendlyName;
             this.Operation = serviceJob.Operation;
             this.Status = serviceJob.Status;
@@ -62,7 +63,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
 
             if (serviceJob.ErrorDetails != null)
             {
-                foreach (Mgmt.ErrorInfo error in serviceJob.ErrorDetails)
+                foreach (Mgmt.CSMJobErrorInfo error in serviceJob.ErrorDetails)
                 {
                     this.ErrorDetails.Add(new ErrorInfo(error));
                 }
@@ -93,7 +94,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
 
         public List<string> Recommendations { get; set; }
 
-        public ErrorInfo(Mgmt.ErrorInfo serviceErrorInfo)
+        public ErrorInfo(Mgmt.CSMJobErrorInfo serviceErrorInfo)
         {
             this.ErrorCode = serviceErrorInfo.ErrorCode;
             this.ErrorMessage = serviceErrorInfo.ErrorString;
@@ -111,8 +112,8 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
 
         public List<AzureBackupJobSubTask> SubTasks { get; set; }
 
-        public AzureBackupJobDetails(AzurePSBackupVault vault, Mgmt.JobProperties serviceJobProperties)
-            : base(vault, serviceJobProperties)
+        public AzureBackupJobDetails(AzurePSBackupVault vault, Mgmt.CSMJobDetailedProperties serviceJobProperties, string jobName)
+            : base(vault, serviceJobProperties, jobName)
         {
             if (serviceJobProperties.PropertyBag != null)
                 this.Properties = new Dictionary<string, string>(serviceJobProperties.PropertyBag);
@@ -122,7 +123,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
             this.SubTasks = new List<AzureBackupJobSubTask>();
             if(serviceJobProperties.TasksList != null)
             {
-                foreach (Mgmt.JobTaskDetails serviceSubTask in serviceJobProperties.TasksList)
+                foreach (Mgmt.CSMJobTaskDetails serviceSubTask in serviceJobProperties.TasksList)
                 {
                     this.SubTasks.Add(new AzureBackupJobSubTask(serviceSubTask));
                 }
@@ -138,7 +139,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
 
         // Not adding other fields because service is not filling them today.
 
-        public AzureBackupJobSubTask(Mgmt.JobTaskDetails serviceTask)
+        public AzureBackupJobSubTask(Mgmt.CSMJobTaskDetails serviceTask)
         {
             this.Name = serviceTask.TaskId;
             this.Status = serviceTask.Status;

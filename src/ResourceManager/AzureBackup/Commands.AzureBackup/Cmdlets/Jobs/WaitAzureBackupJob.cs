@@ -22,7 +22,7 @@ using Microsoft.Azure.Commands.AzureBackup.Models;
 
 namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 {
-    [Cmdlet("Wait", "AzureBackupJob"), OutputType(typeof(Mgmt.Job))]
+    [Cmdlet("Wait", "AzureBackupJob"), OutputType(typeof(List<AzureBackupJob>), typeof(AzureBackupJob))]
     public class WaitAzureBackupJob : AzureBackupCmdletBase
     {
         [Parameter(Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.WaitJobFilterJobHelpMessage, ValueFromPipeline = true)]
@@ -116,8 +116,8 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 
                     for (int i = 0; i < pendingJobs.Count; i++)
                     {
-                        Mgmt.Job retrievedJob = AzureBackupClient.GetJobDetails(pendingJobs[i]).Job;
-                        if (AzureBackupJobHelper.IsJobRunning(retrievedJob.Status))
+                        Mgmt.CSMJobDetailsResponse retrievedJob = AzureBackupClient.GetJobDetails(pendingJobs[i]);
+                        if (AzureBackupJobHelper.IsJobRunning(retrievedJob.JobDetailedProperties.Status))
                             areJobsRunning = true;
                         else
                         {
@@ -138,7 +138,8 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 IList<AzureBackupJob> finalJobs = new List<AzureBackupJob>();
                 foreach(string jobId in specifiedJobs)
                 {
-                    finalJobs.Add(new AzureBackupJob(Vault, AzureBackupClient.GetJobDetails(jobId).Job));
+                    Mgmt.CSMJobDetailsResponse retrievedJob = AzureBackupClient.GetJobDetails(jobId);
+                    finalJobs.Add(new AzureBackupJob(Vault, retrievedJob.JobDetailedProperties, retrievedJob.Name));
                 }
 
                 if (finalJobs.Count == 1)

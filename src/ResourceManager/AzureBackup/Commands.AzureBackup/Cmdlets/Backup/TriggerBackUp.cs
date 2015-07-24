@@ -19,13 +19,14 @@ using System.Xml;
 using System.Linq;
 using Microsoft.Azure.Management.BackupServices.Models;
 using MBS = Microsoft.Azure.Management.BackupServices;
+using Microsoft.Azure.Commands.AzureBackup.Models;
 
 namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 {
     /// <summary>
     /// Get list of containers
     /// </summary>
-    [Cmdlet(VerbsData.Backup, "AzureBackupItem"), OutputType(typeof(Guid))]
+    [Cmdlet(VerbsData.Backup, "AzureBackupItem"), OutputType(typeof(AzureBackupJob))]
     public class TriggerAzureBackup : AzureBackupDSCmdletBase
     {
         public override void ExecuteCmdlet()
@@ -39,8 +40,8 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 
                 WriteDebug(string.Format("Triggered backup. Converting response {0}", operationId));
 
-                var operationStatus = TrackOperation(operationId);
-                WriteObject(GetCreatedJobs(new Models.AzurePSBackupVault(Item.ResourceGroupName, Item.ResourceName, Item.Location), operationStatus.JobList).FirstOrDefault());
+                //var operationStatus = TrackOperation(operationId);
+                //WriteObject(GetCreatedJobs(new Models.AzurePSBackupVault(Item.ResourceGroupName, Item.ResourceName, Item.Location), operationStatus.JobList).FirstOrDefault());
             });
         }
     }
