@@ -28,34 +28,37 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
     public class AzureBackupContainer : AzureBackupContainerContextObject
     {
         /// <summary>
-        /// Resource group name of the resource (ex: resource group name of the VM) being managed by Azure Backup service.
-        /// </summary>
-        public string ManagedResourceGroupName { get; set; }
-
-        /// <summary>
         /// Resource name of the resource (ex: resource name of the VM) being managed by the Azure Backup service.
         /// </summary>
-        public string ManagedResourceName { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
-        /// Status of health of the Azure Backup container
+        /// Id of the container
         /// </summary>
-        public string HealthStatus { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// Status of registration of the container
         /// </summary>
-        public string RegistrationStatus { get; set; }
+        public string Status { get; set; }
 
         public AzureBackupContainer() : base() { }
+
+        public AzureBackupContainer(AzurePSBackupVault vault, MarsContainerResponse marsContainerResponse)
+            : base(vault, marsContainerResponse)
+        {
+            Name = marsContainerResponse.Properties.FriendlyName;
+            Id = marsContainerResponse.Properties.ContainerId;
+            Status = AzureBackupContainerRegistrationStatus.Registered.ToString();
+        }
 
         public AzureBackupContainer(AzurePSBackupVault vault, CSMContainerResponse containerInfo)
             : base(vault, containerInfo)
         {
-            ManagedResourceGroupName = ContainerHelpers.GetRGNameFromId(containerInfo.Properties.ParentContainerId);
-            ManagedResourceName = containerInfo.Properties.FriendlyName;
-            HealthStatus = containerInfo.Properties.HealthStatus;
-            RegistrationStatus = containerInfo.Properties.Status;
+            //ManagedResourceGroupName = ContainerHelpers.GetRGNameFromId(containerInfo.Properties.ParentContainerId);
+            Name = containerInfo.Properties.FriendlyName;
+            //HealthStatus = containerInfo.Properties.HealthStatus;
+            Status = containerInfo.Properties.Status;
         }
     }
 }

@@ -123,4 +123,10 @@
   <data name="ResourceNotFoundMessage" xml:space="preserve">
     <value>The specified resource does not exist.</value>
   </data>
+  <data name="UnregisterServerCaption" xml:space="preserve">
+    <value>Unregister Server</value>
+  </data>
+  <data name="UnregisterServerMessage" xml:space="preserve">
+    <value>This operation will delete all data in the backup vault that is associated with the server. Are you sure you want to unregister the server?</value>
+  </data>
 </root>

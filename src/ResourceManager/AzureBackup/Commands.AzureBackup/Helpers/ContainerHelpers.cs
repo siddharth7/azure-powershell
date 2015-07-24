@@ -97,5 +97,37 @@ namespace Microsoft.Azure.Commands.AzureBackup.Helpers
             }
             return filterValue; 
         }
+
+        internal static AzureBackupContainerType GetContainerType(string customerType)
+        {
+            CustomerType type = (CustomerType)Enum.Parse(typeof(CustomerType), customerType);
+
+            AzureBackupContainerType containerType = 0;
+
+            switch (type)
+            {
+                case CustomerType.DPM:
+                    containerType = AzureBackupContainerType.SCDPM;
+                    break;
+                case CustomerType.InMage:
+                    break;
+                case CustomerType.Invalid:
+                    break;
+                case CustomerType.ManagedContainer:
+                    break;
+                case CustomerType.OBS:
+                    containerType = AzureBackupContainerType.Windows;
+                    break;
+                case CustomerType.SBS:
+                    containerType = AzureBackupContainerType.Windows;
+                    break;
+                case CustomerType.SqlPaaS:
+                    break;
+                default:
+                    break;
+            }
+
+            return containerType;
+        }
     }
 }

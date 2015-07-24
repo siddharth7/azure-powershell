@@ -74,5 +74,54 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
             var response = AzureBackupClient.Container.RefreshAsync(GetCustomRequestHeaders(), CmdletCancellationToken).Result;
             return response.OperationId;
         }
+
+        /// <summary>
+        /// Gets all MARS containers in the vault
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<MarsContainerResponse> ListMachineContainers()
+        {
+            var listResponse = AzureBackupVaultClient.Container.ListMarsContainersByType(MarsContainerType.Machine, GetCustomRequestHeaders());
+            return listResponse.ListMarsContainerResponse.Value;
+        }
+
+        /// <summary>
+        /// Gets all MARS containers in the vault which match the friendly name
+        /// </summary>
+        /// <param name="friendlyName">The friendly name of the container</param>
+        /// <returns></returns>
+        public IEnumerable<MarsContainerResponse> ListMachineContainers(string friendlyName)
+        {
+            var listResponse = AzureBackupVaultClient.Container.ListMarsContainersByTypeAndFriendlyName(MarsContainerType.Machine, friendlyName, GetCustomRequestHeaders());
+            return listResponse.ListMarsContainerResponse.Value;
+        }
+
+        /// <summary>
+        /// UnRegister container
+        /// </summary>
+        /// <param name="containerId"></param>
+        /// <returns></returns>
+        public void UnregisterMachineContainer(long containerId)
+        {
+            AzureBackupVaultClient.Container.UnregisterMarsContainer(containerId.ToString(), GetCustomRequestHeaders());
+        }
+
+        /// <summary>
+        /// Enable container reregistration
+        /// </summary>
+        /// <param name="containerId"></param>
+        /// <returns></returns>
+        public void EnableMachineContainerReregistration(long containerId)
+        {
+            EnableReregistrationRequest request = new EnableReregistrationRequest()
+            {
+                ContainerReregistrationState = new ContainerReregistrationState()
+                {
+                    EnableReregistration = true,
+                },
+            };
+
+            AzureBackupVaultClient.Container.EnableMarsContainerReregistration(containerId.ToString(), request, GetCustomRequestHeaders());
+        }
     }
 }

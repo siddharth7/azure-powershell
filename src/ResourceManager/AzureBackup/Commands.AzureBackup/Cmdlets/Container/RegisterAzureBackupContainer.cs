@@ -158,7 +158,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
             bool isDiscoveryNeed = false;
             //First check if container is discoverd or not
             ListContainerQueryParameter queryParams = new ListContainerQueryParameter();
-            queryParams.ContainerTypeField = AzureBackupContainerType.IaasVMContainer.ToString();
+            queryParams.ContainerTypeField = ManagedContainerType.IaasVMContainer.ToString();
             queryParams.ContainerStatusField = String.Empty;
             queryParams.ContainerFriendlyNameField = vmName;
             string queryString = ContainerHelpers.GetQueryFilter(queryParams);

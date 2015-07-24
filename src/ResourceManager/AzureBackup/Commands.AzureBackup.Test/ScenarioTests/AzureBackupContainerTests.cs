@@ -12,6 +12,7 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
+using Microsoft.WindowsAzure.Commands.ScenarioTest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +42,13 @@ namespace Microsoft.Azure.Commands.AzureBackup.Test.ScenarioTests
         public void UnregisterAzureBackupContainerTest()
         {
             this.RunPowerShellTest("Test-UnregisterAzureBackupContainer");
+        }
+
+        [Fact]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void AzureBackupMarsContainerScenarioTests()
+        {
+            this.RunPowerShellTest("Test-AzureBackupMarsContainerScenario");
         }
     }
 }

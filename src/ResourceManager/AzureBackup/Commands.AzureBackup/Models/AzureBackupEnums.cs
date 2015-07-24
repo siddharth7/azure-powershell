@@ -21,18 +21,13 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
         LocallyRedundant,
     }
 
-    public enum AzureBackupContainerTypeInput
-    {
-        AzureVirtualMachine = 1,
-    }
-
     public enum AzureBackupContainerStatusInput
     {
         Registering = 1,
         Registered,
     }
 
-    public enum AzureBackupContainerType
+    public enum ManagedContainerType
     {
         Invalid = 0,
 
@@ -149,4 +144,11 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
         [EnumMember]
         RetainBackupData
     };
+
+    public enum AzureBackupContainerType
+    {
+        Windows = 1,
+        SCDPM,
+        AzureVM,
+    }
 }

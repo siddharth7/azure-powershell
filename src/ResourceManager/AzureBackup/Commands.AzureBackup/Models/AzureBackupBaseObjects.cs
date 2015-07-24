@@ -12,7 +12,10 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
+using Microsoft.Azure.Commands.AzureBackup.Helpers;
 using Microsoft.Azure.Management.BackupServices.Models;
+using System;
+
 namespace Microsoft.Azure.Commands.AzureBackup.Models
 {
     public class AzureBackupVaultContextObject
@@ -84,6 +87,13 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
         {
             ContainerType = containerInfo.Properties.ContainerType;
             ContainerUniqueName = containerInfo.Name;
+        }
+
+        public AzureBackupContainerContextObject(AzurePSBackupVault vault, MarsContainerResponse marsContainerResponse)
+            : base(vault)
+        {
+            ContainerType = ContainerHelpers.GetContainerType(marsContainerResponse.Properties.CustomerType).ToString();
+            //ContainerUniqueName = marsContainerResponse.UniqueName;
         }
     }
 

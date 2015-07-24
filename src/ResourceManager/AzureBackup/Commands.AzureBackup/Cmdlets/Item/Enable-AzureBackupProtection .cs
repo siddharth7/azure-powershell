@@ -52,7 +52,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 else if (Item.GetType() == typeof(AzureBackupContainer))
                 {
                     WriteDebug("Input is container Type = " + Item.GetType());
-                    if ((Item as AzureBackupContainer).ContainerType == AzureBackupContainerType.IaasVMContainer.ToString())
+                    if ((Item as AzureBackupContainer).ContainerType == ManagedContainerType.IaasVMContainer.ToString())
                     {
                         itemName = (Item as AzureBackupContainer).ContainerUniqueName;
                     }
