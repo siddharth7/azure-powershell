@@ -136,14 +136,14 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
             if(retentionFormat == RetentionFormat.Daily)
             {
                 List<int> dayList = GetDayList(YearlySchedule.RetentionScheduleDaily.DaysOfTheMonth);
-                yearlyRetention = new AzureBackupYearlyRetentionPolicy("Monthly", YearlySchedule.CSMRetentionDuration.Count,
+                yearlyRetention = new AzureBackupYearlyRetentionPolicy("Yearly", YearlySchedule.CSMRetentionDuration.Count,
                 monthOfTheYearList, retentionFormat, dayList, null, null);
             }
             else if (retentionFormat == RetentionFormat.Weekly)
             {
                 List<WeekNumber> weekNumberList = GetWeekNumberList(YearlySchedule.RetentionScheduleWeekly);
                 List<DayOfWeek> dayOfWeekList = GetWeekDaysList(YearlySchedule.RetentionScheduleWeekly);
-                yearlyRetention = new AzureBackupYearlyRetentionPolicy("Monthly", YearlySchedule.CSMRetentionDuration.Count,
+                yearlyRetention = new AzureBackupYearlyRetentionPolicy("Yearly", YearlySchedule.CSMRetentionDuration.Count,
                  monthOfTheYearList, retentionFormat, null, weekNumberList, dayOfWeekList);
             }
 
