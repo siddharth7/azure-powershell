@@ -104,8 +104,10 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
     public enum RetentionType
     {
         Invalid = 0,
-        Days = 1,
-        Weeks = 2
+        Daily = 1,
+        Weekly = 2,
+        Monthly = 3,
+        Yearly = 4
     }
 
     public enum WorkloadType
