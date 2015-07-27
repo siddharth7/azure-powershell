@@ -116,6 +116,12 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
         VM = 1
     }
 
+    public enum RetentionFormat
+    {
+        Daily,
+        Weekly
+    }
+
     public enum BackupType
     {
         Invalid = 0,
