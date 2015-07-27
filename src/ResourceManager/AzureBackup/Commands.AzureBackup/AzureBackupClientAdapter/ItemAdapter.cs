@@ -57,9 +57,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
         /// Dsiable protection
         /// </summary>
         /// <param name="containerName"></param>
-        /// <param name="dsType"></param>
-        /// <param name="dsId"></param>
-        /// <param name="request"></param>
+        /// <param name="itemName"></param>
         /// <returns></returns>
         public Guid DisableProtection(string containerName, string itemName)
         {
@@ -70,6 +68,8 @@ namespace Microsoft.Azure.Commands.AzureBackup.ClientAdapter
         /// <summary>
         /// Enable Protection
         /// </summary>
+        /// <param name="containerName"></param>
+        /// <param name="itemName"></param>
         /// <param name="request"></param>
         /// <returns></returns>
         public Guid EnableProtection(string containerName, string itemName, CSMSetProtectionRequest request)

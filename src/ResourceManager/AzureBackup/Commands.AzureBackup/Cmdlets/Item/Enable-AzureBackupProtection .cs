@@ -43,12 +43,15 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 
                 WriteDebug("Making client call");
                 string itemName = string.Empty;
+
                 CSMSetProtectionRequest input = new CSMSetProtectionRequest();
                 input.Properties.PolicyId = Policy.InstanceId;
+
                 if (Item.GetType() == typeof(AzureBackupItem))
                 {
                     itemName = (Item as AzureBackupItem).ItemName;
                 }
+
                 else if (Item.GetType() == typeof(AzureBackupContainer))
                 {
                     WriteDebug("Input is container Type = " + Item.GetType());
@@ -61,6 +64,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                         throw new Exception("Uknown item type");
                     }
                 }
+
                 else
                 {
                     throw new Exception("Uknown item type");

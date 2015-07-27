@@ -37,11 +37,6 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
         public string ProtectionStatus { get; set; }
 
         /// <summary>
-        /// DataSourceId of Azure Backup Item
-        /// </summary>
-        public string DataSourceId { get; set; }
-
-        /// <summary>
         /// Type of Azure Backup Item
         /// </summary>
         public string Type { get; set; }
@@ -75,7 +70,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
             ProtectionPolicyName = datasource.Properties.ProtectionPolicyId.Split('/').Last();
             ProtectionPolicyId = datasource.Properties.ProtectionPolicyId;
             RecoveryPointsCount = datasource.Properties.RecoveryPointsCount;
-            Type = datasource.Type;
+            Type = datasource.Properties.ItemType;
         }
 
         public AzureBackupItem(CSMItemResponse pPOItem, AzureBackupContainer azureBackupContainer)
@@ -83,7 +78,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
         {
             ProtectionStatus = pPOItem.Properties.Status;
             ItemName = pPOItem.Name;
-            Type = pPOItem.Type;
+            Type = pPOItem.Properties.ItemType;
         }
     }
 }

@@ -100,7 +100,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 foreach (var item in sourcePOList)
                 {
                     //If user has stopped protection for some datasoure then we will have duplicate items(po and ds).
-                    //So in this case removing  poitems from the list.
+                    //So in this case removing  po items from the list.
                     if (targetList.FindIndex(element => element.ItemName == item.Name) < 0)
                     {
                         targetList.Add(new AzureBackupItem(item, azureBackupContainer));
