@@ -103,7 +103,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 {
                     var operationStatus = GetOperationStatus(operationId);
                     WriteDebug("Protection Policy successfully updated and created job(s) to re-configure protection on associated items");
-                    WriteObject(operationStatus.Jobs);
+                    WriteObject(operationStatus.JobList);
                 }
 
                 else

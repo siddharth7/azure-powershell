@@ -27,7 +27,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
     /// <summary>
     /// Stop a running cancellable job
     /// </summary>
-    [Cmdlet("Stop", "AzureBackupJob"), OutputType(typeof(Mgmt.Job))]
+    [Cmdlet("Stop", "AzureBackupJob")]
     public class StopAzureBackupJob : AzureBackupCmdletBase
     {
         [Parameter(Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.Vault, ParameterSetName = "IdFiltersSet")]
@@ -60,15 +60,15 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 
                 WriteDebug("JobID is: " + JobID);
                 Guid cancelTaskId = AzureBackupClient.TriggerCancelJob(JobID);
-                OperationResultResponse opResponse = TrackOperation(cancelTaskId);
+                CSMOperationResult opResponse = TrackOperation(cancelTaskId);
 
-                if (opResponse.OperationResult == AzureBackupOperationResult.Succeeded.ToString())
+                if (opResponse.Status == CSMAzureBackupOperationStatus.Succeeded.ToString())
                 {
                     WriteDebug("Triggered cancellation of job with JobID: " + JobID);
                 }
                 else
                 {
-                    throw new Exception("Stop Job failed with ErrorCode: " + opResponse.ErrorCode);
+                    throw new Exception("Stop Job failed with ErrorCode: " + opResponse.Error.Code);
                 }
             });
         }

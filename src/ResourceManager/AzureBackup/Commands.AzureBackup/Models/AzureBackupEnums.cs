@@ -12,6 +12,7 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
+using System.Runtime.Serialization;
 namespace Microsoft.Azure.Commands.AzureBackup.Models
 {
     public enum AzureBackupVaultStorageType
@@ -121,9 +122,33 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
         Full = 1
     }
 
-    public enum RetentionFormat
+    public enum CSMAzureBackupOperationStatus
     {
-        Daily,
-        Weekly
+        
+        Invalid = 0,
+
+        
+        InProgress,
+
+        
+        Cancelled,
+
+        
+        Succeeded,
+
+        
+        Failed,
+
+        
+        PartialSuccess
     }
+
+    public enum RemoveProtectionOptions
+    {
+        [EnumMember]
+        DeleteBackupData,
+
+        [EnumMember]
+        RetainBackupData
+    };
 }

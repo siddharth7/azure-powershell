@@ -20,13 +20,14 @@ using System.Linq;
 using Microsoft.Azure.Management.BackupServices.Models;
 using MBS = Microsoft.Azure.Management.BackupServices;
 using System.Web.Script.Serialization;
+using Microsoft.Azure.Commands.AzureBackup.Models;
 
 namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 {
     /// <summary>
     /// Trigger Restore Job
     /// </summary>
-    [Cmdlet(VerbsData.Restore, "AzureBackupItem"), OutputType(typeof(Guid))]
+    [Cmdlet(VerbsData.Restore, "AzureBackupItem"), OutputType(typeof(AzureBackupJob))]
     public class RestoreAzureBackup : AzureBackupRestoreBase
     {
         [Parameter(Position = 1, Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.StorageAccountName)]
@@ -69,9 +70,8 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 Guid operationId = AzureBackupClient.TriggerRestore(RecoveryPoint.ContainerUniqueName, RecoveryPoint.ItemName, RecoveryPoint.RecoveryPointName, csmRestoreRequest);
                 WriteDebug(string.Format("Triggered Restore. Converting response {0}", operationId));
 
-                //var operationStatus = TrackOperation(operationId);
-                //WriteObject(GetCreatedJobs(new Models.AzurePSBackupVault(RecoveryPoint.ResourceGroupName, RecoveryPoint.ResourceName, RecoveryPoint.Location), operationStatus.Jobs).FirstOrDefault());
-
+                var operationStatus = TrackOperation(operationId);
+                WriteObject(GetCreatedJobs(new Models.AzurePSBackupVault(RecoveryPoint.ResourceGroupName, RecoveryPoint.ResourceName, RecoveryPoint.Location), operationStatus.JobList).FirstOrDefault());
             });
         }
     }
