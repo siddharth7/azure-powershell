@@ -41,9 +41,8 @@ function Test-GetAzureBackupProtectionPolicyTests
 		Assert-NotNull $protectionPolicy.InstanceId 'InstanceId should not be null'
 		Assert-NotNull $protectionPolicy.Name 'Name should not be null'
 		Assert-NotNull $protectionPolicy.WorkloadType 'WorkloadType should not be null'
-		Assert-NotNull $protectionPolicy.BackupType 'BackupType should not be null'
 		Assert-NotNull $protectionPolicy.ScheduleRunTimes 'ScheduleRunTimes should not be null'
-		Assert-NotNull $protectionPolicy.RetentionDuration 'RetentionDuration should not be null'
+		Assert-NotNull $protectionPolicy.RetentionPolicyList 'RetentionPolicyList should not be null'
 		Assert-NotNull $protectionPolicy.ResourceGroupName 'ResourceGroupName should not be null'
 		Assert-NotNull $protectionPolicy.ResourceName 'ResourceName should not be null'
 		Assert-NotNull $protectionPolicy.Location 'Location should not be null'
@@ -58,9 +57,8 @@ function Test-GetAzureBackupProtectionPolicyByNameTests
 	Assert-NotNull $protectionPolicy.InstanceId 'InstanceId should not be null'
 	Assert-NotNull $protectionPolicy.Name 'Name should not be null'
 	Assert-NotNull $protectionPolicy.WorkloadType 'WorkloadType should not be null'
-	Assert-NotNull $protectionPolicy.BackupType 'BackupType should not be null'
 	Assert-NotNull $protectionPolicy.ScheduleRunTimes 'ScheduleRunTimes should not be null'
-	Assert-NotNull $protectionPolicy.RetentionDuration 'RetentionDuration should not be null'
+	Assert-NotNull $protectionPolicy.RetentionPolicyList 'RetentionPolicyList should not be null'
 	Assert-NotNull $protectionPolicy.ResourceGroupName 'ResourceGroupName should not be null'
 	Assert-NotNull $protectionPolicy.ResourceName 'ResourceName should not be null'
 	Assert-NotNull $protectionPolicy.Location 'Location should not be null'
@@ -70,14 +68,17 @@ function Test-GetAzureBackupProtectionPolicyByNameTests
 function Test-NewAzureBackupProtectionPolicyTests
 {	
 	$vault = Get-AzureBackupVault -Name $ResourceName;
-	$protectionPolicy = New-AzureBackupProtectionPolicy -vault $vault -Name $PolicyName -WorkloadType $WorkloadType -BackupType $BackupType -Daily -RetentionType $RetentionType -RetentionDuration $RetentionDuration -ScheduleRunTimes $ScheduleRunTimes
+	$r1 = New-AzureBackupRetentionPolicyObject -DailyRetention -Retention 20
+	$r2 = New-AzureBackupRetentionPolicyObject -WeeklyRetention -DaysOfWeek "Monday" -Retention 10
+	$r = ($r1, $r2)
+
+	$protectionPolicy = New-AzureBackupProtectionPolicy -vault $vault -Name $PolicyName -WorkloadType $WorkloadType -Daily -RetentionPolicies $r -ScheduleRunTimes $ScheduleRunTimes
 	
 	Assert-NotNull $protectionPolicy.InstanceId 'InstanceId should not be null'
 	Assert-NotNull $protectionPolicy.Name 'Name should not be null'
 	Assert-NotNull $protectionPolicy.WorkloadType 'WorkloadType should not be null'
-	Assert-NotNull $protectionPolicy.BackupType 'BackupType should not be null'
 	Assert-NotNull $protectionPolicy.ScheduleRunTimes 'ScheduleRunTimes should not be null'
-	Assert-NotNull $protectionPolicy.RetentionDuration 'RetentionDuration should not be null'
+	Assert-NotNull $protectionPolicy.RetentionPolicyList 'RetentionPolicyList should not be null'
 	Assert-NotNull $protectionPolicy.ResourceGroupName 'ResourceGroupName should not be null'
 	Assert-NotNull $protectionPolicy.ResourceName 'ResourceName should not be null'
 	Assert-NotNull $protectionPolicy.Location 'Location should not be null'
@@ -85,44 +86,17 @@ function Test-NewAzureBackupProtectionPolicyTests
 
 function Test-SetAzureBackupProtectionPolicyTests
 {	
-	$policy = New-Object Microsoft.Azure.Commands.AzureBackup.Models.AzureBackupProtectionPolicy
-	$policy.InstanceId = $PolicyId
-	$policy.Name = $PolicyName
-	$policy.ResourceGroupName = $ResourceGroupName
-	$policy.ResourceName = $ResourceName
-	$policy.Location = $Location
-	$policy.WorkloadType = $WorkloadType
-	$policy.RetentionType = $RetentionType
-	$policy.ScheduleRunTimes =  $ScheduleRunTimes
-	$policy.ScheduleType = $ScheduleType
+	$vault = Get-AzureBackupVault -Name $ResourceName;
+	$protectionPolicy = Get-AzureBackupProtectionPolicy -vault $vault -Name $PolicyName
 	$policyNewName = "policy09_new"
 	
-	$protectionPolicy = Set-AzureBackupProtectionPolicy -ProtectionPolicy $policy -NewName $policyNewName
-
-	Assert-NotNull $protectionPolicy.InstanceId 'InstanceId should not be null'
-	Assert-NotNull $protectionPolicy.Name 'Name should not be null'
-	Assert-NotNull $protectionPolicy.WorkloadType 'WorkloadType should not be null'
-	Assert-NotNull $protectionPolicy.BackupType 'BackupType should not be null'
-	Assert-NotNull $protectionPolicy.ScheduleRunTimes 'ScheduleRunTimes should not be null'
-	Assert-NotNull $protectionPolicy.RetentionDuration 'RetentionDuration should not be null'
-	Assert-NotNull $protectionPolicy.ResourceGroupName 'ResourceGroupName should not be null'
-	Assert-NotNull $protectionPolicy.ResourceName 'ResourceName should not be null'
-	Assert-NotNull $protectionPolicy.Location 'Location should not be null'
+	Set-AzureBackupProtectionPolicy -ProtectionPolicy $protectionPolicy -NewName $policyNewName	
 }
 
 function Test-RemoveAzureBackupProtectionPolicyTests
 {	
-	$policyNewName = "policy09_new"
-	$policy = New-Object Microsoft.Azure.Commands.AzureBackup.Models.AzureBackupProtectionPolicy
-	$policy.InstanceId = $PolicyId
-	$policy.Name = $policyNewName
-	$policy.ResourceGroupName = $ResourceGroupName
-	$policy.ResourceName = $ResourceName
-	$policy.Location = $Location
-	$policy.WorkloadType = $WorkloadType
-	$policy.RetentionType = $RetentionType
-	$policy.ScheduleRunTimes =  $ScheduleRunTimes
-	$policy.ScheduleType = $ScheduleType
+	$vault = Get-AzureBackupVault -Name $ResourceName;
+	$protectionPolicy = Get-AzureBackupProtectionPolicy -vault $vault -Name $PolicyName
 	
-	Remove-AzureBackupProtectionPolicy -ProtectionPolicy $policy
+	Remove-AzureBackupProtectionPolicy -ProtectionPolicy $protectionPolicy
 }
