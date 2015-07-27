@@ -26,6 +26,9 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
         /// <summary>
         /// Name of the azurebackup object
         /// </summary>
+
+        public string PolicyId { get; set; }
+
         public string Name { get; set; }
 
         public string WorkloadType { get; set; }
@@ -42,15 +45,16 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
         {
         }
 
-        public AzureBackupProtectionPolicy(AzurePSBackupVault vault, CSMProtectionPolicyProperties sourcePolicy)
+        public AzureBackupProtectionPolicy(AzurePSBackupVault vault, CSMProtectionPolicyProperties sourcePolicy, string policyId)
             : base(vault)
         {
+            PolicyId = policyId;
             Name = sourcePolicy.PolicyName;
             WorkloadType = sourcePolicy.WorkloadType;
-            ScheduleType = sourcePolicy.backupSchedule.scheduleRun;
-            ScheduleRunTimes = ConvertScheduleRunTimes(sourcePolicy.backupSchedule.scheduleRunTimes);
-            ScheduleRunDays = ConvertScheduleRunDays(sourcePolicy.backupSchedule.scheduleRunDays);
-            RetentionPolicyList = ConvertCSMRetentionPolicyListToPowershell(sourcePolicy.LTRRetentionPolicy);
+            ScheduleType = sourcePolicy.BackupSchedule.ScheduleRun;
+            ScheduleRunTimes = ConvertScheduleRunTimes(sourcePolicy.BackupSchedule.ScheduleRunTimes);
+            ScheduleRunDays = ConvertScheduleRunDays(sourcePolicy.BackupSchedule.ScheduleRunDays);
+            RetentionPolicyList = ConvertCSMRetentionPolicyListToPowershell(sourcePolicy.LtrRetentionPolicy);            
         }
 
         private IList<AzureBackupRetentionPolicy> ConvertCSMRetentionPolicyListToPowershell(CSMLongTermRetentionPolicy LTRRetentionPolicy)
@@ -223,22 +227,22 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
                 if(retentionPolicy.RetentionType == "Daily")
                 {
                     csmLongTermRetentionPolicy.DailySchedule = ConvertToCSMDailyRetentionObject((AzureBackupDailyRetentionPolicy)retentionPolicy,
-                        backupSchedule.scheduleRunTimes);
+                        backupSchedule.ScheduleRunTimes);
                 }
                 if(retentionPolicy.RetentionType == "Weekly")
                 {
                     csmLongTermRetentionPolicy.WeeklySchedule = ConvertToCSMWeeklyRetentionObject((AzureBackupWeeklyRetentionPolicy)retentionPolicy,
-                        backupSchedule.scheduleRunTimes);
+                        backupSchedule.ScheduleRunTimes);
                 }
                 if(retentionPolicy.RetentionType == "Monthly")
                 {
                     csmLongTermRetentionPolicy.MonthlySchedule = ConvertToGetCSMMonthlyRetentionObject((AzureBackupMonthlyRetentionPolicy)retentionPolicy,
-                        backupSchedule.scheduleRunTimes);
+                        backupSchedule.ScheduleRunTimes);
                 }
                 if(retentionPolicy.RetentionType == "Yearly")
                 {
                     csmLongTermRetentionPolicy.YearlySchedule = ConvertToCSMYearlyRetentionObject((AzureBackupYearlyRetentionPolicy)retentionPolicy,
-                        backupSchedule.scheduleRunTimes);
+                        backupSchedule.ScheduleRunTimes);
                 }
             }
 

@@ -53,7 +53,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Helpers
                 return null;
             }
 
-            return new AzureBackupProtectionPolicy(vault, sourcePolicy.Properties);
+            return new AzureBackupProtectionPolicy(vault, sourcePolicy.Properties, sourcePolicy.Id);
         }
 
         public static IEnumerable<AzureBackupProtectionPolicy> GetCmdletPolicies(CmdletModel.AzurePSBackupVault vault, IEnumerable<CSMProtectionPolicyResponse> sourcePolicyList)
@@ -78,19 +78,19 @@ namespace Microsoft.Azure.Commands.AzureBackup.Helpers
         {
             var backupSchedule = new CSMBackupSchedule();
 
-            backupSchedule.backupType = BackupType.Full.ToString();
+            backupSchedule.BackupType = BackupType.Full.ToString();
             
             scheduleType = FillScheduleType(scheduleType, scheduleRunDays);
-            backupSchedule.scheduleRun = scheduleType;
+            backupSchedule.ScheduleRun = scheduleType;
 
             if (string.Compare(scheduleType, ScheduleType.Weekly.ToString(), true) == 0)
             {
-                backupSchedule.scheduleRunDays = ParseScheduleRunDays(scheduleRunDays);
+                backupSchedule.ScheduleRunDays = ParseScheduleRunDays(scheduleRunDays);
             }
 
             DateTime scheduleRunTime = ParseScheduleRunTime(scheduleStartTime);
 
-            backupSchedule.scheduleRunTimes = new List<DateTime> { scheduleRunTime };
+            backupSchedule.ScheduleRunTimes = new List<DateTime> { scheduleRunTime };
 
             return backupSchedule;
         }
