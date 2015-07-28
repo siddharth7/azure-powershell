@@ -54,7 +54,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
             ScheduleType = sourcePolicy.BackupSchedule.ScheduleRun;
             ScheduleRunTimes = ConvertScheduleRunTimes(sourcePolicy.BackupSchedule.ScheduleRunTimes);
             ScheduleRunDays = ConvertScheduleRunDays(sourcePolicy.BackupSchedule.ScheduleRunDays);
-            RetentionPolicyList = ConvertCSMRetentionPolicyListToPowershell(sourcePolicy.LtrRetentionPolicy);            
+            RetentionPolicyList = ConvertCSMRetentionPolicyListToPowershell(sourcePolicy.LTRRetentionPolicy);            
         }
 
         private IList<AzureBackupRetentionPolicy> ConvertCSMRetentionPolicyListToPowershell(CSMLongTermRetentionPolicy LTRRetentionPolicy)
