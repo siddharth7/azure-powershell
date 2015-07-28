@@ -88,13 +88,13 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 {
                     updateProtectionPolicyRequest.Properties.LtrRetentionPolicy = 
                         protectionPolicy.ConvertToCSMRetentionPolicyObject(RetentionPolicies, backupSchedule);
-                    ProtectionPolicyHelpers.ValidateRetentionPolicy(RetentionPolicies, backupSchedule.scheduleRun);
+                    ProtectionPolicyHelpers.ValidateRetentionPolicy(RetentionPolicies, backupSchedule.ScheduleRun);
                 }
                 else
                 {
                     updateProtectionPolicyRequest.Properties.LtrRetentionPolicy =
                         protectionPolicy.ConvertToCSMRetentionPolicyObject(policyInfo.RetentionPolicyList, backupSchedule);
-                    ProtectionPolicyHelpers.ValidateRetentionPolicy(policyInfo.RetentionPolicyList, backupSchedule.scheduleRun);
+                    ProtectionPolicyHelpers.ValidateRetentionPolicy(policyInfo.RetentionPolicyList, backupSchedule.ScheduleRun);
                 }
 
                 var operationId = AzureBackupClient.UpdateProtectionPolicy(policyInfo.Name, updateProtectionPolicyRequest);
