@@ -68,12 +68,18 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 
                 var azureBackupDatasourceListResponse = AzureBackupClient.ListDataSources(DSQueryParam);
 
-                azureBackupDatasourceObjects = azureBackupDatasourceListResponse.Where(x => x.Properties.ContainerId.Split('/').Last().Equals(Container.ContainerUniqueName, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
+                if (azureBackupDatasourceListResponse != null)
+                {
+                    azureBackupDatasourceObjects = azureBackupDatasourceListResponse.Where(x => x.Properties.ContainerId.Split('/').Last().Equals(Container.ContainerUniqueName, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
+                }
 
                 if (this.Status == null)
                 {
                     var azureBackupPOListResponse = AzureBackupClient.ListProtectableObjects(POQueryParam);
-                    azureBackupPOObjects = azureBackupPOListResponse.Where(x => x.Properties.ContainerId.Split('/').Last().Equals(Container.ContainerUniqueName, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
+                    if (azureBackupPOListResponse != null)
+                    {
+                        azureBackupPOObjects = azureBackupPOListResponse.Where(x => x.Properties.ContainerId.Split('/').Last().Equals(Container.ContainerUniqueName, System.StringComparison.InvariantCultureIgnoreCase)).ToList();
+                    }
                 }
 
                 WriteDebug("Received azure backup item response");
@@ -90,9 +96,12 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
         {
             List<AzureBackupItem> targetList = new List<AzureBackupItem>();
 
-            foreach (var item in sourceDataSourceList)
+            if (sourceDataSourceList != null)
             {
-                targetList.Add(new AzureBackupItem(item, azureBackupContainer));
+                foreach (var item in sourceDataSourceList)
+                {
+                    targetList.Add(new AzureBackupItem(item, azureBackupContainer));
+                }
             }
 
             if (sourcePOList != null)
