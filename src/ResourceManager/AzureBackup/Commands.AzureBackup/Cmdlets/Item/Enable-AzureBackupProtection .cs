@@ -71,7 +71,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                     throw new Exception("Uknown item type");
                 }
 
-                var operathookionId = AzureBackupClient.EnableProtection(Item.ContainerUniqueName,itemName, input);
+                var operationId = AzureBackupClient.EnableProtection(Item.ContainerUniqueName,itemName, input);
                 WriteDebug("Received enable azure backup protection response");
 
                 var operationStatus = GetOperationStatus(operationId);
