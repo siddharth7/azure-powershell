@@ -45,6 +45,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 string itemName = string.Empty;
 
                 CSMSetProtectionRequest input = new CSMSetProtectionRequest();
+                input.Properties = new CSMSetProtectionRequestProperties();
                 input.Properties.PolicyId = Policy.PolicyId;
 
                 if (Item.GetType() == typeof(AzureBackupItem))
@@ -70,7 +71,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                     throw new Exception("Uknown item type");
                 }
 
-                var operationId = AzureBackupClient.EnableProtection(Item.ContainerUniqueName,itemName, input);
+                var operathookionId = AzureBackupClient.EnableProtection(Item.ContainerUniqueName,itemName, input);
                 WriteDebug("Received enable azure backup protection response");
 
                 var operationStatus = GetOperationStatus(operationId);
