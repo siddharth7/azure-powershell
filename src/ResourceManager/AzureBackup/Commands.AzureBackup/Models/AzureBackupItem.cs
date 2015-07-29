@@ -67,7 +67,12 @@ namespace Microsoft.Azure.Commands.AzureBackup.Models
             DataSourceStatus = datasource.Properties.ProtectionStatus;
             ProtectionStatus = datasource.Properties.Status;
             ItemName = datasource.Name;
-            ProtectionPolicyName = datasource.Properties.ProtectionPolicyId.Split('/').Last();
+
+            if (datasource.Properties.ProtectionPolicyId != null)
+            {
+                ProtectionPolicyName = datasource.Properties.ProtectionPolicyId.Split('/').Last();
+            }
+
             ProtectionPolicyId = datasource.Properties.ProtectionPolicyId;
             RecoveryPointsCount = datasource.Properties.RecoveryPointsCount;
             Type = datasource.Properties.ItemType;

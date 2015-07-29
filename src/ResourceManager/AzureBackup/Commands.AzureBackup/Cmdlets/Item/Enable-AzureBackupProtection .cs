@@ -45,6 +45,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 string itemName = string.Empty;
 
                 CSMSetProtectionRequest input = new CSMSetProtectionRequest();
+                input.Properties = new CSMSetProtectionRequestProperties();
                 input.Properties.PolicyId = Policy.PolicyId;
 
                 if (Item.GetType() == typeof(AzureBackupItem))

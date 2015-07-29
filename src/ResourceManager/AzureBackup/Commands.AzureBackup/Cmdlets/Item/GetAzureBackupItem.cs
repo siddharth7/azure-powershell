@@ -55,8 +55,8 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 WriteDebug("Making client call");
                 CSMProtectedItemQueryObject DSQueryParam = new CSMProtectedItemQueryObject()
                 {
-                    ProtectionStatus = this.Status,
-                    Status = this.ProtectionStatus,
+                    ProtectionStatus = this.ProtectionStatus,
+                    Status = this.Status,
                     Type = this.Type
                 };
 
