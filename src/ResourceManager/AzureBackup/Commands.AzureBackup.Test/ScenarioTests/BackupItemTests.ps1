@@ -18,9 +18,6 @@ function Test-BackUpAzureBackUpItem
 	$azureBackUpItem.ResourceName = $ResourceName
 	$azureBackUpItem.Location = $Location
 	$azureBackUpItem.ContainerUniqueName = $ContainerName
-	$azureBackUpItem.ContainerType = $ContainerType
-	$azureBackUpItem.DataSourceId = $DataSourceId
-	$azureBackUpItem.Type = $DataSourceType
 	$azureBackUpItem.ItemName = $ItemName
 	$jobId = Backup-AzureBackupItem -Item $azureBackUpItem
 }

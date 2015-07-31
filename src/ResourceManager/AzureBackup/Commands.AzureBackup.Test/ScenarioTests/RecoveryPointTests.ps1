@@ -16,12 +16,9 @@ function Test-GetAzureRecoveryPoints
 {
     $azureBackUpItem = New-Object Microsoft.Azure.Commands.AzureBackup.Models.AzureBackupItem
 	$azureBackUpItem.ResourceGroupName = $ResourceGroupName
-	$azureBackUpItem.ResourceName = $ResourceGroupName
+	$azureBackUpItem.ResourceName = $ResourceName
 	$azureBackUpItem.Location = $Location
 	$azureBackUpItem.ContainerUniqueName = $ContainerName
-	$azureBackUpItem.ContainerType = $ContainerType
-	$azureBackUpItem.DataSourceId = $DataSourceId
-	$azureBackUpItem.Type = $DataSourceType
 	$azureBackUpItem.ItemName = $ItemName
 	$recoveryPoints = Get-AzureBackupRecoveryPoint -Item $azureBackUpItem
 	if (!($recoveryPoints -eq $null))
@@ -39,14 +36,11 @@ function Test-GetAzureRecoveryPoint
 {
     $azureBackUpItem = New-Object Microsoft.Azure.Commands.AzureBackup.Models.AzureBackupItem
 	$azureBackUpItem.ResourceGroupName = $ResourceGroupName
-	$azureBackUpItem.ResourceName = $ResourceGroupName
+	$azureBackUpItem.ResourceName = $ResourceName
 	$azureBackUpItem.Location = $Location
 	$azureBackUpItem.ContainerUniqueName = $ContainerName
-	$azureBackUpItem.ContainerType = $ContainerType
-	$azureBackUpItem.DataSourceId = $DataSourceId
-	$azureBackUpItem.Type = $DataSourceType
 	$azureBackUpItem.ItemName = $ItemName
-	$recoveryPoint = Get-AzureBackupRecoveryPoint -Item $azureBackUpItem -Id $RecoveryPointName
+	$recoveryPoint = Get-AzureBackupRecoveryPoint -Item $azureBackUpItem -RecoveryPointId $RecoveryPointName
 	if (!($recoveryPoint -eq $null))
 	{
 		Assert-NotNull $recoveryPoint.RecoveryPointTime 'RecoveryPointTime should not be null'

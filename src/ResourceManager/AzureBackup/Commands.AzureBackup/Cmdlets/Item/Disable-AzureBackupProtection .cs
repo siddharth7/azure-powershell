@@ -55,6 +55,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets.DataSource
 
                 if(!this.DeleteBackupData)
                 {
+                    //Calling update protection with policy Id as empty.
                     CSMUpdateProtectionRequest input = new CSMUpdateProtectionRequest()
                     {
                         Properties = new CSMUpdateProtectionRequestProperties(string.Empty)
@@ -65,6 +66,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets.DataSource
 
                 else
                 {
+                    //Calling disable protection
                     operationId = AzureBackupClient.DisableProtection(Item.ContainerUniqueName, Item.ItemName);
                 }
 

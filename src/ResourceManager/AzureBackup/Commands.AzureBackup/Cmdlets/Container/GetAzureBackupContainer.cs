@@ -103,9 +103,14 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 
         private bool GetManagedContainers(List<AzureBackupContainer> managedContainers)
         {
-            string queryFilterString = string.Empty;
-            queryFilterString = ConstructQueryFilterString();
-            var containerList = AzureBackupClient.ListContainers(queryFilterString);
+            ContainerQueryParameters parameters = new ContainerQueryParameters();
+            parameters.ContainerType = ManagedContainerType.IaasVM.ToString();
+            parameters.FriendlyName = Name;
+            if (Status != 0)
+            {
+                parameters.Status = Status.ToString();
+            }
+            var containerList = AzureBackupClient.ListContainers(parameters);
 
             WriteDebug(string.Format("Fetched {0} containers", containerList.Count()));
 
@@ -143,7 +148,7 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
             switch (Type)
             {
                 case AzureBackupContainerType.AzureVM:
-                    containerQueryObject.ContainerTypeField = ManagedContainerType.IaasVMContainer.ToString();
+                    containerQueryObject.ContainerTypeField = ManagedContainerType.IaasVM.ToString();
                     break;
                 default:
                     break;
