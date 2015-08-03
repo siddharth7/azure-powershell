@@ -62,8 +62,9 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 
         [Parameter(ParameterSetName = MonthlyRetentionInDailyFormatParamSet, Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.DaysOfMonth)]
         [Parameter(ParameterSetName = YearlyRetentionInDailyFormatParamSet, Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.DaysOfMonth)]
-        [ValidateRange(1, 29)]
-        public List<int> DaysOfMonth { get; set; }
+        [ValidateSet("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" ,"13" ,"14", "15", "16", "17", "18",
+            "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "IsLast", IgnoreCase = true)]
+        public List<string> DaysOfMonth { get; set; }
 
         [Parameter(ParameterSetName = MonthlyRetentionInWeeklyFormatParamSet, Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.WeekNumber)]
         [Parameter(ParameterSetName = YearlyRetentionInWeeklyFormatParamSet, Mandatory = true, HelpMessage = AzureBackupCmdletHelpMessage.WeekNumber)]

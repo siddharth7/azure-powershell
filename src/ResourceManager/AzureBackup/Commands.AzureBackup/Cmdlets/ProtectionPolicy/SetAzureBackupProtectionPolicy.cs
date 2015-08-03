@@ -45,14 +45,14 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
         public SwitchParameter Weekly { get; set; }
 
         [Parameter(Position = 4, Mandatory = false, HelpMessage = AzureBackupCmdletHelpMessage.ScheduleRunTimes)]
-        public DateTime ScheduleRunTimes { get; set; }
+        public DateTime BackupTime { get; set; }
 
         [Parameter(Position = 5, Mandatory = false, HelpMessage = AzureBackupCmdletHelpMessage.RetentionPolicyList)]
         public AzureBackupRetentionPolicy[] RetentionPolicies { get; set; }
 
         [Parameter(ParameterSetName = WeeklyScheduleParamSet, Position = 6, Mandatory = false, HelpMessage = AzureBackupCmdletHelpMessage.ScheduleRunDays)]
         [ValidateSet("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", IgnoreCase = true)]
-        public string[] ScheduleRunDays { get; set; }
+        public string[] DaysOfWeek { get; set; }
 
         public override void ExecuteCmdlet()
         {
@@ -74,8 +74,8 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 // TODO: Make the below function work with AzureBackupProtectionPolicy
                 FillRemainingValuesForSetPolicyRequest(policyInfo, this.NewName);
 
-                var backupSchedule = ProtectionPolicyHelpers.FillCSMBackupSchedule(policyInfo.ScheduleType, ScheduleRunTimes,
-                    policyInfo.ScheduleRunDays.ToArray<string>());
+                var backupSchedule = ProtectionPolicyHelpers.FillCSMBackupSchedule(policyInfo.ScheduleType, BackupTime,
+                    policyInfo.DaysOfWeek.ToArray<string>());
 
                 NewName = (string.IsNullOrEmpty(NewName) ? policyInfo.Name : NewName);
                 var updateProtectionPolicyRequest = new CSMUpdateProtectionPolicyRequest();
@@ -86,15 +86,15 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 AzureBackupProtectionPolicy protectionPolicy = new AzureBackupProtectionPolicy();
                 if (RetentionPolicies != null && RetentionPolicies.Length > 0)
                 {
-                    updateProtectionPolicyRequest.Properties.LtrRetentionPolicy = 
-                        protectionPolicy.ConvertToCSMRetentionPolicyObject(RetentionPolicies, backupSchedule);
-                    ProtectionPolicyHelpers.ValidateRetentionPolicy(RetentionPolicies, backupSchedule.ScheduleRun);
+                    updateProtectionPolicyRequest.Properties.LtrRetentionPolicy =
+                        ProtectionPolicyHelpers.ConvertToCSMRetentionPolicyObject(RetentionPolicies, backupSchedule);
+                    ProtectionPolicyHelpers.ValidateRetentionPolicy(RetentionPolicies, backupSchedule);
                 }
                 else
                 {
                     updateProtectionPolicyRequest.Properties.LtrRetentionPolicy =
-                        protectionPolicy.ConvertToCSMRetentionPolicyObject(policyInfo.RetentionPolicyList, backupSchedule);
-                    ProtectionPolicyHelpers.ValidateRetentionPolicy(policyInfo.RetentionPolicyList, backupSchedule.ScheduleRun);
+                        ProtectionPolicyHelpers.ConvertToCSMRetentionPolicyObject(policyInfo.RetentionPolicyList, backupSchedule);
+                    ProtectionPolicyHelpers.ValidateRetentionPolicy(policyInfo.RetentionPolicyList, backupSchedule);
                 }
 
                 var operationId = AzureBackupClient.UpdateProtectionPolicy(policyInfo.Name, updateProtectionPolicyRequest);
@@ -122,33 +122,33 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
                 AzureBackupClient.CheckProtectionPolicyNameAvailability(this.NewName);
             }
 
-            ScheduleRunTimes = (ScheduleRunTimes == DateTime.MinValue) ? policy.ScheduleRunTimes : 
-                                ScheduleRunTimes;
+            BackupTime = (BackupTime == DateTime.MinValue) ? policy.BackupTime :
+                                BackupTime;
 
             WriteDebug("ParameterSetName = " + this.ParameterSetName.ToString());
 
             if (this.ParameterSetName != NoScheduleParamSet )
             {
-                if (ScheduleRunDays != null && ScheduleRunDays.Length > 0 && 
+                if (DaysOfWeek != null && DaysOfWeek.Length > 0 && 
                     this.ParameterSetName == WeeklyScheduleParamSet)
                 {
                     policy.ScheduleType = ScheduleType.Weekly.ToString();
-                    policy.ScheduleRunDays = ScheduleRunDays.ToList<string>();
+                    policy.DaysOfWeek = DaysOfWeek.ToList<string>();
                 }
-                else if (this.ParameterSetName == DailyScheduleParamSet && 
-                    (ScheduleRunDays == null || ScheduleRunDays.Length <= 0))
+                else if (this.ParameterSetName == DailyScheduleParamSet &&
+                    (DaysOfWeek == null || DaysOfWeek.Length <= 0))
                 {
                     policy.ScheduleType = ScheduleType.Daily.ToString();
-                    policy.ScheduleRunDays = new List<string>();
+                    policy.DaysOfWeek = new List<string>();
                 }
                 else
                 {
-                    policy.ScheduleType = ProtectionPolicyHelpers.GetScheduleType(ScheduleRunDays, this.ParameterSetName,
+                    policy.ScheduleType = ProtectionPolicyHelpers.GetScheduleType(DaysOfWeek, this.ParameterSetName,
                     DailyScheduleParamSet, WeeklyScheduleParamSet);
 
                 }                
             }
-            else if(ScheduleRunDays != null && ScheduleRunDays.Length > 0)
+            else if (DaysOfWeek != null && DaysOfWeek.Length > 0)
             {
                 throw new ArgumentException("For Schedule Run Days, weekly switch param is required");
             }
