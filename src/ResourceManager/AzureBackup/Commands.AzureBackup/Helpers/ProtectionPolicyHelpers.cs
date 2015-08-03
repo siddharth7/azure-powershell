@@ -37,10 +37,10 @@ namespace Microsoft.Azure.Commands.AzureBackup.Helpers
     public static class ProtectionPolicyHelpers
     {
         public const int MinRetentionInDays = 7;
-        public const int MaxRetentionInDays = 90;
+        public const int MaxRetentionInDays = 366;
         public const int MinRetention = 1;
-        public const int MaxRetentionInWeeks = 30;
-        public const int MaxRetentionInMonths = 24;
+        public const int MaxRetentionInWeeks = 260;
+        public const int MaxRetentionInMonths = 120;
         public const int MaxRetentionInYears = 99;
         public const int MinPolicyNameLength = 3;
         public const int MaxPolicyNameLength = 150;
@@ -137,6 +137,77 @@ namespace Microsoft.Azure.Commands.AzureBackup.Helpers
             }  
         }
 
+        public static void ValidateRetentionPolicy(IList<AzureBackupRetentionPolicy> retentionPolicyList, CSMBackupSchedule backupSchedule = null)
+        {
+            bool validateDailyRetention = false;
+            bool validateWeeklyRetention = false;
+
+            if(retentionPolicyList.Count == 0 )
+            {
+                var exception = new ArgumentException("Please pass atlease one retention policy");
+                throw exception;
+            }
+
+            foreach (AzureBackupRetentionPolicy retentionPolicy in retentionPolicyList)
+            {
+                if(retentionPolicy.RetentionType == "Daily")
+                {
+                    ValidateDailyRetention((AzureBackupDailyRetentionPolicy)retentionPolicy);
+                    validateDailyRetention = true;
+                }
+                else if (retentionPolicy.RetentionType == "Weekly")
+                {
+                    ValidateWeeklyRetention((AzureBackupWeeklyRetentionPolicy)retentionPolicy);
+                    validateWeeklyRetention = true;
+                    if (backupSchedule != null)
+                    {
+                        var weeklyRetention = (AzureBackupWeeklyRetentionPolicy)retentionPolicy;
+                        ValidateForWeeklyBackupSchedule(RetentionFormat.Weekly, backupSchedule.BackupType, backupSchedule.ScheduleRunDays, weeklyRetention.DaysOfWeek);
+                    }
+                }
+                else if (retentionPolicy.RetentionType == "Monthly")
+                {
+                    ValidateMonthlyRetention((AzureBackupMonthlyRetentionPolicy)retentionPolicy);
+                    if (backupSchedule != null)
+                    {
+                        var monthlyRetention = (AzureBackupMonthlyRetentionPolicy)retentionPolicy;
+                        ValidateForWeeklyBackupSchedule(monthlyRetention.RetentionFormat, backupSchedule.BackupType, backupSchedule.ScheduleRunDays, monthlyRetention.DaysOfWeek);
+                    }
+                }
+                else if (retentionPolicy.RetentionType == "Yearly")
+                {
+                    ValidateYearlyRetention((AzureBackupYearlyRetentionPolicy)retentionPolicy);
+                    if (backupSchedule != null)
+                    {
+                        var yearlyRetention = (AzureBackupYearlyRetentionPolicy)retentionPolicy;
+                        ValidateForWeeklyBackupSchedule(yearlyRetention.RetentionFormat, backupSchedule.BackupType, backupSchedule.ScheduleRunDays, yearlyRetention.DaysOfWeek);
+                    }
+                }
+            }
+
+            if (backupSchedule != null)
+                {
+                    string scheduleType = backupSchedule.BackupType;
+                    if (scheduleType == ScheduleType.Daily.ToString() && validateDailyRetention == false)
+                    {
+                        var exception = new ArgumentException("For Daily Schedule, please pass AzureBackupDailyRetentionPolicy in RetentionPolicies param.");
+                        throw exception;
+                    }
+
+                    if (scheduleType == ScheduleType.Weekly.ToString() && validateWeeklyRetention == false)
+                    {
+                        var exception = new ArgumentException("For Weekly Schedule, please pass AzureBackupWeeklyRetentionPolicy in RetentionPolicies param.");
+                        throw exception;
+                    }
+
+                    if (scheduleType == ScheduleType.Weekly.ToString() && validateDailyRetention == true)
+                    {
+                        var exception = new ArgumentException("For Weekly Schedule, you cannot pass AzureBackupDailyRetentionPolicy in RetentionPolicies param.");
+                        throw exception;
+                    }
+               }
+        }
+
         private static string FillScheduleType(string scheduleType, string[] scheduleRunDays)
         {
             if (scheduleType == ScheduleType.Daily.ToString() && scheduleRunDays != null && scheduleRunDays.Length > 0)
@@ -183,60 +254,6 @@ namespace Microsoft.Azure.Commands.AzureBackup.Helpers
             return scheduleRunTime;
         }
 
-        public static void ValidateRetentionPolicy(IList<AzureBackupRetentionPolicy> retentionPolicyList, string scheduleType = "")
-        {
-            bool validateDailyRetention = false;
-            bool validateWeeklyRetention = false;
-            if(retentionPolicyList.Count == 0 )
-            {
-                var exception = new ArgumentException("Please pass atlease one retention policy");
-                throw exception;
-            }
-
-            foreach (AzureBackupRetentionPolicy retentionPolicy in retentionPolicyList)
-            {
-                if(retentionPolicy.RetentionType == "Daily")
-                {
-                    ValidateDailyRetention((AzureBackupDailyRetentionPolicy)retentionPolicy);
-                    validateDailyRetention = true;
-                }
-                else if (retentionPolicy.RetentionType == "Weekly")
-                {
-                    ValidateWeeklyRetention((AzureBackupWeeklyRetentionPolicy)retentionPolicy);
-                    validateWeeklyRetention = true;
-                }
-                else if (retentionPolicy.RetentionType == "Monthly")
-                {
-                    ValidateMonthlyRetention((AzureBackupMonthlyRetentionPolicy)retentionPolicy);
-                }
-                else if (retentionPolicy.RetentionType == "Yearly")
-                {
-                    ValidateYearlyRetention((AzureBackupYearlyRetentionPolicy)retentionPolicy);
-                }
-            }
-
-            if (!string.IsNullOrEmpty(scheduleType))
-                {
-                    if (scheduleType == ScheduleType.Daily.ToString() && validateDailyRetention == false)
-                    {
-                        var exception = new ArgumentException("For Daily Schedule, please pass AzureBackupDailyRetentionPolicy in RetentionPolicies param.");
-                        throw exception;
-                    }
-
-                    if (scheduleType == ScheduleType.Weekly.ToString() && validateWeeklyRetention == false)
-                    {
-                        var exception = new ArgumentException("For Weekly Schedule, please pass AzureBackupWeeklyRetentionPolicy in RetentionPolicies param.");
-                        throw exception;
-                    }
-
-                    if (scheduleType == ScheduleType.Weekly.ToString() && validateDailyRetention == true)
-                    {
-                        var exception = new ArgumentException("For Weekly Schedule, you cannot pass AzureBackupDailyRetentionPolicy in RetentionPolicies param.");
-                        throw exception;
-                    }
-               }
-        }
-
         private static void ValidateDailyRetention(AzureBackupDailyRetentionPolicy dailyRetention)
         {
             if (dailyRetention.Retention < MinRetentionInDays || dailyRetention.Retention > MaxRetentionInDays)
@@ -276,6 +293,12 @@ namespace Microsoft.Azure.Commands.AzureBackup.Helpers
                     var exception = new ArgumentException("For MonthlyRetentionPolicy and RetentionFormat in Days, pass atleast one value for DaysOfMonth param.");
                     throw exception;
                 }
+
+                if(monthlyRetention.DaysOfWeek != null || monthlyRetention.WeekNumber != null)
+                {
+                    var exception = new ArgumentException("For MonthlyRetentionPolicy and RetentionFormat in Days, DaysOfWeek or WeekNumber params are not allowed.");
+                    throw exception;
+                }
             }
 
             if (monthlyRetention.RetentionFormat == RetentionFormat.Weekly)
@@ -289,6 +312,12 @@ namespace Microsoft.Azure.Commands.AzureBackup.Helpers
                 if (monthlyRetention.WeekNumber == null || monthlyRetention.WeekNumber.Count == 0)
                 {
                     var exception = new ArgumentException("For MonthlyRetentionPolicy and RetentionFormat in Weeks, pass atleast one value for WeekNumber param.");
+                    throw exception;
+                }
+
+                if (monthlyRetention.DaysOfMonth != null)
+                {
+                    var exception = new ArgumentException("For MonthlyRetentionPolicy and RetentionFormat in Weeks, DaysOfMonth param is not allowed.");
                     throw exception;
                 }
             }
@@ -315,6 +344,12 @@ namespace Microsoft.Azure.Commands.AzureBackup.Helpers
                     var exception = new ArgumentException("For YearlyRetentionPolicy and RetentionFormat in Days, pass atleast one value for DaysOfMonth param.");
                     throw exception;
                 }
+
+                if (yearlyRetention.DaysOfWeek != null || yearlyRetention.WeekNumber != null)
+                {
+                    var exception = new ArgumentException("For YearlyRetentionPolicy and RetentionFormat in Days, DaysOfWeek or WeekNumber params are not allowed.");
+                    throw exception;
+                }
             }
 
             if (yearlyRetention.RetentionFormat == RetentionFormat.Weekly)
@@ -330,8 +365,326 @@ namespace Microsoft.Azure.Commands.AzureBackup.Helpers
                     var exception = new ArgumentException("For YearlyRetentionPolicy and RetentionFormat in Weeks, pass atleast one value for WeekNumber param.");
                     throw exception;
                 }
+
+                if (yearlyRetention.DaysOfMonth != null)
+                {
+                    var exception = new ArgumentException("For YearlyRetentionPolicy and RetentionFormat in Weeks, DaysOfMonth param is not allowed.");
+                    throw exception;
+                }
             }
         }
 
+        private static void ValidateForWeeklyBackupSchedule(RetentionFormat RetentionScheduleType, string backupScheduleType, IList<DayOfWeek> backupScheduleRunDays, List<DayOfWeek> retentionScheduleRunDays)
+        {
+            if (string.Compare(backupScheduleType, ScheduleType.Weekly.ToString(), true) == 0)
+            {
+                if (RetentionScheduleType == RetentionFormat.Daily)
+                {
+                    throw new ArgumentException("Days of  the month in Monthly/Yearly retention is not allowed for weekly backup Schedules ");
+                }
+                foreach (var day in retentionScheduleRunDays)
+                {
+                    if (!backupScheduleRunDays.Contains(day))
+                    {
+                        throw new ArgumentException(" Days of the week list  in Weekly/Monthly/Yearly retention schedule should be subset of  Day of week list in Backup Schedule ");
+                    }
+                }
+            }
+
+        }
+
+        # region Conversion Helper Functions
+
+        public static IList<AzureBackupRetentionPolicy> ConvertCSMRetentionPolicyListToPowershell(CSMLongTermRetentionPolicy LTRRetentionPolicy)
+        {
+            IList<AzureBackupRetentionPolicy> retentionPolicyList = new List<AzureBackupRetentionPolicy>();
+            AzureBackupDailyRetentionPolicy dailyRetentionPolicy = ConvertToPowershellDailyRetentionObject(LTRRetentionPolicy.DailySchedule);
+            AzureBackupWeeklyRetentionPolicy weeklyRetentionPolicy = ConvertToPowershellWeeklyRetentionObject(LTRRetentionPolicy.WeeklySchedule);
+            AzureBackupMonthlyRetentionPolicy monthlyRetentionPolicy = ConvertToPowershellMonthlyRetentionObject(LTRRetentionPolicy.MonthlySchedule);
+            AzureBackupYearlyRetentionPolicy yearlyRetentionPolicy = ConvertToPowershellYearlyRetentionObject(LTRRetentionPolicy.YearlySchedule);
+
+            if (dailyRetentionPolicy != null)
+            {
+                retentionPolicyList.Add(dailyRetentionPolicy);
+            }
+            if (weeklyRetentionPolicy != null)
+            {
+                retentionPolicyList.Add(weeklyRetentionPolicy);
+            }
+            if (monthlyRetentionPolicy != null)
+            {
+                retentionPolicyList.Add(monthlyRetentionPolicy);
+            }
+            if (yearlyRetentionPolicy != null)
+            {
+                retentionPolicyList.Add(yearlyRetentionPolicy);
+            }
+
+            return retentionPolicyList;
+        }
+
+        public static List<string> ConvertToPowershellScheduleRunDays(IList<DayOfWeek> weekDaysList)
+        {
+            List<string> scheduelRunDays = new List<string>();
+
+            foreach (object item in weekDaysList)
+            {
+                scheduelRunDays.Add(item.ToString());
+            }
+
+            return scheduelRunDays;
+        }
+
+        public static DateTime ConvertToPowershellScheduleRunTimes(IList<DateTime> scheduleRunTimeList)
+        {
+            IEnumerator<DateTime> scheduleEnumerator = scheduleRunTimeList.GetEnumerator();
+            scheduleEnumerator.MoveNext();
+            return scheduleEnumerator.Current;
+        }
+
+        public static CSMLongTermRetentionPolicy ConvertToCSMRetentionPolicyObject(IList<AzureBackupRetentionPolicy> retentionPolicyList, CSMBackupSchedule backupSchedule)
+        {
+            CSMLongTermRetentionPolicy csmLongTermRetentionPolicy = new CSMLongTermRetentionPolicy();
+            foreach (AzureBackupRetentionPolicy retentionPolicy in retentionPolicyList)
+            {
+                if (retentionPolicy.RetentionType == "Daily")
+                {
+                    csmLongTermRetentionPolicy.DailySchedule = ConvertToCSMDailyRetentionObject((AzureBackupDailyRetentionPolicy)retentionPolicy,
+                        backupSchedule.ScheduleRunTimes);
+                }
+                if (retentionPolicy.RetentionType == "Weekly")
+                {
+                    csmLongTermRetentionPolicy.WeeklySchedule = ConvertToCSMWeeklyRetentionObject((AzureBackupWeeklyRetentionPolicy)retentionPolicy,
+                        backupSchedule.ScheduleRunTimes);
+                }
+                if (retentionPolicy.RetentionType == "Monthly")
+                {
+                    csmLongTermRetentionPolicy.MonthlySchedule = ConvertToGetCSMMonthlyRetentionObject((AzureBackupMonthlyRetentionPolicy)retentionPolicy,
+                        backupSchedule.ScheduleRunTimes);
+                }
+                if (retentionPolicy.RetentionType == "Yearly")
+                {
+                    csmLongTermRetentionPolicy.YearlySchedule = ConvertToCSMYearlyRetentionObject((AzureBackupYearlyRetentionPolicy)retentionPolicy,
+                        backupSchedule.ScheduleRunTimes);
+                }
+            }
+
+            return csmLongTermRetentionPolicy;
+        }
+
+        private static AzureBackupDailyRetentionPolicy ConvertToPowershellDailyRetentionObject(CSMDailyRetentionSchedule DailySchedule)
+        {
+            if (DailySchedule == null)
+                return null;
+            AzureBackupDailyRetentionPolicy dailyRetention = new AzureBackupDailyRetentionPolicy("Daily", DailySchedule.CSMRetentionDuration.Count);
+
+            return dailyRetention;
+        }
+
+        private static AzureBackupWeeklyRetentionPolicy ConvertToPowershellWeeklyRetentionObject(CSMWeeklyRetentionSchedule WeeklySchedule)
+        {
+            if (WeeklySchedule == null)
+                return null;
+            AzureBackupWeeklyRetentionPolicy weeklyRetention = new AzureBackupWeeklyRetentionPolicy("Weekly", WeeklySchedule.CSMRetentionDuration.Count,
+                WeeklySchedule.DaysOfTheWeek);
+
+            return weeklyRetention;
+        }
+
+        private static AzureBackupMonthlyRetentionPolicy ConvertToPowershellMonthlyRetentionObject(CSMMonthlyRetentionSchedule MonthlySchedule)
+        {
+            if (MonthlySchedule == null)
+                return null;
+            AzureBackupMonthlyRetentionPolicy monthlyRetention = null;
+
+            RetentionFormat retentionFormat = (RetentionFormat)Enum.Parse(typeof(RetentionFormat), MonthlySchedule.RetentionScheduleType.ToString(), true);
+            if (retentionFormat == RetentionFormat.Daily)
+            {
+                List<string> dayList = ConvertToPowershellDayList(MonthlySchedule.RetentionScheduleDaily.DaysOfTheMonth);
+                monthlyRetention = new AzureBackupMonthlyRetentionPolicy("Monthly", MonthlySchedule.CSMRetentionDuration.Count,
+                retentionFormat, dayList, null, null);
+            }
+            else if (retentionFormat == RetentionFormat.Weekly)
+            {
+                List<WeekNumber> weekNumberList = ConvertToPowershellWeekNumberList(MonthlySchedule.RetentionScheduleWeekly);
+                List<DayOfWeek> dayOfWeekList = ConvertToPowershellWeekDaysList(MonthlySchedule.RetentionScheduleWeekly);
+                monthlyRetention = new AzureBackupMonthlyRetentionPolicy("Monthly", MonthlySchedule.CSMRetentionDuration.Count,
+                retentionFormat, null, weekNumberList, dayOfWeekList);
+            }
+
+            return monthlyRetention;
+        }
+
+        private static AzureBackupYearlyRetentionPolicy ConvertToPowershellYearlyRetentionObject(CSMYearlyRetentionSchedule YearlySchedule)
+        {
+            if (YearlySchedule == null)
+                return null;
+            AzureBackupYearlyRetentionPolicy yearlyRetention = null;
+
+            List<Month> monthOfTheYearList = ConvertToPowershellMonthsOfYearList(YearlySchedule.MonthsOfYear);
+
+            RetentionFormat retentionFormat = (RetentionFormat)Enum.Parse(typeof(RetentionFormat), YearlySchedule.RetentionScheduleType.ToString(), true);
+            if (retentionFormat == RetentionFormat.Daily)
+            {
+                List<string> dayList = ConvertToPowershellDayList(YearlySchedule.RetentionScheduleDaily.DaysOfTheMonth);
+                yearlyRetention = new AzureBackupYearlyRetentionPolicy("Yearly", YearlySchedule.CSMRetentionDuration.Count,
+                monthOfTheYearList, retentionFormat, dayList, null, null);
+            }
+            else if (retentionFormat == RetentionFormat.Weekly)
+            {
+                List<WeekNumber> weekNumberList = ConvertToPowershellWeekNumberList(YearlySchedule.RetentionScheduleWeekly);
+                List<DayOfWeek> dayOfWeekList = ConvertToPowershellWeekDaysList(YearlySchedule.RetentionScheduleWeekly);
+                yearlyRetention = new AzureBackupYearlyRetentionPolicy("Yearly", YearlySchedule.CSMRetentionDuration.Count,
+                 monthOfTheYearList, retentionFormat, null, weekNumberList, dayOfWeekList);
+            }
+
+            return yearlyRetention;
+        }
+
+        private static List<string> ConvertToPowershellDayList(IList<Day> daysOfTheMonthList)
+        {
+            string lastDayOfTheMonth = "IsLast";
+            List<string> dayList = new List<string>();
+            foreach (Day day in daysOfTheMonthList)
+            {
+                dayList.Add(day.Date.ToString());
+                if (day.IsLast)
+                {
+                    dayList.Add(lastDayOfTheMonth);
+                }
+            }
+
+            return dayList;
+        }
+
+        private static List<WeekNumber> ConvertToPowershellWeekNumberList(CSMWeeklyRetentionFormat csmWeekNumberList)
+        {
+            List<WeekNumber> weekNumberList = new List<WeekNumber>();
+            foreach (WeekNumber weekNumber in csmWeekNumberList.WeeksOfTheMonth)
+            {
+                weekNumberList.Add(weekNumber);
+            }
+            return weekNumberList;
+        }
+
+        private static List<DayOfWeek> ConvertToPowershellWeekDaysList(CSMWeeklyRetentionFormat csmWeekNumberList)
+        {
+            List<DayOfWeek> dayOfWeekList = new List<DayOfWeek>();
+            foreach (DayOfWeek dayOfWeek in csmWeekNumberList.DaysOfTheWeek)
+            {
+                dayOfWeekList.Add(dayOfWeek);
+            }
+            return dayOfWeekList;
+        }
+
+        private static List<Month> ConvertToPowershellMonthsOfYearList(IList<Month> MonthsOfYear)
+        {
+            List<Month> monthOfTheYearList = new List<Month>();
+            foreach (Month monthOfTheYear in MonthsOfYear)
+            {
+                monthOfTheYearList.Add(monthOfTheYear);
+            }
+            return monthOfTheYearList;
+        }
+
+        private static CSMDailyRetentionSchedule ConvertToCSMDailyRetentionObject(AzureBackupDailyRetentionPolicy retentionPolicy, IList<DateTime> RetentionTimes)
+        {
+            CSMDailyRetentionSchedule csmDailyRetention = new CSMDailyRetentionSchedule();
+            csmDailyRetention.CSMRetentionDuration = new CSMRetentionDuration();
+            csmDailyRetention.CSMRetentionDuration.Count = retentionPolicy.Retention;
+            csmDailyRetention.CSMRetentionDuration.DurationType = RetentionDurationType.Days;
+            csmDailyRetention.RetentionTimes = RetentionTimes;
+
+            return csmDailyRetention;
+        }
+        private static CSMWeeklyRetentionSchedule ConvertToCSMWeeklyRetentionObject(AzureBackupWeeklyRetentionPolicy retentionPolicy, IList<DateTime> RetentionTimes)
+        {
+            CSMWeeklyRetentionSchedule csmWeeklyRetention = new CSMWeeklyRetentionSchedule();
+            csmWeeklyRetention.DaysOfTheWeek = retentionPolicy.DaysOfWeek;
+            csmWeeklyRetention.CSMRetentionDuration = new CSMRetentionDuration();
+            csmWeeklyRetention.CSMRetentionDuration.Count = retentionPolicy.Retention;
+            csmWeeklyRetention.CSMRetentionDuration.DurationType = RetentionDurationType.Weeks;
+            csmWeeklyRetention.RetentionTimes = RetentionTimes;
+            return csmWeeklyRetention;
+        }
+
+        private static CSMMonthlyRetentionSchedule ConvertToGetCSMMonthlyRetentionObject(AzureBackupMonthlyRetentionPolicy retentionPolicy, IList<DateTime> RetentionTimes)
+        {
+            CSMMonthlyRetentionSchedule csmMonthlyRetention = new CSMMonthlyRetentionSchedule();
+
+            if (retentionPolicy.RetentionFormat == RetentionFormat.Daily)
+            {
+                csmMonthlyRetention.RetentionScheduleType = RetentionScheduleFormat.Daily;
+                csmMonthlyRetention.RetentionScheduleDaily = new CSMDailyRetentionFormat();
+                csmMonthlyRetention.RetentionScheduleDaily.DaysOfTheMonth = ConvertToCSMDayList(retentionPolicy.DaysOfMonth);
+            }
+
+            else if (retentionPolicy.RetentionFormat == RetentionFormat.Weekly)
+            {
+                csmMonthlyRetention.RetentionScheduleWeekly = new CSMWeeklyRetentionFormat();
+                csmMonthlyRetention.RetentionScheduleType = RetentionScheduleFormat.Weekly;
+                csmMonthlyRetention.RetentionScheduleWeekly.DaysOfTheWeek = retentionPolicy.DaysOfWeek;
+                csmMonthlyRetention.RetentionScheduleWeekly.WeeksOfTheMonth = retentionPolicy.WeekNumber;
+            }
+
+            csmMonthlyRetention.CSMRetentionDuration = new CSMRetentionDuration();
+            csmMonthlyRetention.CSMRetentionDuration.Count = retentionPolicy.Retention;
+            csmMonthlyRetention.CSMRetentionDuration.DurationType = RetentionDurationType.Months;
+            csmMonthlyRetention.RetentionTimes = RetentionTimes;
+
+            return csmMonthlyRetention;
+        }
+
+        private static CSMYearlyRetentionSchedule ConvertToCSMYearlyRetentionObject(AzureBackupYearlyRetentionPolicy retentionPolicy, IList<DateTime> RetentionTimes)
+        {
+            CSMYearlyRetentionSchedule csmYearlyRetention = new CSMYearlyRetentionSchedule();
+
+            if (retentionPolicy.RetentionFormat == RetentionFormat.Daily)
+            {
+                csmYearlyRetention.RetentionScheduleType = RetentionScheduleFormat.Daily;
+                csmYearlyRetention.RetentionScheduleDaily = new CSMDailyRetentionFormat();
+                csmYearlyRetention.RetentionScheduleDaily.DaysOfTheMonth = ConvertToCSMDayList(retentionPolicy.DaysOfMonth);
+            }
+
+            else if (retentionPolicy.RetentionFormat == RetentionFormat.Weekly)
+            {
+                csmYearlyRetention.RetentionScheduleWeekly = new CSMWeeklyRetentionFormat();
+                csmYearlyRetention.RetentionScheduleType = RetentionScheduleFormat.Weekly;
+                csmYearlyRetention.RetentionScheduleWeekly.DaysOfTheWeek = retentionPolicy.DaysOfWeek;
+                csmYearlyRetention.RetentionScheduleWeekly.WeeksOfTheMonth = retentionPolicy.WeekNumber;
+            }
+
+            csmYearlyRetention.CSMRetentionDuration = new CSMRetentionDuration();
+            csmYearlyRetention.CSMRetentionDuration.Count = retentionPolicy.Retention;
+            csmYearlyRetention.CSMRetentionDuration.DurationType = RetentionDurationType.Years;
+            csmYearlyRetention.RetentionTimes = RetentionTimes;
+            csmYearlyRetention.MonthsOfYear = retentionPolicy.MonthsOfYear;
+
+            return csmYearlyRetention;
+        }
+
+        private static IList<Day> ConvertToCSMDayList(List<string> DaysOfMonth)
+        {
+            IList<Day> dayList = new List<Day>();
+
+            foreach (string DayOfMonth in DaysOfMonth)
+            {
+                Day day = new Day();
+                if (string.Compare(DayOfMonth,"IsLast", true) == 0)
+                {
+                    day.IsLast = true;
+                }
+                else
+                {
+                    day.Date = Convert.ToInt32(DayOfMonth);
+                    day.IsLast = false;
+                }
+                dayList.Add(day);
+            }
+
+            return dayList;
+        }
+
+        #endregion
     }
 }

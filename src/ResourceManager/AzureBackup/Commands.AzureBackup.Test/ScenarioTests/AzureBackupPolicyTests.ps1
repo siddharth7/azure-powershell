@@ -19,10 +19,10 @@ $Location = "SouthEast Asia"
 $PolicyName = "Policy10";
 $PolicyId = "c87bbada-6e1b-4db2-b76c-9062d28959a4";
 $POName = "iaasvmcontainer;dev01testing;dev01testing"
-$WorkloadType = "VM"
+$Type = "IaasVM"
 $RetentionType = "Days"
-$ScheduleRunTimes =  "2015-06-13T20:30:00"
-$ScheduleRunDays = "Monday"
+$BackupTime =  "2015-06-13T20:30:00"
+$DaysOfWeek = "Monday"
 $RetentionDuration = 30
 $BackupType = "Full"
 $ScheduleType = "Daily"
@@ -40,8 +40,8 @@ function Test-GetAzureBackupProtectionPolicyTests
 	{
 		Assert-NotNull $protectionPolicy.InstanceId 'InstanceId should not be null'
 		Assert-NotNull $protectionPolicy.Name 'Name should not be null'
-		Assert-NotNull $protectionPolicy.WorkloadType 'WorkloadType should not be null'
-		Assert-NotNull $protectionPolicy.ScheduleRunTimes 'ScheduleRunTimes should not be null'
+		Assert-NotNull $protectionPolicy.Type 'Type should not be null'
+		Assert-NotNull $protectionPolicy.BackupTime 'BackupTime should not be null'
 		Assert-NotNull $protectionPolicy.RetentionPolicyList 'RetentionPolicyList should not be null'
 		Assert-NotNull $protectionPolicy.ResourceGroupName 'ResourceGroupName should not be null'
 		Assert-NotNull $protectionPolicy.ResourceName 'ResourceName should not be null'
@@ -56,8 +56,8 @@ function Test-GetAzureBackupProtectionPolicyByNameTests
 	
 	Assert-NotNull $protectionPolicy.InstanceId 'InstanceId should not be null'
 	Assert-NotNull $protectionPolicy.Name 'Name should not be null'
-	Assert-NotNull $protectionPolicy.WorkloadType 'WorkloadType should not be null'
-	Assert-NotNull $protectionPolicy.ScheduleRunTimes 'ScheduleRunTimes should not be null'
+	Assert-NotNull $protectionPolicy.Type 'Type should not be null'
+	Assert-NotNull $protectionPolicy.BackupTime 'BackupTime should not be null'
 	Assert-NotNull $protectionPolicy.RetentionPolicyList 'RetentionPolicyList should not be null'
 	Assert-NotNull $protectionPolicy.ResourceGroupName 'ResourceGroupName should not be null'
 	Assert-NotNull $protectionPolicy.ResourceName 'ResourceName should not be null'
@@ -72,12 +72,12 @@ function Test-NewAzureBackupProtectionPolicyTests
 	$r2 = New-AzureBackupRetentionPolicyObject -WeeklyRetention -DaysOfWeek "Monday" -Retention 10
 	$r = ($r1, $r2)
 
-	$protectionPolicy = New-AzureBackupProtectionPolicy -vault $vault -Name $PolicyName -WorkloadType $WorkloadType -Daily -RetentionPolicies $r -ScheduleRunTimes $ScheduleRunTimes
+	$protectionPolicy = New-AzureBackupProtectionPolicy -vault $vault -Name $PolicyName -Type $Type -Daily -RetentionPolicies $r -BackupTime $BackupTime
 	
 	Assert-NotNull $protectionPolicy.InstanceId 'InstanceId should not be null'
 	Assert-NotNull $protectionPolicy.Name 'Name should not be null'
-	Assert-NotNull $protectionPolicy.WorkloadType 'WorkloadType should not be null'
-	Assert-NotNull $protectionPolicy.ScheduleRunTimes 'ScheduleRunTimes should not be null'
+	Assert-NotNull $protectionPolicy.Type 'Type should not be null'
+	Assert-NotNull $protectionPolicy.BackupTime  'BackupTime  should not be null'
 	Assert-NotNull $protectionPolicy.RetentionPolicyList 'RetentionPolicyList should not be null'
 	Assert-NotNull $protectionPolicy.ResourceGroupName 'ResourceGroupName should not be null'
 	Assert-NotNull $protectionPolicy.ResourceName 'ResourceName should not be null'
