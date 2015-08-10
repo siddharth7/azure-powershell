@@ -23,66 +23,27 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Management.BackupServices.Models;
 using MBS = Microsoft.Azure.Management.BackupServices;
 using Microsoft.Azure.Commands.AzureBackup.Models;
-using Microsoft.WindowsAzure.Commands.Utilities.Store;
-using Microsoft.Azure.Commands.AzureBackup.Properties;
 
 namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 {
     /// <summary>
     /// Get list of containers
     /// </summary>
-    [Cmdlet(VerbsLifecycle.Unregister, "AzureBackupContainer")]
+    [Cmdlet(VerbsLifecycle.Unregister, "AzureBackupContainer"), OutputType(typeof(string))]
     public class UnregisterAzureBackupContainer : AzureBackupContainerCmdletBase
     {
-        private PowerShellCustomConfirmation customerConfirmation;
-
-        [Parameter(Position = 1, Mandatory = false, HelpMessage = "Confirm unregistration and deletion of server")]
-        public SwitchParameter Force { get; set; }
-
         public override void ExecuteCmdlet()
         {
             ExecutionBlock(() =>
             {
                 base.ExecuteCmdlet();
 
-                AzureBackupContainerType containerType = (AzureBackupContainerType)Enum.Parse(typeof(AzureBackupContainerType), Container.ContainerType, true);
-                switch (containerType)
-                {
-                    case AzureBackupContainerType.Windows:
-                    case AzureBackupContainerType.SCDPM:
-                        DeleteServer();
-                        break;
-                    case AzureBackupContainerType.AzureVM:
-                        UnregisterContainer();
-                        break;
-                    default:
-                        break;
-                }
+                string containerUniqueName = Container.ContainerUniqueName;
+                UnregisterContainerRequestInput unregRequest = new UnregisterContainerRequestInput(containerUniqueName, AzureBackupContainerType.IaasVMContainer.ToString());
+                var operationId = AzureBackupClient.UnRegisterContainer(unregRequest);
+
+                WriteObject(GetCreatedJobs(new Models.AzurePSBackupVault(Container.ResourceGroupName, Container.ResourceName, Container.Location), GetOperationStatus(operationId).Jobs).FirstOrDefault());
             });
-        }
-
-        private void DeleteServer()
-        {
-            bool shouldUnregister = true;
-
-            if (!Force.IsPresent)
-            {
-                customerConfirmation = customerConfirmation ?? new PowerShellCustomConfirmation(Host);
-                shouldUnregister = customerConfirmation.ShouldProcess(Resources.UnregisterServerCaption, Resources.UnregisterServerMessage);
-            }
-
-            if (shouldUnregister)
-            {
-                AzureBackupClient.UnregisterMachineContainer(Container.Id);
-            }
-        }
-
-        private void UnregisterContainer()
-        {
-            string containerUniqueName = Container.ContainerUniqueName;
-            var operationId = AzureBackupClient.UnRegisterContainer(containerUniqueName);
-
-            WriteObject(GetCreatedJobs(new Models.AzurePSBackupVault(Container.ResourceGroupName, Container.ResourceName, Container.Location), GetOperationStatus(operationId).JobList).FirstOrDefault());
         }
     }
 }
