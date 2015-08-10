@@ -167,8 +167,13 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
             {
                 response = GetOperationStatus(operationId);
 
-                if (response.Status == CSMAzureBackupOperationStatus.Succeeded.ToString())
+                if (response.Status != CSMAzureBackupOperationStatus.InProgress.ToString())
                 {
+                    if (response.Status == CSMAzureBackupOperationStatus.Failed.ToString())
+                    {
+                        throw new Exception(String.Format("GetOperationStatus failed with error : {0}",response.Error.Message));
+                    }
+
                     break;
                 }
 
