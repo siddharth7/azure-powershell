@@ -55,20 +55,20 @@ namespace Microsoft.Azure.Commands.AzureBackup.Cmdlets
 
                 else if (Item.GetType() == typeof(AzureBackupContainer))
                 {
-                    WriteDebug("Input is container Type = " + Item.GetType());
+                    WriteDebug("Container Type = " + Item.GetType());
                     if ((Item as AzureBackupContainer).ContainerType == AzureBackupContainerType.AzureVM.ToString())
                     {
                         itemName = (Item as AzureBackupContainer).ContainerUniqueName;
                     }
                     else
                     {
-                        throw new Exception("Uknown item type");
+                        throw new ArgumentException("Unknown item type");
                     }
                 }
 
                 else
                 {
-                    throw new Exception("Uknown item type");
+                    throw new ArgumentException("Unknown item type");
                 }
 
                 var operationId = AzureBackupClient.EnableProtection(Item.ContainerUniqueName, itemName, input);
