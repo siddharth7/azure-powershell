@@ -1029,6 +1029,15 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unsupported {0} Kind for storage account: {1}.
+        /// </summary>
+        public static string UnsupportedStorageAccountException {
+            get {
+                return ResourceManager.GetString("UnsupportedStorageAccountException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unsupported combination for WorkloadType: {0}, BackupManagementType:{1}.
         /// </summary>
         public static string UnsupportedWorkloadBackupManagementTypeException {
