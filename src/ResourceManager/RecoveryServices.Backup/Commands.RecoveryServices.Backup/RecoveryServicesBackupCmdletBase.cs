@@ -12,26 +12,21 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
-using Hyak.Common;
-using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
-using Microsoft.Azure.Commands.ResourceManager.Common;
-using Microsoft.WindowsAzure.Management.Scheduler;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Management.Automation;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClientAdapterNS;
-using CmdletModel = Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
-using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
-using Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers;
-using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
-using System.Threading;
+using Hyak.Common;
 using Microsoft.Azure.Commands.Common.Authentication;
 using Microsoft.Azure.Commands.Common.Authentication.Models;
-using Microsoft.WindowsAzure.Commands.Utilities.Common;
+using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClientAdapterNS;
+using Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers;
+using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
+using Microsoft.Azure.Commands.ResourceManager.Common;
+using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
+using Microsoft.Azure.Management.Storage;
+using Microsoft.WindowsAzure.Management.Scheduler;
+using CmdletModel = Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
 using ResourcesNS = Microsoft.Azure.Management.Resources;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
@@ -41,6 +36,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
     /// </summary>
     public abstract class RecoveryServicesBackupCmdletBase : AzureRMCmdlet
     {
+        private IStorageManagementClient storageManagementClient;
+
         /// <summary>
         /// Service client adapter is used to make calls to the backend service
         /// </summary>
@@ -52,6 +49,25 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
         protected ResourcesNS.ResourceManagementClient RmClient { get; set; }
 
         /// <summary>
+        /// Resource management client is used to make calls to the Compute service
+        /// </summary>
+        protected IStorageManagementClient StorageClient
+        {
+            get
+            {
+                if (storageManagementClient == null)
+                {
+                    storageManagementClient =
+                        AzureSession.ClientFactory.CreateArmClient<StorageManagementClient>(DefaultContext, AzureEnvironment.Endpoint.ResourceManager);
+                }
+                return storageManagementClient;
+                
+            }
+
+            set { storageManagementClient = value; }
+        }
+
+        /// <summary>
         /// Initializes the service clients and the logging utility
         /// </summary>
         protected void InitializeAzureBackupCmdlet()
@@ -61,6 +77,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
 
             WriteDebug("InsideRestore. going to create ResourceManager Client");
             RmClient = AzureSession.ClientFactory.CreateClient<ResourcesNS.ResourceManagementClient>(DefaultContext, AzureEnvironment.Endpoint.ResourceManager);
+
             WriteDebug("Client Created successfully");
 
             Logger.Instance = new Logger(WriteWarning, WriteDebug, WriteVerbose, ThrowTerminatingError);
