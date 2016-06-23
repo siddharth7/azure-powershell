@@ -482,4 +482,7 @@ Please contact Microsoft for further assistant.</value>
   <data name="UnsupportedStorageAccountException" xml:space="preserve">
     <value>Unsupported {0} Kind for storage account: {1}</value>
   </data>
+  <data name="GetContainerNameParamDeprecated" xml:space="preserve">
+    <value>Name parameter will be deprecated. Please use FriendlyName instead for filtering by name.</value>
+  </data>
 </root>
