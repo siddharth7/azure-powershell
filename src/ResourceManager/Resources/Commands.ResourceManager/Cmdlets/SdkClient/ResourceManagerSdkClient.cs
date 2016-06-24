@@ -351,31 +351,24 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                     Enum.TryParse<HttpStatusCode>(operation.Properties.StatusCode, out statusCode);
                     if (!statusCode.IsClientFailureRequest())
                     {
-                        var resourceGroupName = ResourceIdUtility.GetResourceGroupName(operation.Properties.TargetResource.Id);
-                        var deploymentName = operation.Properties.TargetResource.ResourceName;
-
-                        if (ResourceManagementClient.Deployments.CheckExistence(resourceGroupName, deploymentName) == true)
-                        {
-                            List<DeploymentOperation> newNestedOperations = new List<DeploymentOperation>();
-
-                            var result = ResourceManagementClient.DeploymentOperations.List(
+                        var result = ResourceManagementClient.DeploymentOperations.List(
                                 resourceGroupName: resourceGroupName,
                                 deploymentName: deploymentName);
 
-                            newNestedOperations = GetNewOperations(operations, result);
+                        List<DeploymentOperation>  newNestedOperations = GetNewOperations(operations, result);
 
-                            foreach (DeploymentOperation op in newNestedOperations)
+                        foreach (DeploymentOperation op in newNestedOperations)
+                        {
+                            DeploymentOperation nestedOperationWithSameIdAndProvisioningState = newOperations.Find(o => o.OperationId.Equals(op.OperationId) && o.Properties.ProvisioningState.Equals(op.Properties.ProvisioningState));
+
+                            if (nestedOperationWithSameIdAndProvisioningState == null)
                             {
-                                DeploymentOperation nestedOperationWithSameIdAndProvisioningState = newOperations.Find(o => o.OperationId.Equals(op.OperationId) && o.Properties.ProvisioningState.Equals(op.Properties.ProvisioningState));
-
-                                if (nestedOperationWithSameIdAndProvisioningState == null)
-                                {
-                                    newOperations.Add(op);
-                                }
+                                newOperations.Add(op);
                             }
                         }
                     }
                 }
+            }
             }
 
             return newOperations;
