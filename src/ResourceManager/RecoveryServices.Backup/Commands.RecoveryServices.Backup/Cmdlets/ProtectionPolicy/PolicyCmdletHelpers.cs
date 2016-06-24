@@ -26,14 +26,21 @@ using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
-using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.HydraAdapterNS;
+using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClientAdapterNS;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
 {   
+    /// <summary>
+    /// Class hosting helper methods for policy related cmdlets.
+    /// </summary>
     public class PolicyCmdletHelpers 
     {
-        public static Regex rgx = new Regex(@"^[A-Za-z][-A-Za-z0-9]*[A-Za-z0-9]$");
+        public static Regex policyNameRgx = new Regex(@"^[A-Za-z][-A-Za-z0-9]*[A-Za-z0-9]$");
 
+        /// <summary>
+        /// Validates name of the policy
+        /// </summary>
+        /// <param name="policyName">Name of the policy</param>
         public static void ValidateProtectionPolicyName(string policyName)
         {
             if(string.IsNullOrEmpty(policyName))
@@ -47,20 +54,26 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                 throw new ArgumentException(Resources.ProtectionPolicyNameLengthException);
             }
 
-            if (!rgx.IsMatch(policyName))
+            if (!policyNameRgx.IsMatch(policyName))
             {
                 throw new ArgumentException(Resources.ProtectionPolicyNameException);
             }
         }
 
+        /// <summary>
+        /// Fetches policies by name
+        /// </summary>
+        /// <param name="policyName">Name of the policy to be fetched</param>
+        /// <param name="serviceClientAdapter">Service client adapter with which to make calls</param>
+        /// <returns></returns>
         public static ProtectionPolicyResponse GetProtectionPolicyByName(string policyName,
-                                                 HydraAdapter hydraAdapter)
+                                                 ServiceClientAdapter serviceClientAdapter)
         {
             ProtectionPolicyResponse response = null;
 
             try
             {                
-                response = hydraAdapter.GetProtectionPolicy(policyName);
+                response = serviceClientAdapter.GetProtectionPolicy(policyName);
                 Logger.Instance.WriteDebug("Successfully fetched policy from service: " + policyName);
             }
             catch (AggregateException exception)

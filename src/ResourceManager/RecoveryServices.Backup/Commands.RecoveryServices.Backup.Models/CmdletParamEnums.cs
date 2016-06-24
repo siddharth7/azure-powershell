@@ -29,15 +29,20 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
         Name,
         ResourceGroupName,
         Status,
-        Container
+        Container,
+        FriendlyName,
     }
 
-    public enum GetRecoveryPointParams
+    public enum RecoveryPointParams
     {
         StartDate,
         EndDate,
         Item,
         RecoveryPointId,
+        RecoveryPoint,
+        ILRAction,
+        TargetLocation,
+        KeyFileDownloadLocation,
     }
 
     public enum RestoreBackupItemParams
@@ -73,6 +78,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
         ProtectionStatus,
         ProtectionState,
         DeleteBackupData,
-        ExpiryDate,
+        BackupManagementType,
+        ExpiryDateTimeUTC,
     }
 }

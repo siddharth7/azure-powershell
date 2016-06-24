@@ -21,12 +21,24 @@ using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
 {
-    public class AzureRmRecoveryServicesBackupSimpleSchedulePolicy : AzureRmRecoveryServicesBackupSchedulePolicyBase
+    /// <summary>
+    /// Recovery services simple schedule policy.
+    /// </summary>
+    public class SimpleSchedulePolicy : SchedulePolicyBase
     {
+        /// <summary>
+        /// Describes the frequency at which this schedule should be run.
+        /// </summary>
         public ScheduleRunType ScheduleRunFrequency { get; set; }
 
+        /// <summary>
+        /// Describes the list of the days of the week when this schedule should run.
+        /// </summary>
         public List<DayOfWeek> ScheduleRunDays { get; set; }
        
+        /// <summary>
+        /// Describes the list of times of the days when this schedule should run.
+        /// </summary>
         public List<DateTime> ScheduleRunTimes { get; set; }
 
         public override void Validate()

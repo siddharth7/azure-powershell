@@ -12,25 +12,22 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
-using Hyak.Common;
-using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
-using Microsoft.Azure.Commands.ResourceManager.Common;
-using Microsoft.WindowsAzure.Management.Scheduler;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Management.Automation;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.HydraAdapterNS;
-using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
-using Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers;
-using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
-using System.Threading;
+using Hyak.Common;
 using Microsoft.Azure.Commands.Common.Authentication;
 using Microsoft.Azure.Commands.Common.Authentication.Models;
-using Microsoft.WindowsAzure.Commands.Utilities.Common;
+using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClientAdapterNS;
+using Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers;
+using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
+using Microsoft.Azure.Commands.ResourceManager.Common;
+using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
+using Microsoft.Azure.Management.Storage;
+using Microsoft.WindowsAzure.Management.Scheduler;
+using CmdletModel = Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
+using ResourcesNS = Microsoft.Azure.Management.Resources;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
 {
@@ -39,18 +36,58 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
     /// </summary>
     public abstract class RecoveryServicesBackupCmdletBase : AzureRMCmdlet
     {
-        // in seconds
-        private int _defaultSleepForOperationTracking = 5;
+        private IStorageManagementClient storageManagementClient;
 
-        protected HydraAdapter HydraAdapter { get; set; }
+        /// <summary>
+        /// Service client adapter is used to make calls to the backend service
+        /// </summary>
+        protected ServiceClientAdapter ServiceClientAdapter { get; set; }
 
+        /// <summary>
+        /// Resource management client is used to make calls to the Compute service
+        /// </summary>
+        protected ResourcesNS.ResourceManagementClient RmClient { get; set; }
+
+        /// <summary>
+        /// Resource management client is used to make calls to the Compute service
+        /// </summary>
+        protected IStorageManagementClient StorageClient
+        {
+            get
+            {
+                if (storageManagementClient == null)
+                {
+                    storageManagementClient =
+                        AzureSession.ClientFactory.CreateArmClient<StorageManagementClient>(DefaultContext, AzureEnvironment.Endpoint.ResourceManager);
+                }
+                return storageManagementClient;
+                
+            }
+
+            set { storageManagementClient = value; }
+        }
+
+        /// <summary>
+        /// Initializes the service clients and the logging utility
+        /// </summary>
         protected void InitializeAzureBackupCmdlet()
         {
             var cloudServicesClient = AzureSession.ClientFactory.CreateClient<CloudServiceManagementClient>(DefaultContext, AzureEnvironment.Endpoint.ResourceManager);
-            HydraAdapter = new HydraAdapter(cloudServicesClient.Credentials, cloudServicesClient.BaseUri);
+            ServiceClientAdapter = new ServiceClientAdapter(cloudServicesClient.Credentials, cloudServicesClient.BaseUri);
+
+            WriteDebug("InsideRestore. going to create ResourceManager Client");
+            RmClient = AzureSession.ClientFactory.CreateClient<ResourcesNS.ResourceManagementClient>(DefaultContext, AzureEnvironment.Endpoint.ResourceManager);
+
+            WriteDebug("Client Created successfully");
+
             Logger.Instance = new Logger(WriteWarning, WriteDebug, WriteVerbose, ThrowTerminatingError);
         }
 
+        /// <summary>
+        /// Wrapper method which executes the cmdlet processing blocks. 
+        /// Catches and logs any exception occuring during the execution.
+        /// </summary>
+        /// <param name="action">Delegate representing the cmdlet processing block</param>
         protected void ExecutionBlock(Action action)
         {
             try
@@ -67,7 +104,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
         /// <summary>
         /// Handles set of exceptions thrown by client
         /// </summary>
-        /// <param name="ex"></param>
+        /// <param name="ex">Exception thrown by the client</param>
         private void HandleException(Exception exception)
         {
             if (exception is AggregateException && ((AggregateException)exception).InnerExceptions != null
@@ -121,21 +158,31 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
             }
         }
 
-        public override void ExecuteCmdlet()
+        protected override void BeginProcessing()
         {
-            base.ExecuteCmdlet();
+            base.BeginProcessing();
 
             InitializeAzureBackupCmdlet();
         }
 
-        public AzureRmRecoveryServicesJobBase GetJobObject(string jobId)
+        /// <summary>
+        /// Get the job PS model after fetching the job object from the service given the job ID.
+        /// </summary>
+        /// <param name="jobId">ID of the job to be fetched</param>
+        /// <returns></returns>
+        public CmdletModel.JobBase GetJobObject(string jobId)
         {
-            return JobConversions.GetPSJob(HydraAdapter.GetJob(jobId));
+            return JobConversions.GetPSJob(ServiceClientAdapter.GetJob(jobId));
         }
 
-        public List<AzureRmRecoveryServicesJobBase> GetJobObject(IList<string> jobIds)
+        /// <summary>
+        /// Gets list of job PS models after fetching the job objects from the service given the list of job IDs.
+        /// </summary>
+        /// <param name="jobIds">List of IDs of jobs to be fetched</param>
+        /// <returns></returns>
+        public List<CmdletModel.JobBase> GetJobObject(IList<string> jobIds)
         {
-            List<AzureRmRecoveryServicesJobBase> result = new List<AzureRmRecoveryServicesJobBase>();
+            List<CmdletModel.JobBase> result = new List<CmdletModel.JobBase>();
             foreach (string jobId in jobIds)
             {
                 result.Add(GetJobObject(jobId));
@@ -143,51 +190,41 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
             return result;
         }
 
-        public BackUpOperationStatusResponse WaitForOperationCompletionUsingStatusLink(
-                                              string statusUrlLink,
-                                              Func<string, BackUpOperationStatusResponse> hydraFunc)
-        {
-            // using this directly because it doesn't matter which function we use.
-            // return type is same and currently we are using it in only two places.
-            // protected item and policy.
-            BackUpOperationStatusResponse response = hydraFunc(statusUrlLink);
-
-            while (response.OperationStatus.Status == OperationStatusValues.InProgress.ToString())
-            {
-                WriteDebug("Tracking operation completion using status link: " + statusUrlLink);
-                TestMockSupport.Delay(_defaultSleepForOperationTracking * 1000);
-                response = hydraFunc(statusUrlLink);
-            }
-
-            return response;
-        }
-
+        /// <summary>
+        /// Based on the response from the service, handles the job created in the service appropriately.
+        /// </summary>
+        /// <param name="itemResponse">Response from service</param>
+        /// <param name="operationName">Name of the operation</param>
         protected void HandleCreatedJob(BaseRecoveryServicesJobResponse itemResponse, string operationName)
         {
             WriteDebug(Resources.TrackingOperationStatusURLForCompletion +
                             itemResponse.AzureAsyncOperation);
 
-            var response = WaitForOperationCompletionUsingStatusLink(
+            var response = TrackingHelpers.WaitForOperationCompletionUsingStatusLink(
                                             itemResponse.AzureAsyncOperation,
-                                            HydraAdapter.GetProtectedItemOperationStatusByURL);
+                                            ServiceClientAdapter.GetProtectedItemOperationStatusByURL);
 
-            WriteDebug(Resources.FinalOperationStatus + response.OperationStatus.Status);
-
-            if (response.OperationStatus.Properties != null &&
-                   ((OperationStatusJobExtendedInfo)response.OperationStatus.Properties).JobId != null)
+            if (response != null && response.OperationStatus != null)
             {
-                var jobStatusResponse = (OperationStatusJobExtendedInfo)response.OperationStatus.Properties;
-                WriteObject(GetJobObject(jobStatusResponse.JobId));
-            }
+                WriteDebug(Resources.FinalOperationStatus + response.OperationStatus.Status);
 
-            if (response.OperationStatus.Status == OperationStatusValues.Failed)
-            {
-                var errorMessage = string.Format(
-                    Resources.OperationFailed,
-                    operationName,
-                    response.OperationStatus.OperationStatusError.Code,
-                    response.OperationStatus.OperationStatusError.Message);
-                throw new Exception(errorMessage);
+                if (response.OperationStatus.Properties != null &&
+                       ((OperationStatusJobExtendedInfo)response.OperationStatus.Properties).JobId != null)
+                {
+                    var jobStatusResponse = (OperationStatusJobExtendedInfo)response.OperationStatus.Properties;
+                    WriteObject(GetJobObject(jobStatusResponse.JobId));
+                }
+
+                if (response.OperationStatus.Status == OperationStatusValues.Failed &&
+                    response.OperationStatus.OperationStatusError != null)
+                {
+                    var errorMessage = string.Format(
+                        Resources.OperationFailed,
+                        operationName,
+                        response.OperationStatus.OperationStatusError.Code,
+                        response.OperationStatus.OperationStatusError.Message);
+                    throw new Exception(errorMessage);
+                }
             }
         }
     }

@@ -25,12 +25,18 @@ using System.Threading.Tasks;
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
 {
     /// <summary>
-    /// Get list of containers
+    /// Fetches backup management servers registered to the recovery services vault.
     /// </summary>
-    [Cmdlet(VerbsCommon.Get, "AzureRmRecoveryServicesBackupManagementServer"), OutputType(typeof(AzureRmRecoveryServicesBackupEngineBase), typeof(List<AzureRmRecoveryServicesBackupEngineBase>))]
-    public class GetAzureRmRecoveryServicesBackupManagementServer : RecoveryServicesBackupCmdletBase
+    [Cmdlet(VerbsCommon.Get, "AzureRmRecoveryServicesBackupManagementServer"),
+    OutputType(typeof(BackupEngineBase), typeof(IList<BackupEngineBase>))]
+    public class GetAzureRmRecoveryServicesBackupManagementServer 
+        : RecoveryServicesBackupCmdletBase
     {
-        [Parameter(Mandatory = false, Position = 1, HelpMessage = ParamHelpMsg.Container.Name)]
+        /// <summary>
+        /// Name of the backup management server(s) to be fetched.
+        /// </summary>
+        [Parameter(Mandatory = false, Position = 1, 
+            HelpMessage = ParamHelpMsgs.Container.Name)]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
 
@@ -40,13 +46,15 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
             {
                 base.ExecuteCmdlet();
 
-                PsBackupProviderManager providerManager = new PsBackupProviderManager(new Dictionary<System.Enum, object>()
+                PsBackupProviderManager providerManager = new PsBackupProviderManager(
+                    new Dictionary<System.Enum, object>()
                 {  
                     {ContainerParams.ContainerType, ContainerType.Windows},                
                     {ContainerParams.Name, Name}
-                }, HydraAdapter);
+                }, ServiceClientAdapter);
 
-                IPsBackupProvider psBackupProvider = providerManager.GetProviderInstanceForBackupManagementServer();
+                IPsBackupProvider psBackupProvider = 
+                    providerManager.GetProviderInstanceForBackupManagementServer();
 
                 var backupServerModels = psBackupProvider.ListBackupManagementServers();
                 if (!string.IsNullOrEmpty(this.Name))
@@ -56,14 +64,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                         backupServerModels = backupServerModels.Where(x => x.Name == this.Name).ToList();
                     }
                 }
-                if (backupServerModels.Count == 1)
-                {
-                    WriteObject(backupServerModels.First());
-                }
-                else
-                {
-                    WriteObject(backupServerModels, enumerateCollection: true);
-                }
+                WriteObject(backupServerModels, enumerateCollection: true);
             });
         }
     }
