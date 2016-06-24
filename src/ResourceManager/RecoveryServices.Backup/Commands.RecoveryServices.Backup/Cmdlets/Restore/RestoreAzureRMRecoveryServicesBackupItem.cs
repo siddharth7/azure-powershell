@@ -78,6 +78,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                 }
                 catch (Exception)
                 {
+<<<<<<< HEAD
                     storageAccountDetails = this.StorageClient.StorageAccounts.GetProperties(
                        StorageAccountResourceGroupName,
                        StorageAccountName);
@@ -86,6 +87,12 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                         throw new ArgumentException(String.Format(Resources.UnsupportedStorageAccountException,
                         storageAccountDetails.Kind.ToString(), StorageAccountName));
                     }
+=======
+                    identity.ResourceProviderNamespace = "Microsoft.Storage/storageAccounts";
+                    identity.ResourceProviderApiVersion = "2016-01-01";
+                    resource = RmClient.Resources.GetAsync(StorageAccountResourceGroupName, 
+                        identity, CancellationToken.None).Result;
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
                 }
 
                 string storageAccountId = (resource != null) ? resource.Resource.Id

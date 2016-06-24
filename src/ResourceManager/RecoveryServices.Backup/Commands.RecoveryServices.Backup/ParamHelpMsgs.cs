@@ -81,8 +81,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                 "also be deleted and restoring data will not be possible.";
             public const string ExpiryDate = "Retention period for the recovery points created by this backup operaiton";
             public const string ForceOption = "Force disables backup protection (prevents confirmation dialog). This parameter is optional.";
+<<<<<<< HEAD:src/ResourceManager/RecoveryServices.Backup/Commands.RecoveryServices.Backup/ParamHelpMsgs.cs
             public const string ExpiryDateTimeUTC = "Date and time specified in UTC after which the recovery points created " +
                 "by this backup will no longer be available for restore";
+=======
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b:src/ResourceManager/RecoveryServices.Backup/Commands.RecoveryServices.Backup/ParamHelpMsgs.cs
         }
 
         internal static class RecoveryPoint

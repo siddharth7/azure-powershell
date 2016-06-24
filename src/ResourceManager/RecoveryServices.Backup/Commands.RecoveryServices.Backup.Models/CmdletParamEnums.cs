@@ -79,6 +79,9 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
         ProtectionState,
         DeleteBackupData,
         BackupManagementType,
+<<<<<<< HEAD
         ExpiryDateTimeUTC,
+=======
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
     }
 }

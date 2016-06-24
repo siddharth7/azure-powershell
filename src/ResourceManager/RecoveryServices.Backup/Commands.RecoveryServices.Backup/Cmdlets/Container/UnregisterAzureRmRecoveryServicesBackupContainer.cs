@@ -46,12 +46,18 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
             {
                 base.ExecuteCmdlet();
                 
+<<<<<<< HEAD
                 if (!((Container.ContainerType == ContainerType.Windows && Container.BackupManagementType == BackupManagementType.MARS) ||
                     (Container.ContainerType == ContainerType.AzureSQL && Container.BackupManagementType == BackupManagementType.AzureSQL)))
+=======
+                if (Container.ContainerType != ContainerType.Windows || Container.BackupManagementType 
+                    != BackupManagementType.MARS)
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
                 {
                     throw new ArgumentException(String.Format(Resources.UnsupportedContainerException, 
                         Container.ContainerType, Container.BackupManagementType));
                 }
+<<<<<<< HEAD
                 string containerName = Container.Name;
                 
                 if (Container.ContainerType == ContainerType.AzureSQL)
@@ -59,6 +65,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                     containerName = ContainerConstansts.SqlContainerNamePrefix + containerName;
                 }
 
+=======
+                MabContainer mabContainer = 
+                    Container as MabContainer;
+                string containerName = mabContainer.Name;
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
                 ServiceClientAdapter.UnregisterContainers(containerName);
             });
         }

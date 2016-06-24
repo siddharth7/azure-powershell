@@ -33,12 +33,16 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
         /// <summary>
         /// Represents any windows containers such as those managed by the MAB device etc.
         /// </summary>
+<<<<<<< HEAD
         Windows,
 
         /// <summary>
         /// Represents any Azure Sql containers.
         /// </summary>
         AzureSQL
+=======
+        Windows
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
     }
 
     /// <summary>

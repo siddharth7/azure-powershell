@@ -22,6 +22,7 @@ using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
 {
     /// <summary>
+<<<<<<< HEAD
     /// Backup simple retention policy class.
     /// </summary>
     public class SimpleRetentionPolicy : RetentionPolicyBase
@@ -56,6 +57,12 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
     /// </summary>
     public class LongTermRetentionPolicy : RetentionPolicyBase
     {
+=======
+    /// Backup long term retention policy class.
+    /// </summary>
+    public class LongTermRetentionPolicy : RetentionPolicyBase
+    {
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
         /// <summary>
         /// Specifies if daily schedule is enabled.
         /// </summary>
@@ -539,6 +546,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
             return string.Format("Date:{0}, IsLast:{1}", Date, IsLast);
         }
     }
+<<<<<<< HEAD
 
     public class RetentionDuration
     {
@@ -554,4 +562,6 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
             }
         }
     }
+=======
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
 }

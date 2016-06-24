@@ -69,9 +69,12 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
             {
                 case CmdletModel.WorkloadType.AzureVM:
                     providerType = ServiceClientModel.BackupManagementType.AzureIaasVM.ToString();
+<<<<<<< HEAD:src/ResourceManager/RecoveryServices.Backup/Commands.RecoveryServices.Backup.Helpers/ServiceClientHelpers.cs
                     break;
                 case CmdletModel.WorkloadType.AzureSQLDatabase:
                     providerType = ServiceClientModel.BackupManagementType.AzureSql.ToString();
+=======
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b:src/ResourceManager/RecoveryServices.Backup/Commands.RecoveryServices.Backup.Helpers/ServiceClientHelpers.cs
                     break;
                 default:
                     break;

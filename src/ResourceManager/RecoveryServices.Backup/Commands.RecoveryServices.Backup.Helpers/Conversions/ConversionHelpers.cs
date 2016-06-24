@@ -42,6 +42,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
                 protectionContainer.Properties != null)
             {
                 if (protectionContainer.Properties.GetType().IsSubclassOf(typeof(ServiceClientModel.AzureIaaSVMProtectionContainer)))
+<<<<<<< HEAD
                 {
                     containerModel = new AzureVmContainer(protectionContainer);
                 }
@@ -52,6 +53,14 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
                 else if (protectionContainer.Properties.GetType() == typeof(ServiceClientModel.AzureSqlProtectionContainer))
                 {
                     containerModel = new AzureSqlContainer(protectionContainer);
+=======
+                {
+                    containerModel = new AzureVmContainer(protectionContainer);
+                }
+                if (protectionContainer.Properties.GetType() == typeof(ServiceClientModel.MabProtectionContainer))
+                {
+                    containerModel = new MabContainer(protectionContainer);
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
                 }
             }
 
@@ -156,6 +165,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
                                                   ((ServiceClientModel.AzureIaaSVMProtectionPolicy)serviceClientResponse.Properties).RetentionPolicy);
                 iaasPolicyModel.SchedulePolicy = PolicyHelpers.GetPSSimpleSchedulePolicy((ServiceClientModel.SimpleSchedulePolicy)
                                                  ((ServiceClientModel.AzureIaaSVMProtectionPolicy)serviceClientResponse.Properties).SchedulePolicy);
+<<<<<<< HEAD
             }
             else if (serviceClientResponse.Properties.GetType() == typeof(ServiceClientModel.AzureSqlProtectionPolicy))
             {
@@ -174,6 +184,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
                 sqlPolicyModel.BackupManagementType = Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models.BackupManagementType.AzureSQL;
                 sqlPolicyModel.RetentionPolicy = PolicyHelpers.GetPSSimpleRetentionPolicy((ServiceClientModel.SimpleRetentionPolicy)
                                                   ((ServiceClientModel.AzureSqlProtectionPolicy)serviceClientResponse.Properties).RetentionPolicy);
+=======
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
             }
             else
             {
@@ -239,6 +251,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
                     string policyName = null;
                     string policyId = ((ServiceClientModel.AzureIaaSVMProtectedItem)protectedItem.Properties).PolicyId;
                     if (!string.IsNullOrEmpty(policyId))
+<<<<<<< HEAD
                     {
                         Dictionary<UriEnums, string> keyValueDict =
                         HelperUtils.ParseUri(policyId);
@@ -261,20 +274,29 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
                     string policyName = null;
                     string policyId = ((ServiceClientModel.AzureSqlProtectedItem)protectedItem.Properties).PolicyId;
                     if (!String.IsNullOrEmpty(policyId))
+=======
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
                     {
-                        Dictionary<UriEnums, string> keyVauleDict =
+                        Dictionary<UriEnums, string> keyValueDict =
                         HelperUtils.ParseUri(policyId);
-                        policyName = HelperUtils.GetPolicyNameFromPolicyId(keyVauleDict, policyId);
+                        policyName = HelperUtils.GetPolicyNameFromPolicyId(keyValueDict, policyId);
                     }
 
                     string containerUri = HelperUtils.GetContainerUri(
                         HelperUtils.ParseUri(protectedItem.Id),
                         protectedItem.Id);
 
+<<<<<<< HEAD
                     itemModel = new AzureSqlItem(
                         protectedItem,
                         IdUtils.GetNameFromUri(containerUri),
                         Cmdlets.Models.ContainerType.AzureSQL,
+=======
+                    itemModel = new AzureVmItem(
+                        protectedItem,
+                        IdUtils.GetNameFromUri(containerUri),
+                        Cmdlets.Models.ContainerType.AzureVM,
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
                         policyName);
                 }
             }

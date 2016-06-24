@@ -38,14 +38,22 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
         public static LongTermRetentionPolicy GetPSLongTermRetentionPolicy(
             ServiceClientModel.LongTermRetentionPolicy serviceClientRetPolicy)
         {
+<<<<<<< HEAD
             if (serviceClientRetPolicy == null)
+=======
+            if(serviceClientRetPolicy == null)
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
             {
                 return null;
             }
 
             LongTermRetentionPolicy ltrPolicy = new LongTermRetentionPolicy();
 
+<<<<<<< HEAD
             if (serviceClientRetPolicy.DailySchedule != null)
+=======
+            if(serviceClientRetPolicy.DailySchedule != null)
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
             {
                 ltrPolicy.IsDailyScheduleEnabled = true;
                 ltrPolicy.DailySchedule = GetPSLTRDailySchedule(serviceClientRetPolicy.DailySchedule);
@@ -75,8 +83,16 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
             return ltrPolicy;
         }
 
+<<<<<<< HEAD
         public static SimpleRetentionPolicy GetPSSimpleRetentionPolicy(
            ServiceClientModel.SimpleRetentionPolicy hydraRetPolicy)
+=======
+        // <summary>
+        /// Helper function to convert ps simple retention policy from service response.
+        /// </summary>
+        public static LongTermRetentionPolicy GetPSSimpleRetentionPolicy(
+           ServiceClientModel.SimpleRetentionPolicy serviceClientRetPolicy)
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
         {
             if (hydraRetPolicy == null)
             {
@@ -221,7 +237,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 
         private static DailyRetentionSchedule GetPSLTRDailySchedule(ServiceClientModel.DailyRetentionSchedule serviceClientDaily)
         {
+<<<<<<< HEAD
             if (serviceClientDaily == null)
+=======
+            if(serviceClientDaily == null)
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
             {
                 return null;
             }
@@ -344,6 +364,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
         #endregion
 
         #region PStoServiceClientObject conversions
+<<<<<<< HEAD
 
         public static ServiceClientModel.SimpleRetentionPolicy GetServiceClientSimpleRetentionPolicy(
             SimpleRetentionPolicy psRetPolicy)
@@ -365,6 +386,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
             }
         }
 
+=======
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
         // <summary>
         /// Helper function to convert service long term retention policy from ps retention policy.
         /// </summary>
@@ -396,8 +419,13 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
             if (psRetPolicy.IsYearlyScheduleEnabled)
             {
                 serviceClientRetPolicy.YearlySchedule = GetServiceClientLTRYearlySchedule(psRetPolicy.YearlySchedule);
+<<<<<<< HEAD
             }
 
+=======
+            }            
+                        
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
             return serviceClientRetPolicy;
         }
 
@@ -558,7 +586,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
             }
 
             return serviceClientFormat;
+<<<<<<< HEAD
         }
+=======
+        }        
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
 
         #endregion
 

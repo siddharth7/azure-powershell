@@ -67,17 +67,25 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                         providerType = PsBackupProviderTypes.IaasVm;
                     }
                     else
+<<<<<<< HEAD
                     {
                         throw new ArgumentException(
                             String.Format(Resources.BackupManagementTypeIncorrectForContainerType,
                             containerType)
                             );
                     }
+=======
+                        throw new ArgumentException(
+                            String.Format(Resources.BackupManagementTypeIncorrectForContainerType, 
+                            containerType)
+                            );
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
                     break;
                 case ContainerType.Windows:
                     if (backupManagementType == BackupManagementType.MARS)
                     {
                         providerType = PsBackupProviderTypes.Mab;
+<<<<<<< HEAD
                     }
                     else if (backupManagementType == null)
                     {
@@ -108,6 +116,20 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                             Resources.BackupManagementTypeRequiredForContainerType,
                             containerType));
                     }
+=======
+                    else if (backupManagementType == null)
+                        throw new ArgumentException(
+                            String.Format(
+                            Resources.BackupManagementTypeRequiredForContainerType, 
+                            containerType)
+                            );
+                    else
+                        throw new ArgumentException(
+                            String.Format(
+                            Resources.BackupManagementTypeIncorrectForContainerType, 
+                            containerType)
+                            );
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
                     break;
                 default:
                     throw new ArgumentException(
@@ -208,9 +230,6 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             {
                 case PsBackupProviderTypes.IaasVm:
                     psBackupProvider = new IaasVmPsBackupProvider();
-                    break;
-                case PsBackupProviderTypes.AzureSql:
-                    psBackupProvider = new AzureSqlPsBackupProvider();
                     break;
                 case PsBackupProviderTypes.Mab:
                     psBackupProvider = new MabPsBackupProvider();

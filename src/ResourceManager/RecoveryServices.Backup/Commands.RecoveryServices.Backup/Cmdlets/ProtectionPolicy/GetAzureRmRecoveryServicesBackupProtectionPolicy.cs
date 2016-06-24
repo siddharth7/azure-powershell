@@ -109,10 +109,13 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                            {
                                serviceClientProviderType = 
                                    ServiceClientHelpers.GetServiceClientProviderType(Models.WorkloadType.AzureVM);
+<<<<<<< HEAD:src/ResourceManager/RecoveryServices.Backup/Commands.RecoveryServices.Backup/Cmdlets/ProtectionPolicy/GetAzureRmRecoveryServicesBackupProtectionPolicy.cs
                            }
                            else if (WorkloadType == Models.WorkloadType.AzureSQLDatabase)
                            {
                                serviceClientProviderType = ServiceClientHelpers.GetServiceClientProviderType(Models.WorkloadType.AzureSQLDatabase);
+=======
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b:src/ResourceManager/RecoveryServices.Backup/Commands.RecoveryServices.Backup/Cmdlets/ProtectionPolicy/GetAzureRmRecoveryServicesBackupProtectionPolicy.cs
                            }
                            break;
 
@@ -123,6 +126,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                                {
                                    throw new ArgumentException(
                                        Resources.AzureVMUnsupportedBackupManagementTypeException);
+<<<<<<< HEAD:src/ResourceManager/RecoveryServices.Backup/Commands.RecoveryServices.Backup/Cmdlets/ProtectionPolicy/GetAzureRmRecoveryServicesBackupProtectionPolicy.cs
                                }
                                serviceClientProviderType = ServiceClientHelpers.
                                    GetServiceClientProviderType(Models.WorkloadType.AzureVM);
@@ -134,6 +138,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                                    throw new ArgumentException(Resources.AzureSqlUnsupportedBackupManagementTypeException);
                                }
                                serviceClientProviderType = ServiceClientHelpers.GetServiceClientProviderType(Models.WorkloadType.AzureSQLDatabase);
+=======
+                               }
+                               serviceClientProviderType = ServiceClientHelpers.
+                                   GetServiceClientProviderType(Models.WorkloadType.AzureVM);
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b:src/ResourceManager/RecoveryServices.Backup/Commands.RecoveryServices.Backup/Cmdlets/ProtectionPolicy/GetAzureRmRecoveryServicesBackupProtectionPolicy.cs
                            }
                            else
                            {

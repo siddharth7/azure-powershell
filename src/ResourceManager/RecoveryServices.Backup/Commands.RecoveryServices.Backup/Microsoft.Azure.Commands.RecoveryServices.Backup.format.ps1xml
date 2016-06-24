@@ -274,6 +274,7 @@
     </View>
     <View>
       <Name>Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models.AzureVmItem</Name>
+<<<<<<< HEAD
       <ViewSelectedBy>
         <TypeName>Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models.AzureVmItem</TypeName>
       </ViewSelectedBy>
@@ -327,6 +328,10 @@
       <Name>Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models.AzureSqlItem</Name>
       <ViewSelectedBy>
         <TypeName>Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models.AzureSqlItem</TypeName>
+=======
+      <ViewSelectedBy>
+        <TypeName>Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models.AzureVmItem</TypeName>
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
       </ViewSelectedBy>
       <TableControl>
         <TableHeaders>
@@ -407,6 +412,7 @@
 					  <TableColumnItems>
 						  <TableColumnItem>
 							  <PropertyName>RecoveryPointId</PropertyName>
+<<<<<<< HEAD
 						  </TableColumnItem>
 						  <TableColumnItem>
 							  <PropertyName>RecoveryPointType</PropertyName>
@@ -458,6 +464,8 @@
 					  <TableColumnItems>
 						  <TableColumnItem>
 							  <PropertyName>RecoveryPointId</PropertyName>
+=======
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
 						  </TableColumnItem>
 						  <TableColumnItem>
 							  <PropertyName>RecoveryPointType</PropertyName>

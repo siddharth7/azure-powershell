@@ -39,5 +39,26 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                                      BmsAdapter.GetCustomRequestHeaders(),
                                      BmsAdapter.CmdletCancellationToken).Result;
         }
+<<<<<<< HEAD:src/ResourceManager/RecoveryServices.Backup/Commands.RecoveryServices.Backup.ServiceClientAdapter/BMSAPIs/ProtectableItemAPI.cs
+=======
+
+        /// <summary>
+        /// Triggers backup on the specified item
+        /// </summary>
+        /// <param name="containerName">Name of the container which this item belongs to</param>
+        /// <param name="itemName">Name of the item</param>
+        /// <returns>Job created by this operation</returns>
+        public BaseRecoveryServicesJobResponse TriggerBackup(string containerName, string itemName)
+        {
+            return BmsAdapter.Client.Backups.TriggerBackupAsync(
+                BmsAdapter.GetResourceGroupName(),
+                BmsAdapter.GetResourceName(),
+                BmsAdapter.GetCustomRequestHeaders(),
+                ServiceClientAdapter.AzureFabricName,
+                containerName,
+                itemName,
+                BmsAdapter.CmdletCancellationToken).Result;
+        }
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b:src/ResourceManager/RecoveryServices.Backup/Commands.RecoveryServices.Backup.ServiceClientAdapter/BMSAPIs/ProtectableItemAPI.cs
     }
 }

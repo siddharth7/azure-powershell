@@ -48,7 +48,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
         public string BackupManagementType { get; set; }
 
         /// <summary>
+<<<<<<< HEAD
         /// Friendly name of the container(s) to be fetched. This will be deprecated.
+=======
+        /// Friendly name of the container(s) to be fetched.
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
         /// </summary>
         [Parameter(Mandatory = false, Position = 3, 
             HelpMessage = ParamHelpMsgs.Container.Name)]
@@ -56,6 +60,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
         public string Name { get; set; }
 
         /// <summary>
+<<<<<<< HEAD
         /// Friendly name of the container(s) to be fetched.
         /// </summary>
         [Parameter(Mandatory = false, Position = 3,
@@ -64,6 +69,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
         public string FriendlyName { get; set; }
 
         /// <summary>
+=======
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
         /// Resource group name of the container(s) to be fetched.
         /// </summary>
         [Parameter(Mandatory = false, Position = 4, 

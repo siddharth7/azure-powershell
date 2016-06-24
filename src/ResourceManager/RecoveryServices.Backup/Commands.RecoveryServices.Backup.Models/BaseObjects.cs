@@ -175,6 +175,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
 
         /// <summary>
         /// Latest Recovery Point for the item
+<<<<<<< HEAD
         /// </summary>
         public DateTime? LatestRecoveryPoint { get; set; }
 
@@ -182,6 +183,10 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
         /// ARM ID of the resource represented by the item
         /// </summary>
         public string SourceResourceId { get; set; }
+=======
+        /// </summary>
+        public DateTime? LatestRecoveryPoint { get; set; }
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
 
         public ItemBase(ServiceClientModel.ProtectedItemResource protectedItemResource,
             string containerName, ContainerType containerType)
@@ -191,7 +196,10 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
             Name = protectedItemResource.Name;
             Id = protectedItemResource.Id;
             LatestRecoveryPoint = protectedItem.LastRecoveryPoint;
+<<<<<<< HEAD
             SourceResourceId = protectedItem.SourceResourceId;
+=======
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
         }
     }
 
@@ -211,6 +219,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
 
         /// <summary>
         /// ID of the recovery point
+<<<<<<< HEAD
+=======
         /// </summary>
         public string RecoveryPointId { get; set; }
 
@@ -221,6 +231,26 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
 
         /// <summary>
         /// Fully qualified ARM ID of this recovery point
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
+        /// </summary>
+        public string Id { get; set; }
+
+        /// <summary>
+<<<<<<< HEAD
+        /// Name of the item represented by this recovery point
+        /// </summary>
+        public string ItemName { get; set; }
+
+        /// <summary>
+        /// Fully qualified ARM ID of this recovery point
+=======
+        /// Type of recovery point (appConsistent\CrashConsistent etc) 
+        /// </summary>
+        public String RecoveryPointType { get; set; }
+
+        /// <summary>
+        /// Time when this recovery point was created
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
         /// </summary>
         public string Id { get; set; }
 

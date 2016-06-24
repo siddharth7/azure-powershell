@@ -76,8 +76,13 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
     /// </summary>
     public class IdUtils
     {
+<<<<<<< HEAD
         static readonly string UriFormat = @"/Subscriptions/(?<subscriptionsId>.+)/resourceGroups" +
             @"/(?<resourceGroupName>.+)/providers/(?<providersName>.+)/vaults/(?<BackupVaultName>.+)" +
+=======
+        static readonly string UriFormat = @"/Subscriptions/(?<subscriptionsId>.+)/resourceGroups" + 
+            @"/(?<resourceGroupName>.+)/providers/(?<providersName>.+)/vaults/(?<BackupVaultName>.+)" + 
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
             "/backupFabrics/(?<BackupFabricName>.+)/protectionContainers/(?<containersName>.+)";
         static readonly Regex ResourceGroupRegex = new Regex(UriFormat, RegexOptions.Compiled);
         const string NameDelimiter = ";";
@@ -185,9 +190,15 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
         }
     }
 
+<<<<<<< HEAD
     /// <summary>
     /// Conversion utilities.
     /// </summary>
+=======
+   /// <summary>
+   /// Conversion utilities.
+   /// </summary>
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
     public class ConversionUtils
     {
         /// <summary>

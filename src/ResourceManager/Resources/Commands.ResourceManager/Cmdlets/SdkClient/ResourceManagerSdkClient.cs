@@ -352,8 +352,13 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                     if (!statusCode.IsClientFailureRequest())
                     {
                         var result = ResourceManagementClient.DeploymentOperations.List(
+<<<<<<< HEAD
                                 resourceGroupName: resourceGroupName,
                                 deploymentName: deploymentName);
+=======
+                            resourceGroupName: ResourceIdUtility.GetResourceGroupName(operation.Properties.TargetResource.Id),
+                            deploymentName: operation.Properties.TargetResource.ResourceName);
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
 
                         List<DeploymentOperation>  newNestedOperations = GetNewOperations(operations, result);
 
@@ -369,7 +374,10 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                     }
                 }
             }
+<<<<<<< HEAD
             }
+=======
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
 
             return newOperations;
         }
@@ -706,7 +714,11 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                 WriteVerbose(ProjectResources.TemplateValid);
             }
 
+<<<<<<< HEAD
             ResourceManagementClient.Deployments.BeginCreateOrUpdate(parameters.ResourceGroupName, parameters.DeploymentName, deployment);
+=======
+            ResourceManagementClient.Deployments.CreateOrUpdateAsync(parameters.ResourceGroupName, parameters.DeploymentName, deployment);
+>>>>>>> 99bbde85768e4aa70311e268685a49ac8ce3328b
             WriteVerbose(string.Format(ProjectResources.CreatedDeployment, parameters.DeploymentName));
             DeploymentExtended result = ProvisionDeploymentStatus(parameters.ResourceGroupName, parameters.DeploymentName, deployment);
 
