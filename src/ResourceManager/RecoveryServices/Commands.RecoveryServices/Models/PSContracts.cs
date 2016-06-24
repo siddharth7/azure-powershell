@@ -395,7 +395,8 @@ namespace Microsoft.Azure.Portal.RecoveryServices.Models.Common
             string siteId,
             string siteName,
             string resourceNamespace,
-            string resourceType)
+            string resourceType,
+            string location)
             : base(subscriptionId, resourceName, managementCert, acsNamespace)
         {
             this.ChannelIntegrityKey = channelIntegrityKey;
@@ -407,6 +408,7 @@ namespace Microsoft.Azure.Portal.RecoveryServices.Models.Common
 
             this.ResourceNamespace = resourceNamespace;
             this.ARMResourceType = resourceType;
+            this.Location = location;
         }
 
         #endregion
@@ -454,6 +456,12 @@ namespace Microsoft.Azure.Portal.RecoveryServices.Models.Common
         [DataMember(Order = 6)]
         public string ARMResourceType { get; set; }
 
+        /// <summary>
+        /// Gets or sets the vault location
+        /// </summary>
+        [DataMember(Order = 7)]
+        public string Location { get; set; }
+
         #endregion
     }
 
@@ -484,7 +492,8 @@ namespace Microsoft.Azure.Portal.RecoveryServices.Models.Common
         /// <param name="resourceName">resource name</param>
         /// <param name="managementCert">management cert</param>
         /// <param name="acsNamespace">acs namespace</param>
-        public BackupVaultCreds(string subscriptionId, string resourceName, string managementCert, AcsNamespace acsNamespace)
+        public BackupVaultCreds(string subscriptionId, string resourceName, string managementCert, 
+            AcsNamespace acsNamespace)
             : base(subscriptionId, resourceName, managementCert, acsNamespace, Constants.BackupVaultType) { }
 
         /// <summary>
@@ -496,7 +505,8 @@ namespace Microsoft.Azure.Portal.RecoveryServices.Models.Common
         /// <param name="managementCert">management cert</param>
         /// <param name="acsNamespace">acs namespace</param>
         /// <param name="agentLinks">agent links</param>
-        public BackupVaultCreds(string subscriptionId, string resourceName, string managementCert, AcsNamespace acsNamespace, string agentLinks)
+        public BackupVaultCreds(string subscriptionId, string resourceName, string managementCert, 
+            AcsNamespace acsNamespace, string agentLinks)
             : this(subscriptionId, resourceName, managementCert, acsNamespace)
         {
             AgentLinks = agentLinks;

@@ -21,7 +21,7 @@ Recovery Services Vault CRUD Tests
 function Test-RecoveryServicesVaultCRUDTests
 {
 	# Create vault
-	$vaultCreationResponse = New-AzureRmRecoveryServicesVault -Name rsv1 -ResourceGroupName vishakintdrg -Location westus
+	$vaultCreationResponse = New-AzureRmRecoveryServicesVault -Name rsv1 -ResourceGroupName RsvTestRG -Location westus
 	Assert-NotNull($vaultCreationResponse.Name)
 	Assert-NotNull($vaultCreationResponse.ID)
 	Assert-NotNull($vaultCreationResponse.Type)
@@ -43,13 +43,21 @@ function Test-RecoveryServicesVaultCRUDTests
 	Set-AzureRmRecoveryServicesBackupProperties -Vault $vaultCreationResponse -BackupStorageRedundancy "LocallyRedundant"
 
 	# Get the created vault
-	$vaultToBeRemoved = Get-AzureRmRecoveryServicesVault -ResourceGroupName vishakintdrg -Name rsv1
-	Assert-NotNull($vaultToBeRemoved.Name)
-	Assert-NotNull($vaultToBeRemoved.ID)
-	Assert-NotNull($vaultToBeRemoved.Type)
+	$vaultToBeProcessed = Get-AzureRmRecoveryServicesVault -ResourceGroupName RsvTestRG -Name rsv1
+	Assert-NotNull($vaultToBeProcessed.Name)
+	Assert-NotNull($vaultToBeProcessed.ID)
+	Assert-NotNull($vaultToBeProcessed.Type)
+
+	# Download vault settings file
+	$vaultFile = Get-AzureRmRecoveryServicesVaultSettingsFile -Vault $vaultToBeProcessed
+	Assert-NotNull($vaultFile.Filepath)
+
+	# Read file and check for data
+	[xml]$xmlDocument = Get-Content -Path $vaultFile.Filepath
+	Assert-NotNull($xmlDocument.ASRVaultCreds.Location)
 
 	# Remove Vault
-	Remove-AzureRmRecoveryServicesVault -Vault $vaultToBeRemoved
-	$vaults = Get-AzureRmRecoveryServicesVault -ResourceGroupName vishakintdrg -Name rsv1
+	Remove-AzureRmRecoveryServicesVault -Vault $vaultToBeProcessed
+	$vaults = Get-AzureRmRecoveryServicesVault -ResourceGroupName RsvTestRG -Name rsv1
 	Assert-True { $vaults.Count -eq 0 }
 }

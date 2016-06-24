@@ -26,14 +26,19 @@ using System.Threading.Tasks;
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
 {
     /// <summary>
-    /// Get list of containers
+    /// Unregisters container from the recovery services vault.
     /// </summary>
     [Cmdlet(VerbsLifecycle.Unregister, "AzureRmRecoveryServicesBackupContainer")]
-    public class UnregisterAzureRmRecoveryServicesBackupContainer : RecoveryServicesBackupCmdletBase
+    public class UnregisterAzureRmRecoveryServicesBackupContainer 
+        : RecoveryServicesBackupCmdletBase
     {
-        [Parameter(Mandatory = true, Position = 1, HelpMessage = ParamHelpMsg.Container.RegisteredContainer)]
+        /// <summary>
+        /// Container model object to be unregistered from the vault.
+        /// </summary>
+        [Parameter(Mandatory = true, Position = 1, 
+            HelpMessage = ParamHelpMsgs.Container.RegisteredContainer)]
         [ValidateNotNullOrEmpty]
-        public AzureRmRecoveryServicesBackupContainerBase Container { get; set; }        
+        public ContainerBase Container { get; set; }        
 
         public override void ExecuteCmdlet()
         {
@@ -41,13 +46,20 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
             {
                 base.ExecuteCmdlet();
                 
-                if (Container.ContainerType != ContainerType.Windows || Container.BackupManagementType != BackupManagementType.MARS)
+                if (!((Container.ContainerType == ContainerType.Windows && Container.BackupManagementType == BackupManagementType.MARS) ||
+                    (Container.ContainerType == ContainerType.AzureSQL && Container.BackupManagementType == BackupManagementType.AzureSQL)))
                 {
-                    throw new ArgumentException(String.Format(Resources.UnsupportedContainerException, Container.ContainerType, Container.BackupManagementType));
+                    throw new ArgumentException(String.Format(Resources.UnsupportedContainerException, 
+                        Container.ContainerType, Container.BackupManagementType));
                 }
-                AzureRmRecoveryServicesMabContainer mabContainer = Container as AzureRmRecoveryServicesMabContainer;
-                string containerName = mabContainer.Name;
-                HydraAdapter.UnregisterContainers(containerName);
+                string containerName = Container.Name;
+                
+                if (Container.ContainerType == ContainerType.AzureSQL)
+                {
+                    containerName = ContainerConstansts.SqlContainerNamePrefix + containerName;
+                }
+
+                ServiceClientAdapter.UnregisterContainers(containerName);
             });
         }
     }

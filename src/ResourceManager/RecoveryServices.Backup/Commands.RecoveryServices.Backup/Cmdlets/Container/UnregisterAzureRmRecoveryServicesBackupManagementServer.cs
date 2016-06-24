@@ -25,12 +25,20 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Container
 {
+    /// <summary>
+    /// Unregisters the backup management server from the vault.
+    /// </summary>
     [Cmdlet(VerbsLifecycle.Unregister, "AzureRmRecoveryServicesBackupManagementServer")]
-    public class UnregisterAzureRmRecoveryServicesBackupManagementServer : RecoveryServicesBackupCmdletBase
+    public class UnregisterAzureRmRecoveryServicesBackupManagementServer 
+        : RecoveryServicesBackupCmdletBase
     {
-        [Parameter(Mandatory = true, Position = 1, HelpMessage = ParamHelpMsg.Container.RegisteredContainer)]
+        /// <summary>
+        /// The backup management server to be unregistered from the vault.
+        /// </summary>
+        [Parameter(Mandatory = true, Position = 1,
+            HelpMessage = ParamHelpMsgs.Container.RegisteredContainer)]
         [ValidateNotNullOrEmpty]
-        public AzureRmRecoveryServicesBackupEngineBase AzureRmBackupManagementServer { get; set; }
+        public BackupEngineBase AzureRmBackupManagementServer { get; set; }
 
         public override void ExecuteCmdlet()
         {
@@ -38,16 +46,23 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Container
             {
                 base.ExecuteCmdlet();
 
-                if ((AzureRmBackupManagementServer.BackupEngineType != BackupEngineType.DpmBackupEngine.ToString() && 
-                    AzureRmBackupManagementServer.BackupEngineType != BackupEngineType.AzureBackupServerEngine.ToString())||
-                    AzureRmBackupManagementServer.BackupManagementType.ToString() != BackupManagementType.SCDPM.ToString() &&
-                    AzureRmBackupManagementServer.BackupManagementType.ToString() != BackupManagementType.AzureBackupServer.ToString())
+                if ((AzureRmBackupManagementServer.BackupEngineType != 
+                    BackupEngineType.DpmBackupEngine.ToString() && 
+                    AzureRmBackupManagementServer.BackupEngineType != 
+                    BackupEngineType.AzureBackupServerEngine.ToString())||
+                    AzureRmBackupManagementServer.BackupManagementType.ToString() != 
+                    BackupManagementType.SCDPM.ToString() &&
+                    AzureRmBackupManagementServer.BackupManagementType.ToString() != 
+                    BackupManagementType.AzureBackupServer.ToString())
                 {
-                    throw new ArgumentException(String.Format(Resources.UnsupportedAzureRmBackupManagementServerException, AzureRmBackupManagementServer.BackupEngineType, AzureRmBackupManagementServer.BackupManagementType));
+                    throw new ArgumentException(String.Format(
+                        Resources.UnsupportedAzureRmBackupManagementServerException, 
+                        AzureRmBackupManagementServer.BackupEngineType, 
+                        AzureRmBackupManagementServer.BackupManagementType));
                 }
 
                 string azureRmBackupManagementServer = AzureRmBackupManagementServer.Name;
-                HydraAdapter.UnregisterContainers(azureRmBackupManagementServer);
+                ServiceClientAdapter.UnregisterContainers(azureRmBackupManagementServer);
             });
         }
     }

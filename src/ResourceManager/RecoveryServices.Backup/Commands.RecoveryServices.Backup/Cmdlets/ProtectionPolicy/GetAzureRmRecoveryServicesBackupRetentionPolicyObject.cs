@@ -23,14 +23,27 @@ using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
 {
-    [Cmdlet(VerbsCommon.Get, "AzureRmRecoveryServicesBackupRetentionPolicyObject"), OutputType(typeof(AzureRmRecoveryServicesBackupRetentionPolicyBase))]
+    /// <summary>
+    /// Returns a retention policy PS object which can be modified in the PS shell 
+    /// and fed to other cmdlets which accept it.
+    /// </summary>
+    [Cmdlet(VerbsCommon.Get, "AzureRmRecoveryServicesBackupRetentionPolicyObject"),
+    OutputType(typeof(RetentionPolicyBase))]
     public class GetAzureRmRecoveryServicesBackupRetentionPolicyObject : RecoveryServicesBackupCmdletBase
     {
-        [Parameter(Mandatory = true, HelpMessage = ParamHelpMsg.Common.WorkloadType)]
+        /// <summary>
+        /// Workload type of the policy to be created.
+        /// </summary>
+        [Parameter(Mandatory = true, Position = 0, 
+            HelpMessage = ParamHelpMsgs.Common.WorkloadType)]
         [ValidateNotNullOrEmpty]
         public WorkloadType WorkloadType { get; set; }
 
-        [Parameter(Mandatory = false, HelpMessage = ParamHelpMsg.Common.BackupManagementType)]
+        /// <summary>
+        /// Backup management type of the policy to be created.
+        /// </summary>
+        [Parameter(Mandatory = false, Position = 1, 
+            HelpMessage = ParamHelpMsgs.Common.BackupManagementType)]
         [ValidateNotNullOrEmpty]
         public BackupManagementType? BackupManagementType { get; set; }
 
@@ -40,9 +53,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
             {
                 base.ExecuteCmdlet();
 
-                PsBackupProviderManager providerManager = new PsBackupProviderManager(new Dictionary<System.Enum, object>(), HydraAdapter);
+                PsBackupProviderManager providerManager = 
+                    new PsBackupProviderManager(new Dictionary<System.Enum, object>(), ServiceClientAdapter);
 
-                IPsBackupProvider psBackupProvider = providerManager.GetProviderInstance(WorkloadType, BackupManagementType);
+                IPsBackupProvider psBackupProvider = 
+                    providerManager.GetProviderInstance(WorkloadType, BackupManagementType);
                 WriteObject(psBackupProvider.GetDefaultRetentionPolicyObject());
             });
         }

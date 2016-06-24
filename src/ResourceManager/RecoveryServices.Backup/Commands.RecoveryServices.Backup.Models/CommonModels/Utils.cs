@@ -22,9 +22,19 @@ using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
 {
+    /// <summary>
+    /// Backup policy constants.
+    /// </summary>
     public class PolicyConstants
     {
+        /// <summary>
+        /// Maximum allowed duration length of retention.
+        /// </summary>
         public const int MaxAllowedRetentionDurationCount = 9999;
+
+        /// <summary>
+        /// Maximum number of days in a month.
+        /// </summary>
         public const int MaxAllowedDateInMonth = 28;
 
         // day constants
@@ -38,19 +48,38 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
 
         // month constants
         public const int NumOfMonthsInYear = 12;
+
+        public const int MaxAllowedRetentionDurationCountWeeklySql = 520;
+        public const int MaxAllowedRetentionDurationCountMonthlySql = 120;
+        public const int MaxAllowedRetentionDurationCountYearlySql = 10;
     }
 
+    /// <summary>
+    /// Trace utilities.
+    /// </summary>
     public class TraceUtils
     {
+        /// <summary>
+        /// Returns a string which contains an enumeration of the given input list.
+        /// </summary>
+        /// <typeparam name="T">Type of the object in the list</typeparam>
+        /// <param name="objList">List of input objects</param>
+        /// <returns></returns>
         public static string GetString<T>(IEnumerable<T> objList)
         {
             return (objList == null) ? "null" : "{" + string.Join(", ", objList.Select(e => e.ToString())) + "}";
         }
     }
 
+    /// <summary>
+    /// ARM ID utilities.
+    /// </summary>
     public class IdUtils
     {
-        static readonly Regex ResourceGroupRegex = new Regex(@"/Subscriptions/(?<subscriptionsId>.+)/resourceGroups/(?<resourceGroupName>.+)/providers/(?<providersName>.+)/vaults/(?<BackupVaultName>.+)/backupFabrics/(?<BackupFabricName>.+)/protectionContainers/(?<containersName>.+)", RegexOptions.Compiled);
+        static readonly string UriFormat = @"/Subscriptions/(?<subscriptionsId>.+)/resourceGroups" +
+            @"/(?<resourceGroupName>.+)/providers/(?<providersName>.+)/vaults/(?<BackupVaultName>.+)" +
+            "/backupFabrics/(?<BackupFabricName>.+)/protectionContainers/(?<containersName>.+)";
+        static readonly Regex ResourceGroupRegex = new Regex(UriFormat, RegexOptions.Compiled);
         const string NameDelimiter = ";";
         const string IdDelimiter = "/";
 
@@ -65,6 +94,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
             public const string ProtectedItemName = "protectedItems";
         }
 
+        /// <summary>
+        /// Fetches the resource group name embedded in the ARM ID by parsing.
+        /// </summary>
+        /// <param name="id">ARM ID to parse</param>
+        /// <returns></returns>
         public static string GetResourceGroupName(string id)
         {
             var match = ResourceGroupRegex.Match(id);
@@ -92,6 +126,12 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
             return null;
         }
 
+        /// <summary>
+        /// Fetches the value embedded in the ARM ID, identified the provided input id, in the ARM ID.
+        /// </summary>
+        /// <param name="id">The ARM input ID</param>
+        /// <param name="idName">Name of the value to be returned</param>
+        /// <returns></returns>
         public static string GetValueByName(string id, string idName)
         {
             var parts = id.Split(IdDelimiter.ToArray(), StringSplitOptions.RemoveEmptyEntries)
@@ -106,26 +146,55 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
         }
 
         /// <summary>
+        /// Parses the name from the fully qualified ARM ID.
         /// URI format: Type;Name
         /// </summary>
-        /// <param name="uri"></param>
+        /// <param name="uri">Uri to be parsed</param>
         /// <returns></returns>
         public static string GetNameFromUri(string uri)
         {
             return uri.Substring(uri.IndexOf(NameDelimiter) + 1);
         }
+
+        /// <summary>
+        /// Extracts the VM name from the container uri.
+        /// Format of container uri: WorkloadType;ContainerType;ResourceGroupName;VMName
+        /// </summary>
+        /// <param name="uri">Container uri from which to extract the name</param>
+        /// <returns></returns>
+        public static string GetVmNameFromContainerUri(string uri)
+        {
+            return uri.Split(NameDelimiter.ToCharArray())[4];
+        }
     }
 
+    /// <summary>
+    /// Enum utilities.
+    /// </summary>
     public class EnumUtils
     {
+        /// <summary>
+        /// Gets the enum of type T given the string equivalent.
+        /// </summary>
+        /// <typeparam name="T">Type of the enum represented by the string</typeparam>
+        /// <param name="enumValue">String to be parsed</param>
+        /// <returns></returns>
         public static T GetEnum<T>(string enumValue)
         {
             return (T)Enum.Parse(typeof(T), enumValue);
         }
     }
 
+    /// <summary>
+    /// Conversion utilities.
+    /// </summary>
     public class ConversionUtils
     {
+        /// <summary>
+        /// Returns the PS backup management type given the service client defined backup management type.
+        /// </summary>
+        /// <param name="backupManagementType">Service client backup management type</param>
+        /// <returns>PowerShell backup management type</returns>
         public static BackupManagementType GetPsBackupManagementType(string backupManagementType)
         {
             Microsoft.Azure.Management.RecoveryServices.Backup.Models.BackupManagementType providerType
@@ -141,11 +210,18 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
                     return BackupManagementType.SCDPM;
                 case Microsoft.Azure.Management.RecoveryServices.Backup.Models.BackupManagementType.AzureBackupServer:
                     return BackupManagementType.AzureBackupServer;
+                case Microsoft.Azure.Management.RecoveryServices.Backup.Models.BackupManagementType.AzureSql:
+                    return BackupManagementType.AzureSQL;
                 default:
                     throw new Exception("Unsupported BackupManagmentType: " + backupManagementType);
             }
         }
 
+        /// <summary>
+        /// Returns the PS backup management type given the service client defined container type.
+        /// </summary>
+        /// <param name="containerType">Service client container type</param>
+        /// <returns>PowerShell container type</returns>
         public static ContainerType GetPsContainerType(string containerType)
         {
             if (containerType == "Microsoft.ClassicCompute/virtualMachines" ||
@@ -157,17 +233,30 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
             {
                 return ContainerType.Windows;
             }
+            else if (containerType == Microsoft.Azure.Management.RecoveryServices.Backup.Models.ContainerType.AzureSqlContainer.ToString())
+            {
+                return ContainerType.AzureSQL;
+            }
             else
             {
                 throw new Exception("Unsupported ContainerType: " + containerType);
             }
         }
 
+        /// <summary>
+        /// Returns the PS backup management type given the service client defined workload type.
+        /// </summary>
+        /// <param name="workloadType">Service client workload type</param>
+        /// <returns>PowerShell workload type</returns>
         public static WorkloadType GetPsWorkloadType(string workloadType)
         {
             if (workloadType == Microsoft.Azure.Management.RecoveryServices.Backup.Models.WorkloadType.VM)
             {
                 return WorkloadType.AzureVM;
+            }
+            if (workloadType == Microsoft.Azure.Management.RecoveryServices.Backup.Models.WorkloadType.AzureSqlDb)
+            {
+                return WorkloadType.AzureSQLDatabase;
             }
             else
             {

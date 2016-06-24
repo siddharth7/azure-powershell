@@ -18,21 +18,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
+using ServiceClientModel = Microsoft.Azure.Management.RecoveryServices.Backup.Models;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers;
-using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.HydraAdapterNS;
+using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClientAdapterNS;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
 {
+    /// <summary>
+    /// This class implements implements methods for DPM backup provider
+    /// </summary>
     public class DpmPsBackupProvider : IPsBackupProvider
     {
-        ProviderData ProviderData { get; set; }
-        HydraAdapter HydraAdapter { get; set; }
+        Dictionary<System.Enum, object> ProviderData { get; set; }
+        ServiceClientAdapter ServiceClientAdapter { get; set; }
 
-        public void Initialize(ProviderData providerData, HydraAdapter hydraAdapter)
+        /// <summary>
+        /// Initializes the provider with the data recieved from the cmdlet layer
+        /// </summary>
+        /// <param name="providerData">Data from the cmdlet layer intended for the provider</param>
+        /// <param name="serviceClientAdapter">Service client adapter for communicating with the backend service</param>
+        public void Initialize(Dictionary<System.Enum, object> providerData, ServiceClientAdapter serviceClientAdapter)
         {
             this.ProviderData = providerData;
-            this.HydraAdapter = hydraAdapter;
+            this.ServiceClientAdapter = serviceClientAdapter;
         }       
 
         public Management.RecoveryServices.Backup.Models.BaseRecoveryServicesJobResponse EnableProtection()
@@ -60,12 +68,12 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             throw new NotImplementedException();
         }
 
-        public AzureRmRecoveryServicesBackupRecoveryPointBase GetRecoveryPointDetails()
+        public RecoveryPointBase GetRecoveryPointDetails()
         {
             throw new NotImplementedException();
         }
 
-        public List<AzureRmRecoveryServicesBackupRecoveryPointBase> ListRecoveryPoints()
+        public List<RecoveryPointBase> ListRecoveryPoints()
         {
             throw new NotImplementedException();
         }
@@ -75,25 +83,29 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             throw new NotImplementedException();
         }
 
-        public ProtectionPolicyResponse ModifyPolicy()
+        public ServiceClientModel.ProtectionPolicyResponse ModifyPolicy()
         {
             throw new NotImplementedException();
         }
 
-        public List<Models.AzureRmRecoveryServicesBackupContainerBase> ListProtectionContainers()
+        public List<Models.ContainerBase> ListProtectionContainers()
         {
             throw new NotImplementedException();
         }
 
-        public List<Models.AzureRmRecoveryServicesBackupEngineBase> ListBackupManagementServers()
+        /// <summary>
+        /// Lists backup management servers registered with the recovery services vault
+        /// </summary>
+        /// <returns></returns>
+        public List<Models.BackupEngineBase> ListBackupManagementServers()
         {
-            string name = (string)this.ProviderData.ProviderParameters[ContainerParams.Name];
+            string name = (string)this.ProviderData[ContainerParams.Name];
 
-            BackupEngineListQueryParams queryParams = new BackupEngineListQueryParams();
+            ServiceClientModel.BackupEngineListQueryParams queryParams = new ServiceClientModel.BackupEngineListQueryParams();
 
-            var listResponse = HydraAdapter.ListBackupEngines(queryParams);
+            var listResponse = ServiceClientAdapter.ListBackupEngines(queryParams);
 
-            List<AzureRmRecoveryServicesBackupEngineBase> backupEngineModels = ConversionHelpers.GetBackupEngineModelList(listResponse);
+            List<BackupEngineBase> backupEngineModels = ConversionHelpers.GetBackupEngineModelList(listResponse);
 
             return backupEngineModels;
         }
@@ -108,17 +120,17 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             throw new NotImplementedException();
         }
 
-        public AzureRmRecoveryServicesBackupSchedulePolicyBase GetDefaultSchedulePolicyObject()
+        public SchedulePolicyBase GetDefaultSchedulePolicyObject()
         {
             throw new NotImplementedException();
         }
 
-        public AzureRmRecoveryServicesBackupRetentionPolicyBase GetDefaultRetentionPolicyObject()
+        public RetentionPolicyBase GetDefaultRetentionPolicyObject()
         {
             throw new NotImplementedException();
         }
 
-        public List<Models.AzureRmRecoveryServicesBackupItemBase> ListProtectedItems()
+        public List<Models.ItemBase> ListProtectedItems()
         {
             throw new NotImplementedException();
         }
