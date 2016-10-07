@@ -207,8 +207,6 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
     /// </summary>
     public class RecoveryPointBase : ItemContext
     {
-        private global::Microsoft.Azure.Management.RecoveryServices.Backup.Models.RecoveryPointResource rp;
-
         /// <summary>
         /// ID of the recovery point
         /// </summary>
