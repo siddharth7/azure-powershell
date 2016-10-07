@@ -30,7 +30,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// <param name="protectedItemName">Name of the item</param>
         /// <param name="recoveryPointId">ID of the recovery point</param>
         /// <returns>Recovery point response returned by the service</returns>
-        public RecoveryPointResponse GetRecoveryPointDetails
+        public RecoveryPointResource GetRecoveryPointDetails
             (
             string containerName, 
             string protectedItemName, 
@@ -40,7 +40,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
             string resourceGroupName = BmsAdapter.GetResourceGroupName();
             string resourceName = BmsAdapter.GetResourceName();
 
-            var response = BmsAdapter.Client.RecoveryPoints.GetAsync(
+            var response = BmsAdapter.Client.RecoveryPoints.GetWithHttpMessagesAsync(
                 resourceGroupName, 
                 resourceName,
                 BmsAdapter.GetCustomRequestHeaders(), 
