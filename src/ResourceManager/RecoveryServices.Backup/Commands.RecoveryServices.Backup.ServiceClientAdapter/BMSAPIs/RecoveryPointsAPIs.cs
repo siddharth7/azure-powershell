@@ -12,7 +12,9 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
+using Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers;
 using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
+using Microsoft.Rest.Azure.OData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +35,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         public RecoveryPointResource GetRecoveryPointDetails
             (
             string containerName, 
-            string protectedItemName, 
+            string protectedItemName,
             string recoveryPointId
             )
         {
@@ -41,13 +43,13 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
             string resourceName = BmsAdapter.GetResourceName();
 
             var response = BmsAdapter.Client.RecoveryPoints.GetWithHttpMessagesAsync(
-                resourceGroupName, 
                 resourceName,
-                BmsAdapter.GetCustomRequestHeaders(), 
-                AzureFabricName, 
+                resourceGroupName, 
+                AzureFabricName,
                 containerName, 
-                protectedItemName, 
-                recoveryPointId, 
+                protectedItemName,
+                recoveryPointId,
+                BmsAdapter.GetCustomRequestHeaders(),
                 BmsAdapter.CmdletCancellationToken).Result;
 
             return response;
@@ -60,26 +62,33 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// <param name="protectedItemName">Name of the item</param>
         /// <param name="queryFilter">Query filter</param>
         /// <returns>List of recovery points</returns>
-        public RecoveryPointListResponse GetRecoveryPoints
+        public List<RecoveryPointResource> GetRecoveryPoints
             (
             string containerName, 
-            string protectedItemName, 
-            RecoveryPointQueryParameters queryFilter
+            string protectedItemName,
+            ODataQuery<BMSRPQueryObject> queryFilter
             )
         {
             string resourceGroupName = BmsAdapter.GetResourceGroupName();
             string resourceName = BmsAdapter.GetResourceName();
 
-            var response = BmsAdapter.Client.RecoveryPoints.ListAsync(
-                resourceGroupName, 
-                resourceName,
-                BmsAdapter.GetCustomRequestHeaders(), 
-                AzureFabricName, 
-                containerName, 
-                protectedItemName, 
-                queryFilter, 
-                BmsAdapter.CmdletCancellationToken).Result;
+            Func<Microsoft.Rest.Azure.IPage<RecoveryPointResource>> listAsync =
+                () => BmsAdapter.Client.RecoveryPoints.ListWithHttpMessagesAsync(
+                                     resourceName,
+                                     resourceGroupName,
+                                     AzureFabricName,
+                                     containerName,
+                                     protectedItemName,
+                                     queryFilter,
+                                     BmsAdapter.GetCustomRequestHeaders(),
+                                     BmsAdapter.CmdletCancellationToken).Result;
 
+            Func<string, Microsoft.Rest.Azure.IPage<RecoveryPointResource>> listNextAsync =
+                nextLink => BmsAdapter.Client.RecoveryPoints.ListNextWithHttpMessagesAsync(nextLink,
+                                     BmsAdapter.GetCustomRequestHeaders(),
+                                     BmsAdapter.CmdletCancellationToken).Result;
+
+            var response = HelperUtils.GetPagedList<RecoveryPointResource>(listAsync, listNextAsync);
             return response;
         }
     }
