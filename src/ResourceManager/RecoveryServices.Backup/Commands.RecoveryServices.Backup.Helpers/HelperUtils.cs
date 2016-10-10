@@ -20,6 +20,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
 using CmdletModel = Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
+using Microsoft.Rest.Azure;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 {
@@ -269,5 +270,32 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 
             return vaultName;
         }
+
+        public static List<T> GetPagedList<T>(Func<IPage<T>> listResources, Func<string, IPage<T>> listNext)
+            where T : Management.RecoveryServices.Backup.Models.Resource
+        {
+            var resources = new List<T>();
+            string nextLink = null;
+
+            var pagedResources = listResources();
+
+            foreach (var pagedResource in pagedResources)
+            {
+                resources.Add(pagedResource);
+            }
+
+            while (!string.IsNullOrEmpty(nextLink))
+            {
+                nextLink = pagedResources.NextPageLink;
+
+                foreach (var pagedResource in listNext(nextLink))
+                {
+                    resources.Add(pagedResource);
+                }
+            }
+
+            return resources;
+        }
+
     }
 }
