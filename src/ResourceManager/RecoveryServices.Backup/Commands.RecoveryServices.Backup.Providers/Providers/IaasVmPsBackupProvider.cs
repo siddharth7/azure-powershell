@@ -93,7 +93,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                     azureVMResourceGroupName, 
                     policy);
 
-                ProtectableObjectResource protectableObjectResource = 
+                WorkloadProtectableItem protectableObjectResource = 
                     GetAzureVMProtectableObject(azureVMName, azureVMRGName, isComputeAzureVM);
 
                 Dictionary<UriEnums, string> keyValueDict = 
@@ -103,8 +103,9 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                 protectedItemUri = HelperUtils.GetProtectableItemUri(
                     keyValueDict, protectableObjectResource.Id);
 
-                AzureIaaSVMProtectableItem iaasVmProtectableItem =
-                    (AzureIaaSVMProtectableItem)protectableObjectResource.Properties;
+
+                IaaSVMProtectableItem iaasVmProtectableItem =
+                    (IaaSVMProtectableItem)protectableObjectResource;
                 if (iaasVmProtectableItem != null)
                 {
                     sourceResourceId = iaasVmProtectableItem.VirtualMachineId;
