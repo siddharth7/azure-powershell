@@ -14,6 +14,8 @@
 
 using System;
 using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
+using Microsoft.Rest;
+using Microsoft.Rest.Azure;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClientAdapterNS
 {
@@ -24,12 +26,12 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// </summary>
         /// <param name="jobId">ID of the job</param>
         /// <returns>Job response returned by the service</returns>
-        public JobResponse GetJob(string jobId)
+        public Microsoft.Rest.Azure.AzureOperationResponse<JobResource> GetJob(string jobId)
         {
             string resourceName = BmsAdapter.GetResourceName();
             string resourceGroupName = BmsAdapter.GetResourceGroupName();
 
-            return BmsAdapter.Client.Jobs.GetAsync(
+            return BmsAdapter.Client.JobDetailsOperations.GetWithHttpMessagesAsync(
                 resourceGroupName,
                 resourceName,
                 jobId,
@@ -49,7 +51,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// <param name="top">Top pagination param</param>
         /// <param name="skipToken">Skip token pagination param</param>
         /// <returns>Job list response from the service</returns>
-        public JobListResponse GetJobs(
+        public Microsoft.Rest.Azure.AzureOperationResponse<Microsoft.Rest.Azure.IPage<JobResource>> GetJobs(
             string jobId,
             string status,
             string operation,
@@ -81,7 +83,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                 status,
                 operation);
 
-            return BmsAdapter.Client.Jobs.ListAsync(
+            return BmsAdapter.Client.Jobs.ListWithHttpMessagesAsync(
                 resourceGroupName,
                 resourceName,
                 commonFilters,
@@ -95,12 +97,12 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// </summary>
         /// <param name="jobId">ID of the job to cancel</param>
         /// <returns>Cancelled job response from the service</returns>
-        public BaseRecoveryServicesJobResponse CancelJob(string jobId)
+        public Microsoft.Rest.Azure.AzureOperationResponse CancelJob(string jobId)
         {
             string resourceName = BmsAdapter.GetResourceName();
             string resourceGroupName = BmsAdapter.GetResourceGroupName();
 
-            return BmsAdapter.Client.Jobs.CancelJobAsync(
+            return BmsAdapter.Client.JobCancellationsOperations.TriggerWithHttpMessagesAsync(
                 resourceGroupName,
                 resourceName,
                 jobId,
@@ -114,12 +116,12 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// <param name="jobId">ID of the job</param>
         /// <param name="operationId">ID of the operation associated with the job</param>
         /// <returns>Job response returned by the service</returns>
-        public JobResponse GetJobOperationStatus(string jobId, string operationId)
+        public Microsoft.Rest.Azure.AzureOperationResponse GetJobOperationStatus(string jobId, string operationId)
         {
             string resourceName = BmsAdapter.GetResourceName();
             string resourceGroupName = BmsAdapter.GetResourceGroupName();
 
-            return BmsAdapter.Client.Jobs.GetOperationResultAsync(
+            return BmsAdapter.Client.JobOperationResultsOperations.GetWithHttpMessagesAsync(
                 resourceGroupName,
                 resourceName,
                 jobId,

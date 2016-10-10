@@ -18,6 +18,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
+using Microsoft.Rest;
+using Microsoft.Rest.Azure;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClientAdapterNS
 {
@@ -29,11 +31,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// <param name="policyName">Name of the policy</param>
         /// <param name="request">Policy create or update request</param>
         /// <returns>Policy created by this operation</returns>
-        public ProtectionPolicyResponse CreateOrUpdateProtectionPolicy(
+        public Microsoft.Rest.Azure.AzureOperationResponse<ProtectionPolicyResource> CreateOrUpdateProtectionPolicy(
                 string policyName,
-                ProtectionPolicyRequest request)
+                ProtectionPolicyResource request)
         {           
-            return BmsAdapter.Client.ProtectionPolicies.CreateOrUpdateAsync(
+            return BmsAdapter.Client.ProtectionPoliciesOperations.CreateOrUpdateWithHttpMessagesAsync(
                                      BmsAdapter.GetResourceGroupName(),
                                      BmsAdapter.GetResourceName(), 
                                      policyName, 
@@ -47,9 +49,9 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// </summary>
         /// <param name="policyName">Name of the policy</param>
         /// <returns>Policy response returned by the service</returns>
-        public ProtectionPolicyResponse GetProtectionPolicy(string policyName)
+        public Microsoft.Rest.Azure.AzureOperationResponse<ProtectionPolicyResource> GetWithHttpMessagesAsync(string policyName)
         {
-            return BmsAdapter.Client.ProtectionPolicies.GetAsync(
+            return BmsAdapter.Client.ProtectionPoliciesOperations.GetAsync(
                                      BmsAdapter.GetResourceGroupName(),
                                      BmsAdapter.GetResourceName(),
                                      policyName,
@@ -62,13 +64,13 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// </summary>
         /// <param name="queryFilter">Query filter</param>
         /// <returns>List of protection policies</returns>
-        public ProtectionPolicyListResponse ListProtectionPolicy(
-                                            ProtectionPolicyQueryParameters queryFilter)
+        public Microsoft.Rest.Azure.AzureOperationResponse<Microsoft.Rest.Azure.IPage<ProtectionPolicyResource>> ListProtectionPolicy(
+                                            Microsoft.Rest.Azure.OData.ODataQuery<ProtectionPolicyQueryObject> odataQuery)
         {           
-            return BmsAdapter.Client.ProtectionPolicies.ListAsync(
+            return BmsAdapter.Client.ProtectionPoliciesOperations.ListWithHttpMessagesAsync(
                                      BmsAdapter.GetResourceGroupName(),
                                      BmsAdapter.GetResourceName(),
-                                     queryFilter,
+                                     odataQuery,
                                      BmsAdapter.GetCustomRequestHeaders(),
                                      BmsAdapter.CmdletCancellationToken).Result;
         }
@@ -90,10 +92,10 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// Deletes protection policy from the vault specified by the name
         /// </summary>
         /// <param name="policyName">Name of the policy to be deleted</param>
-        public AzureOperationResponse RemoveProtectionPolicy(
+        public Microsoft.Rest.Azure.AzureOperationResponse RemoveProtectionPolicy(
                 string policyName)
         {
-            return BmsAdapter.Client.ProtectionPolicies.DeleteAsync(
+            return BmsAdapter.Client.ProtectionPoliciesOperations.DeleteWithHttpMessagesAsync(
                                      BmsAdapter.GetResourceGroupName(),
                                      BmsAdapter.GetResourceName(),
                                      policyName,

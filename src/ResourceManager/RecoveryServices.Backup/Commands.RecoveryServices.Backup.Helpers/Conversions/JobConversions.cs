@@ -16,6 +16,8 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
 using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
+using Microsoft.Rest;
+using Microsoft.Rest.Azure;
 using CmdletModel = Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
@@ -35,10 +37,10 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
         /// </summary>
         /// <param name="ServiceClientJob"></param>
         /// <returns></returns>
-        public static CmdletModel.JobBase GetPSJob(JobResponse serviceClientJob)
-        {
-            return GetPSJob(serviceClientJob.Item);
-        }
+        //public static CmdletModel.JobBase GetPSJob(JobResponse serviceClientJob)
+        //{
+        //    return GetPSJob(serviceClientJob.Item);
+        //}
 
         /// <summary>
         /// Helper function to convert ps backup job model from service response.
@@ -63,11 +65,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
         /// <summary>
         /// Helper function to convert ps backup job list model from service response.
         /// </summary>
-        public static void AddServiceClientJobsToPSList(JobListResponse serviceClientJobs, List<CmdletModel.JobBase> psJobs, ref int jobsCount)
+        public static void AddServiceClientJobsToPSList(Microsoft.Rest.Azure.IPage<JobResource> serviceClientJobs, List<CmdletModel.JobBase> psJobs, ref int jobsCount)
         {
-            if (serviceClientJobs.ItemList != null && serviceClientJobs.ItemList.Value != null)
+            if (serviceClientJobs != null )
             {
-                foreach (var job in serviceClientJobs.ItemList.Value)
+                foreach (var job in serviceClientJobs)
                 {
                     CmdletModel.JobBase convertedJob = GetPSJob(job);
                     if (convertedJob != null)
@@ -100,15 +102,15 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
             }
 
             response.JobId = GetLastIdFromFullId(serviceClientJob.Id);
-            response.StartTime = vmJob.StartTime;
-            response.EndTime = vmJob.EndTime;
-            response.Duration = vmJob.Duration;
+            response.StartTime = (DateTime)vmJob.StartTime;
+            response.EndTime = (DateTime)vmJob.EndTime;
+            response.Duration = new TimeSpan(Convert.ToInt64(vmJob.Duration));
             response.Status = vmJob.Status;
             response.VmVersion = vmJob.VirtualMachineVersion;
             response.WorkloadName = vmJob.EntityFriendlyName;
             response.ActivityId = vmJob.ActivityId;
             response.BackupManagementType = CmdletModel.EnumUtils.GetEnum<CmdletModel.BackupManagementType>(
-                GetPSBackupManagementType(vmJob.BackupManagementType));
+                GetPSBackupManagementType(vmJob.BackupManagementType.ToString()));
             response.Operation = vmJob.Operation;
 
             if (vmJob.ErrorDetails != null)
@@ -159,7 +161,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
         private static CmdletModel.AzureVmJobErrorInfo GetPSAzureVmErrorInfo(AzureIaaSVMErrorInfo serviceClientError)
         {
             CmdletModel.AzureVmJobErrorInfo psErrorInfo = new CmdletModel.AzureVmJobErrorInfo();
-            psErrorInfo.ErrorCode = serviceClientError.ErrorCode;
+            psErrorInfo.ErrorCode = serviceClientError.ErrorCode ?? default(int);
             psErrorInfo.ErrorMessage = serviceClientError.ErrorString;
             if (serviceClientError.Recommendations != null)
             {
