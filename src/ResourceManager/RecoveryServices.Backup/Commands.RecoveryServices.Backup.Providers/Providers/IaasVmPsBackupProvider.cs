@@ -17,6 +17,7 @@ using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClientAdap
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
 using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
+using Microsoft.Rest.Azure.OData;
 using Microsoft.WindowsAzure.Commands.Utilities.Common;
 using System;
 using System.Collections.Generic;
@@ -138,12 +139,9 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             properties.PolicyId = policy.Id;
             properties.SourceResourceId = sourceResourceId;
 
-            ProtectedItemCreateOrUpdateRequest serviceClientRequest = new ProtectedItemCreateOrUpdateRequest()
+            ProtectedItemResource serviceClientRequest = new ProtectedItemResource()
             {
-                Item = new ProtectedItemResource()
-                {
-                    Properties = properties,
-                }
+                Properties = properties
             };
 
             return ServiceClientAdapter.CreateOrUpdateProtectedItem(
@@ -160,11 +158,9 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
         {
             bool deleteBackupData = (bool)ProviderData[ItemParams.DeleteBackupData];
 
-            ItemBase itemBase = (ItemBase)
-                                                 ProviderData[ItemParams.Item];
+            ItemBase itemBase = (ItemBase)ProviderData[ItemParams.Item];
 
-            AzureVmItem item = (AzureVmItem)
-                                                 ProviderData[ItemParams.Item];
+            AzureVmItem item = (AzureVmItem)ProviderData[ItemParams.Item];
             // do validations
 
             ValidateAzureVMDisableProtectionRequest(itemBase);
@@ -201,12 +197,9 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                 properties.ProtectionState = ItemProtectionState.ProtectionStopped.ToString();
                 properties.SourceResourceId = item.SourceResourceId;
 
-                ProtectedItemCreateOrUpdateRequest serviceClientRequest = new ProtectedItemCreateOrUpdateRequest()
+                ProtectedItemResource serviceClientRequest = new ProtectedItemResource()
                 {
-                    Item = new ProtectedItemResource()
-                    {
-                        Properties = properties,
-                    }
+                   Properties = properties,
                 };
 
                 return ServiceClientAdapter.CreateOrUpdateProtectedItem(
@@ -311,12 +304,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             }
 
             //we need to fetch the list of RPs
-            RecoveryPointQueryParameters queryFilter = new RecoveryPointQueryParameters();
-            queryFilter.StartDate = CommonHelpers.GetDateTimeStringForService(startDate);
-            queryFilter.EndDate = CommonHelpers.GetDateTimeStringForService(endDate);
-            RecoveryPointListResponse rpListResponse = null;
-
-            rpListResponse = ServiceClientAdapter.GetRecoveryPoints(containerUri, protectedItemName, queryFilter);
+            ODataQuery<BMSRPQueryObject> queryFilter = new ODataQuery<BMSRPQueryObject>(qObj => qObj.StartDate == startDate && qObj.EndDate == endDate);
+            List<RecoveryPointResource> rpListResponse = ServiceClientAdapter.GetRecoveryPoints(containerUri, protectedItemName, queryFilter);
             return RecoveryPointConversions.GetPSAzureRecoveryPoints(rpListResponse, item);
         }
 
@@ -542,25 +531,14 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             Models.WorkloadType workloadType =
                 (Models.WorkloadType)this.ProviderData[ItemParams.WorkloadType];
 
-            ProtectedItemListQueryParam queryParams = new ProtectedItemListQueryParam();
-            queryParams.DatasourceType = ServiceClientModel.WorkloadType.VM;
-            queryParams.BackupManagementType = ServiceClientModel.BackupManagementType.AzureIaasVM.ToString();
+            ODataQuery<ProtectedItemQueryObject> queryParams = new ODataQuery<ProtectedItemQueryObject>(
+                q => q.BackupManagementType == ServiceClientModel.BackupManagementType.AzureIaasVM && 
+                q.ItemType == ServiceClientModel.WorkloadType.VM);
 
             List<ProtectedItemResource> protectedItems = new List<ProtectedItemResource>();
             string skipToken = null;
-            PaginationRequest paginationRequest = null;
-            do
-            {
-                var listResponse = ServiceClientAdapter.ListProtectedItem(queryParams, paginationRequest);
-                protectedItems.AddRange(listResponse.ItemList.Value);
-
-                ServiceClientHelpers.GetSkipTokenFromNextLink(listResponse.ItemList.NextLink, out skipToken);
-                if (skipToken != null)
-                {
-                    paginationRequest = new PaginationRequest();
-                    paginationRequest.SkipToken = skipToken;
-                }
-            } while (skipToken != null);
+            var listResponse = ServiceClientAdapter.ListProtectedItem(queryParams, skipToken);
+            protectedItems.AddRange(listResponse);
 
             // 1. Filter by container
             if (container != null)
@@ -573,7 +551,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                 }).ToList();
             }
 
-            List<ProtectedItemResponse> protectedItemGetResponses = new List<ProtectedItemResponse>();
+            List<ProtectedItemResource> protectedItemGetResponses = new List<ProtectedItemResource>();
 
             // 2. Filter by item's friendly name
             if (!string.IsNullOrEmpty(name))
@@ -585,8 +563,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                     return protectedItemUri.ToLower().Contains(name.ToLower());
                 }).ToList();
 
-                GetProtectedItemQueryParam getItemQueryParams = new GetProtectedItemQueryParam();
-                getItemQueryParams.Expand = "extendedinfo";
+                ODataQuery<GetProtectedItemQueryObject> getItemQueryParams = new ODataQuery<GetProtectedItemQueryObject>(
+                    q => q.Expand == "extendedinfo");
 
                 for (int i = 0; i < protectedItems.Count; i++)
                 {
@@ -595,7 +573,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                     string protectedItemUri = HelperUtils.GetProtectedItemUri(dictionary, protectedItems[i].Id);
 
                     var getResponse = ServiceClientAdapter.GetProtectedItem(containerUri, protectedItemUri, getItemQueryParams);
-                    protectedItemGetResponses.Add(getResponse);
+                    protectedItemGetResponses.Add(getResponse.Body);
                 }
             }
 
@@ -606,13 +584,13 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                 for (int i = 0; i < itemModels.Count; i++)
                 {
                     AzureVmItemExtendedInfo extendedInfo = new AzureVmItemExtendedInfo();
-                    var serviceClientExtendedInfo = ((AzureIaaSVMProtectedItem)protectedItemGetResponses[i].Item.Properties).ExtendedInfo;
+                    var serviceClientExtendedInfo = ((AzureIaaSVMProtectedItem)protectedItemGetResponses[i].Properties).ExtendedInfo;
                     if (serviceClientExtendedInfo.OldestRecoveryPoint.HasValue)
                     {
                         extendedInfo.OldestRecoveryPoint = serviceClientExtendedInfo.OldestRecoveryPoint;
                     }
                     extendedInfo.PolicyState = serviceClientExtendedInfo.PolicyInconsistent.ToString();
-                    extendedInfo.RecoveryPointCount = serviceClientExtendedInfo.RecoveryPointCount;
+                    extendedInfo.RecoveryPointCount = (int) (serviceClientExtendedInfo.RecoveryPointCount.HasValue? serviceClientExtendedInfo.RecoveryPointCount : 0);
                     ((AzureVmItem)itemModels[i]).ExtendedInfo = extendedInfo;
                 }
             }
