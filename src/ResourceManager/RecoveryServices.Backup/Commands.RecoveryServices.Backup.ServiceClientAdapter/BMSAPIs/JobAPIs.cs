@@ -38,8 +38,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                 resourceGroupName,
                 resourceName,
                 jobId,
-                BmsAdapter.GetCustomRequestHeaders(),
-                BmsAdapter.CmdletCancellationToken).Result;
+                cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
         }
 
         /// <summary>
@@ -79,13 +78,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                                      resourceGroupName,
                                      queryFilter,
                                      skipToken,
-                                     BmsAdapter.GetCustomRequestHeaders(),
-                                     BmsAdapter.CmdletCancellationToken).Result;
+                                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
 
             Func<string, Microsoft.Rest.Azure.IPage<JobResource>> listNextAsync =
                 nextLink => BmsAdapter.Client.ProtectedItems.ListNextWithHttpMessagesAsync(nextLink,
-                                     BmsAdapter.GetCustomRequestHeaders(),
-                                     BmsAdapter.CmdletCancellationToken).Result;
+                                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
 
             return HelperUtils.GetPagedList<JobResource>(listAsync, listNextAsync);
         }
@@ -104,8 +101,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                 resourceGroupName,
                 resourceName,
                 jobId,
-                BmsAdapter.GetCustomRequestHeaders(),
-                BmsAdapter.CmdletCancellationToken).Result;
+                cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
         }
 
         /// <summary>
@@ -124,8 +120,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                 resourceName,
                 jobId,
                 operationId,
-                BmsAdapter.GetCustomRequestHeaders(),
-                BmsAdapter.CmdletCancellationToken).Result;
+                cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
         }
 
         #region private helpers

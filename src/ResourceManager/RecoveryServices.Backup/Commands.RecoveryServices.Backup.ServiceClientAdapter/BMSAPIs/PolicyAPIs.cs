@@ -41,8 +41,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                                      BmsAdapter.GetResourceName(), 
                                      policyName, 
                                      request,
-                                     BmsAdapter.GetCustomRequestHeaders(),
-                                     BmsAdapter.CmdletCancellationToken).Result;            
+                                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result;            
         }
 
         /// <summary>
@@ -56,8 +55,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                                      BmsAdapter.GetResourceGroupName(),
                                      BmsAdapter.GetResourceName(),
                                      policyName,
-                                     BmsAdapter.GetCustomRequestHeaders(),
-                                     BmsAdapter.CmdletCancellationToken).Result;
+                                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
         }
 
         /// <summary>
@@ -75,14 +73,12 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                                      BmsAdapter.GetResourceName(),
                                      queryFilter,
                                      skipToken,
-                                     BmsAdapter.GetCustomRequestHeaders(),
-                                     BmsAdapter.CmdletCancellationToken).Result;
+                                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
 
             Func<string, Microsoft.Rest.Azure.IPage<ProtectionPolicyResource>> listNextAsync =
                 nextLink => BmsAdapter.Client.ProtectionPolicy.ListNextWithHttpMessagesAsync(
                                      nextLink,
-                                     BmsAdapter.GetCustomRequestHeaders(),
-                                     BmsAdapter.CmdletCancellationToken).Result;
+                                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
 
             return HelperUtils.GetPagedList<ProtectionPolicyResource>(listAsync, listNextAsync);
         }
@@ -96,8 +92,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         {
             return BmsAdapter.Client.GetOperationStatusByURLAsync(
                               url,
-                              BmsAdapter.GetCustomRequestHeaders(),
-                              BmsAdapter.CmdletCancellationToken).Result;                              
+                              cancellationToken: BmsAdapter.CmdletCancellationToken).Result;                              
         }
 
         /// <summary>
@@ -111,8 +106,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                                      BmsAdapter.GetResourceGroupName(),
                                      BmsAdapter.GetResourceName(),
                                      policyName,
-                                     BmsAdapter.GetCustomRequestHeaders(),
-                                     BmsAdapter.CmdletCancellationToken).Result;
+                                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
         }
     }
 }

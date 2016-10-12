@@ -12,8 +12,11 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
+using Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
 using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
+using Microsoft.Rest.Azure;
+using Microsoft.Rest.Azure.OData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,15 +33,22 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// <param name="parameters">Query parameters</param>
         /// <returns>List of protection containers</returns>
         public IEnumerable<ProtectionContainerResource> ListContainers(
-            ProtectionContainerListQueryParams queryParams)
+            ODataQuery<BMSContainerQueryObject> queryFilter,
+            string skipToken = default(string))
         {
-            var listResponse = BmsAdapter.Client.Containers.ListAsync(
-                                        BmsAdapter.GetResourceGroupName(), 
-                                        BmsAdapter.GetResourceName(), 
-                                        queryParams,
-                                        BmsAdapter.GetCustomRequestHeaders(), 
-                                        BmsAdapter.CmdletCancellationToken).Result;
-            return listResponse.ItemList.ProtectionContainers;
+            Func<IPage<ProtectionContainerResource>> listAsync =
+                () => BmsAdapter.Client.ProtectionContainers.ListWithHttpMessagesAsync(
+                    BmsAdapter.GetResourceName(),
+                    BmsAdapter.GetResourceGroupName(),
+                    queryFilter,
+                    cancellationToken: BmsAdapter.CmdletCancellationToken).Result.Body;
+
+            Func<string, IPage<ProtectionContainerResource>> listNextAsync =
+                nextLink => BmsAdapter.Client.ProtectionContainers.ListNextWithHttpMessagesAsync(
+                    nextLink,
+                    cancellationToken: BmsAdapter.CmdletCancellationToken).Result.Body;
+
+            return HelperUtils.GetPagedList(listAsync, listNextAsync);
         }
 
         /// <summary>
@@ -55,8 +65,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                                         BmsAdapter.GetResourceName(), 
                                         queryParams, 
                                         paginationParam, 
-                                        BmsAdapter.GetCustomRequestHeaders(),
-                                        BmsAdapter.CmdletCancellationToken).Result;
+                                        cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
             return listResponse.ItemList.BackupEngines;
         }
 
@@ -71,9 +80,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
             var response = BmsAdapter.Client.Containers.RefreshAsync(
                                         resourceGroupName, 
                                         resourceName, 
-                                        BmsAdapter.GetCustomRequestHeaders(), 
-                                        AzureFabricName, 
-                                        BmsAdapter.CmdletCancellationToken).Result;
+                                        AzureFabricName,
+                                        cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
             return response;
         }
 
@@ -89,8 +97,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                                         resourceGroupName, 
                                         resourceName, 
                                         containerName,
-                                        BmsAdapter.GetCustomRequestHeaders(), 
-                                        BmsAdapter.CmdletCancellationToken).Result;
+                                        cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
             return response;
         }
     }
