@@ -60,7 +60,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
         // <summary>
         /// Helper function to parse utc time from local time.
         /// </summary>
-        public static List<DateTime> ParseDateTimesToUTC(IList<DateTime> localTimes)
+        public static List<DateTime> ParseDateTimesToUTC(IList<DateTime?> localTimes)
         {
             if (localTimes == null || localTimes.Count == 0)
             {
@@ -72,6 +72,10 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 
             foreach (DateTime localTime in localTimes)
             {
+                if(localTime == null)
+                {
+                    throw new ArgumentNullException("Policy date time object is null");
+                }
                 temp = localTime;
                 if (localTime.Kind != DateTimeKind.Utc)
                 {
@@ -105,6 +109,25 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
             return serviceClientPolicy;
         }
 
+        // <summary>
+        /// Helper function to get nullable date time list from  date time list.
+        /// </summary>
+        public static List<DateTime?> GetNullableDateTimeListFromDateTimeList(IList<DateTime> localTimes)
+        {
+            if (localTimes == null || localTimes.Count == 0)
+            {
+                return null;
+            }
+
+            List<DateTime?> convertedTime = new List<DateTime?>();
+            
+            foreach (DateTime localTime in localTimes)
+            {
+                convertedTime.Add((DateTime)localTime);
+            }
+
+            return convertedTime;
+        }
         #endregion
     }
 }

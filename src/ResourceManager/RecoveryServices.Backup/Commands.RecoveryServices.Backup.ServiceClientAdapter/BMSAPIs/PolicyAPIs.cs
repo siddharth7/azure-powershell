@@ -17,6 +17,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers;
 using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
 using Microsoft.Rest;
 using Microsoft.Rest.Azure;
@@ -64,15 +65,26 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// </summary>
         /// <param name="queryFilter">Query filter</param>
         /// <returns>List of protection policies</returns>
-        public Microsoft.Rest.Azure.AzureOperationResponse<Microsoft.Rest.Azure.IPage<ProtectionPolicyResource>> ListProtectionPolicy(
-                                            Microsoft.Rest.Azure.OData.ODataQuery<ProtectionPolicyQueryObject> odataQuery)
-        {           
-            return BmsAdapter.Client.ProtectionPoliciesOperations.ListWithHttpMessagesAsync(
+        public List<ProtectionPolicyResource> ListProtectionPolicy(
+                                            Microsoft.Rest.Azure.OData.ODataQuery<ProtectionPolicyQueryObject> queryFilter,
+                                            string skipToken = default(string))
+        {
+            Func<Microsoft.Rest.Azure.IPage<ProtectionPolicyResource>> listAsync =
+                () => BmsAdapter.Client.ProtectionPolicy.ListWithHttpMessagesAsync(
                                      BmsAdapter.GetResourceGroupName(),
                                      BmsAdapter.GetResourceName(),
-                                     odataQuery,
+                                     queryFilter,
+                                     skipToken,
                                      BmsAdapter.GetCustomRequestHeaders(),
                                      BmsAdapter.CmdletCancellationToken).Result;
+
+            Func<string, Microsoft.Rest.Azure.IPage<ProtectionPolicyResource>> listNextAsync =
+                nextLink => BmsAdapter.Client.ProtectionPolicy.ListNextWithHttpMessagesAsync(
+                                     nextLink,
+                                     BmsAdapter.GetCustomRequestHeaders(),
+                                     BmsAdapter.CmdletCancellationToken).Result;
+
+            return HelperUtils.GetPagedList<ProtectionPolicyResource>(listAsync, listNextAsync);
         }
 
         /// <summary>

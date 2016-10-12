@@ -43,27 +43,27 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             this.ServiceClientAdapter = serviceClientAdapter;
         }       
 
-        public Management.RecoveryServices.Backup.Models.BaseRecoveryServicesJobResponse EnableProtection()
+        public Microsoft.Rest.Azure.AzureOperationResponse EnableProtection()
         {
             throw new NotImplementedException();
         }
 
-        public Management.RecoveryServices.Backup.Models.BaseRecoveryServicesJobResponse DisableProtection()
+        public Microsoft.Rest.Azure.AzureOperationResponse DisableProtection()
         {
             throw new NotImplementedException();
         }
 
-        public Management.RecoveryServices.Backup.Models.BaseRecoveryServicesJobResponse TriggerBackup()
+        public Microsoft.Rest.Azure.AzureOperationResponse TriggerBackup()
         {
             throw new NotImplementedException();
         }
 
-        public Management.RecoveryServices.Backup.Models.BaseRecoveryServicesJobResponse TriggerRestore()
+        public Microsoft.Rest.Azure.AzureOperationResponse TriggerRestore()
         {
             throw new NotImplementedException();
         }
 
-        public Management.RecoveryServices.Backup.Models.ProtectedItemResponse GetProtectedItem()
+        public ServiceClientModel.ProtectedItemResource GetProtectedItem()
         {
             throw new NotImplementedException();
         }

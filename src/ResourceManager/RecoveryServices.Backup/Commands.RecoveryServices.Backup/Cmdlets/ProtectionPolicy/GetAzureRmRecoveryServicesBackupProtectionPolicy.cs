@@ -23,6 +23,7 @@ using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel;
 using ServiceClientModel = Microsoft.Azure.Management.RecoveryServices.Backup.Models;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
+using Microsoft.Rest.Azure.OData;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
 {
@@ -151,14 +152,12 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                             break;
                     }
 
-                    ServiceClientModel.ProtectionPolicyQueryParameters queryParams =
-                        new ServiceClientModel.ProtectionPolicyQueryParameters()
-                    {
-                        BackupManagementType = serviceClientProviderType
-                    };
+                    ODataQuery<ServiceClientModel.ProtectionPolicyQueryObject> queryParams
+                    = new ODataQuery<ServiceClientModel.ProtectionPolicyQueryObject>(
+                    q => q.BackupManagementType == serviceClientProviderType);
 
                     WriteDebug("going to query service to get list of policies");
-                    ServiceClientModel.ProtectionPolicyListResponse respList =
+                    List<ServiceClientModel.ProtectionPolicyResource> respList =
                         ServiceClientAdapter.ListProtectionPolicy(queryParams);
                     WriteDebug("Successfully got response from service");
 

@@ -18,7 +18,6 @@ using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
 using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
 using Microsoft.Rest;
 using Microsoft.Rest.Azure;
-using CmdletModel = Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 {
@@ -65,7 +64,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
         /// <summary>
         /// Helper function to convert ps backup job list model from service response.
         /// </summary>
-        public static void AddServiceClientJobsToPSList(Microsoft.Rest.Azure.IPage<JobResource> serviceClientJobs, List<CmdletModel.JobBase> psJobs, ref int jobsCount)
+        public static void AddServiceClientJobsToPSList(List<JobResource> serviceClientJobs, List<CmdletModel.JobBase> psJobs, ref int jobsCount)
         {
             if (serviceClientJobs != null )
             {
@@ -102,8 +101,17 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
             }
 
             response.JobId = GetLastIdFromFullId(serviceClientJob.Id);
-            response.StartTime = (DateTime)vmJob.StartTime;
-            response.EndTime = (DateTime)vmJob.EndTime;
+            DateTime startTime = DateTime.MinValue;
+            if (vmJob.StartTime.HasValue)
+            {
+                response.StartTime = (DateTime)vmJob.StartTime;
+            }
+            else
+            {
+                throw new ArgumentNullException("Job Start Time is null");
+            }
+
+            response.EndTime = vmJob.EndTime;
             response.Duration = new TimeSpan(Convert.ToInt64(vmJob.Duration));
             response.Status = vmJob.Status;
             response.VmVersion = vmJob.VirtualMachineVersion;
@@ -191,12 +199,12 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
         /// <summary>
         /// Helper function to get job type from ps backup management type.
         /// </summary>
-        public static string GetJobTypeForService(CmdletModel.BackupManagementType mgmtType)
+        public static BackupManagementType GetJobTypeForService(CmdletModel.BackupManagementType mgmtType)
         {
             switch (mgmtType)
             {
                 case CmdletModel.BackupManagementType.AzureVM:
-                    return BackupManagementType.AzureIaasVM.ToString();
+                    return BackupManagementType.AzureIaasVM;
                 default:
                     throw new Exception("Invalid BackupManagementType provided: " + mgmtType);
             }

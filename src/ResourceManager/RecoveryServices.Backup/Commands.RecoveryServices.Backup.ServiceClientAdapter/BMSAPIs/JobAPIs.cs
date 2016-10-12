@@ -13,9 +13,12 @@
 // ----------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
 using Microsoft.Rest;
 using Microsoft.Rest.Azure;
+using Microsoft.Rest.Azure.OData;
+using Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClientAdapterNS
 {
@@ -26,7 +29,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// </summary>
         /// <param name="jobId">ID of the job</param>
         /// <returns>Job response returned by the service</returns>
-        public Microsoft.Rest.Azure.AzureOperationResponse<JobResource> GetJob(string jobId)
+        public JobResource GetJob(string jobId)
         {
             string resourceName = BmsAdapter.GetResourceName();
             string resourceGroupName = BmsAdapter.GetResourceGroupName();
@@ -48,34 +51,21 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// <param name="startTime">Time when the job started</param>
         /// <param name="endTime">Time when the job finished</param>
         /// <param name="backupManagementType">Backup management type of the item represented by the job</param>
-        /// <param name="top">Top pagination param</param>
         /// <param name="skipToken">Skip token pagination param</param>
         /// <returns>Job list response from the service</returns>
-        public Microsoft.Rest.Azure.AzureOperationResponse<Microsoft.Rest.Azure.IPage<JobResource>> GetJobs(
+        public List<JobResource> GetJobs(
             string jobId,
-            string status,
+            JobStatus? status,
             string operation,
             DateTime startTime,
             DateTime endTime,
-            string backupManagementType,
-            int? top = null,
+            BackupManagementType? backupManagementType,
             string skipToken = null)
         {
             string resourceName = BmsAdapter.GetResourceName();
             string resourceGroupName = BmsAdapter.GetResourceGroupName();
-
-            // build pagination request
-            PaginationRequest pagReq = new PaginationRequest()
-            {
-                SkipToken = skipToken
-            };
-            // respecting top if provided
-            if (top.HasValue)
-            {
-                pagReq.Top = top.ToString();
-            }
-
-            CommonJobQueryFilters commonFilters = GetQueryObject(
+                       
+            ODataQuery<JobQueryObject> queryFilter = GetQueryObject(
                 backupManagementType,
                 startTime,
                 endTime,
@@ -83,13 +73,21 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                 status,
                 operation);
 
-            return BmsAdapter.Client.Jobs.ListWithHttpMessagesAsync(
-                resourceGroupName,
-                resourceName,
-                commonFilters,
-                pagReq,
-                BmsAdapter.GetCustomRequestHeaders(),
-                BmsAdapter.CmdletCancellationToken).Result;
+            Func<Microsoft.Rest.Azure.IPage<JobResource>> listAsync =
+                () => BmsAdapter.Client.ProtectedItems.ListWithHttpMessagesAsync(
+                                     resourceName,
+                                     resourceGroupName,
+                                     queryFilter,
+                                     skipToken,
+                                     BmsAdapter.GetCustomRequestHeaders(),
+                                     BmsAdapter.CmdletCancellationToken).Result;
+
+            Func<string, Microsoft.Rest.Azure.IPage<JobResource>> listNextAsync =
+                nextLink => BmsAdapter.Client.ProtectedItems.ListNextWithHttpMessagesAsync(nextLink,
+                                     BmsAdapter.GetCustomRequestHeaders(),
+                                     BmsAdapter.CmdletCancellationToken).Result;
+
+            return HelperUtils.GetPagedList<JobResource>(listAsync, listNextAsync);
         }
 
         /// <summary>
@@ -142,28 +140,26 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// <param name="status">Status of the job</param>
         /// <param name="operation">ID of operation associated with the job</param>
         /// <returns></returns>
-        public CommonJobQueryFilters GetQueryObject(
-            string backupManagementType,
+        public ODataQuery<JobQueryObject> GetQueryObject(
+            BackupManagementType? backupManagementType,
             DateTime startTime,
             DateTime endTime,
             string jobId,
-            string status,
+            JobStatus? status,
             string operation)
         {
             // build query filters object.
             // currently we don't support any provider specific filters.
             // so we are initializing the object directly
-            CommonJobQueryFilters commonFilters = new CommonJobQueryFilters()
-            {
-                BackupManagementType = backupManagementType,
-                StartTime = CommonHelpers.GetDateTimeStringForService(startTime),
-                EndTime = CommonHelpers.GetDateTimeStringForService(endTime),
-                JobId = jobId,
-                Status = status,
-                Operation = operation
-            };
+            ODataQuery<JobQueryObject> queryFilter = new ODataQuery<JobQueryObject>(
+               q => q.BackupManagementType == backupManagementType &&
+               q.StartTime == startTime &&
+               q.EndTime == endTime &&
+               q.JobId == jobId &&
+               q.Status == status &&
+               q.Operation == operation);
 
-            return commonFilters;
+            return queryFilter;
         }
 
         #endregion
