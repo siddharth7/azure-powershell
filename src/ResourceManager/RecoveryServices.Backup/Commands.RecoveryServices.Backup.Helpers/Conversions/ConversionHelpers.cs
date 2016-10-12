@@ -203,10 +203,9 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
         /// Helper function to convert ps backup policy list model from service response.
         /// </summary>
         public static List<PolicyBase> GetPolicyModelList(
-            ServiceClientModel.ProtectionPolicyListResponse serviceClientListResponse)
+            List<ServiceClientModel.ProtectionPolicyResource> serviceClientListResponse)
         {
-            if (serviceClientListResponse == null || serviceClientListResponse.ItemList == null ||
-               serviceClientListResponse.ItemList.Value == null || serviceClientListResponse.ItemList.Value.Count == 0)
+            if (serviceClientListResponse == null && serviceClientListResponse.Count == 0)
             {
                 Logger.Instance.WriteDebug("Received empty list of policies from service");
                 return null;
@@ -215,7 +214,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
             List<PolicyBase> policyModels = new List<PolicyBase>();
             PolicyBase policyModel = null;
 
-            foreach (ServiceClientModel.ProtectionPolicyResource resource in serviceClientListResponse.ItemList.Value)
+            foreach (ServiceClientModel.ProtectionPolicyResource resource in serviceClientListResponse)
             {
                 policyModel = GetPolicyModel(resource);
                 if (policyModel != null)
