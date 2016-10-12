@@ -13,6 +13,8 @@
 // ----------------------------------------------------------------------------------
 
 using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
+using Microsoft.Rest.Azure.OData;
+using System.Collections.Generic;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClientAdapterNS
 {
@@ -24,18 +26,19 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// <param name="queryFilter">Query filter</param>
         /// <param name="paginationRequest">Pagination parameters</param>
         /// <returns>List of protectable items</returns>
-        public ProtectableObjectListResponse ListProtectableItem(
-                ProtectableObjectListQueryParameters queryFilter,
-                PaginationRequest paginationRequest = null)
+        public List<WorkloadProtectableItemResource> ListProtectableItem(
+                ODataQuery<BMSPOQueryObject> queryFilter,
+                string skipToken = default(string)
+                )
         {
             string resourceName = BmsAdapter.GetResourceName();
             string resourceGroupName = BmsAdapter.GetResourceGroupName();
 
-            return BmsAdapter.Client.ProtectableObjects.ListAsync(
-                                     resourceGroupName,
+            return BmsAdapter.Client.ProtectableObjects.ListWithHttpMessagesAsync(
                                      resourceName,
+                                     resourceGroupName,
                                      queryFilter,
-                                     paginationRequest,
+                                     skipToken,
                                      BmsAdapter.GetCustomRequestHeaders(),
                                      BmsAdapter.CmdletCancellationToken).Result;
         }

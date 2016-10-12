@@ -65,16 +65,13 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             string azureVMResourceGroupName = (string)ProviderData[ItemParams.AzureVMResourceGroupName];
             string parameterSetName = (string)ProviderData[ItemParams.ParameterSetName];
 
-            PolicyBase policy = (PolicyBase)
-                                                 ProviderData[ItemParams.Policy];
+            PolicyBase policy = (PolicyBase)ProviderData[ItemParams.Policy];
 
-            ItemBase itemBase = (ItemBase)
-                                                 ProviderData[ItemParams.Item];
+            ItemBase itemBase = (ItemBase)ProviderData[ItemParams.Item];
 
-            AzureVmItem item = (AzureVmItem)
-                                                 ProviderData[ItemParams.Item];
+            AzureVmItem item = (AzureVmItem)ProviderData[ItemParams.Item];
+            
             // do validations
-
             string containerUri = "";
             string protectedItemUri = "";
             bool isComputeAzureVM = false;
@@ -94,7 +91,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                     azureVMResourceGroupName, 
                     policy);
 
-                WorkloadProtectableItem protectableObjectResource = 
+                WorkloadProtectableItemResource protectableObjectResource = 
                     GetAzureVMProtectableObject(azureVMName, azureVMRGName, isComputeAzureVM);
 
                 Dictionary<UriEnums, string> keyValueDict = 
@@ -106,7 +103,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
 
 
                 IaaSVMProtectableItem iaasVmProtectableItem =
-                    (IaaSVMProtectableItem)protectableObjectResource;
+                    (IaaSVMProtectableItem)protectableObjectResource.Properties;
                 if (iaasVmProtectableItem != null)
                 {
                     sourceResourceId = iaasVmProtectableItem.VirtualMachineId;
@@ -534,7 +531,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
 
             ODataQuery<ProtectedItemQueryObject> queryParams = new ODataQuery<ProtectedItemQueryObject>(
                 q => q.BackupManagementType == ServiceClientModel.BackupManagementType.AzureIaasVM && 
-                q.ItemType == ServiceClientModel.WorkloadType.VM);
+                q.ItemType == ServiceClientModel.DataSourceType.VM);
 
             List<ProtectedItemResource> protectedItems = new List<ProtectedItemResource>();
             string skipToken = null;
@@ -883,7 +880,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             return isComputeAzureVM;
         }
 
-        private ProtectableObjectResource GetAzureVMProtectableObject
+        private WorkloadProtectableItemResource GetAzureVMProtectableObject
             (
             string azureVMName, 
             string azureVMRGName, 
@@ -894,7 +891,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
 
             bool isDiscoveryNeed = false;
 
-            ProtectableObjectResource protectableObjectResource = null;
+            WorkloadProtectableItemResource protectableObjectResource = null;
             isDiscoveryNeed = IsDiscoveryNeeded(
                 azureVMName, 
                 azureVMRGName, 
@@ -948,7 +945,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
         }
 
         private bool IsDiscoveryNeeded(string vmName, string rgName, bool isComputeAzureVM,
-            out ProtectableObjectResource protectableObjectResource)
+            out WorkloadProtectableItemResource protectableObjectResource)
         {
             bool isDiscoveryNeed = true;
             protectableObjectResource = null;
@@ -956,19 +953,14 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             vmVersion = (isComputeAzureVM) == true ? computeAzureVMVersion : classicComputeAzureVMVersion;
             string virtualMachineId = GetAzureIaasVirtualMachineId(rgName, vmVersion, vmName);
 
-            ProtectableObjectListQueryParameters queryParam = new ProtectableObjectListQueryParameters();
-            // --- TBD To be added once bug is fixed in Service Client and service
-            //queryParam.ProviderType = ProviderType.AzureIaasVM.ToString();
-            //queryParam.FriendlyName = vmName;
+            ODataQuery<BMSPOQueryObject> queryParam = new ODataQuery<BMSPOQueryObject>(
+                q => q.BackupManagementType == ServiceClientModel.BackupManagementType.AzureIaasVM);
 
-            // No need to use skip or top token here as no pagination support of IaaSVM PO.
-
-            //First check if container is discovered or not
-            var protectableItemList = ServiceClientAdapter.ListProtectableItem(queryParam).ItemList;
+            var protectableItemList = ServiceClientAdapter.ListProtectableItem(queryParam);
 
             Logger.Instance.WriteDebug(String.Format(Resources.ContainerCountAfterFilter, 
-                protectableItemList.ProtectableObjects.Count()));
-            if (protectableItemList.ProtectableObjects.Count() == 0)
+                protectableItemList.Count()));
+            if (protectableItemList.Count() == 0)
             {
                 //Container is not discovered
                 Logger.Instance.WriteDebug(Resources.ContainerNotDiscovered);
@@ -976,10 +968,10 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             }
             else
             {
-                foreach (var protectableItem in protectableItemList.ProtectableObjects)
+                foreach (var protectableItem in protectableItemList)
                 {
-                    AzureIaaSVMProtectableItem iaaSVMProtectableItem = 
-                        (AzureIaaSVMProtectableItem)protectableItem.Properties;
+                    IaaSVMProtectableItem iaaSVMProtectableItem = 
+                        (IaaSVMProtectableItem)protectableItem.Properties;
                     if (iaaSVMProtectableItem != null &&
                         string.Compare(iaaSVMProtectableItem.FriendlyName, vmName, true) == 0
                         && iaaSVMProtectableItem.VirtualMachineId.IndexOf(virtualMachineId,

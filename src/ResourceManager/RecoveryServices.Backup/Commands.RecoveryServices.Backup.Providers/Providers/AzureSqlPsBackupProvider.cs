@@ -315,7 +315,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
 
             ODataQuery<ProtectedItemQueryObject> queryParams = new ODataQuery<ProtectedItemQueryObject>(
                 q => q.BackupManagementType == ServiceClientModel.BackupManagementType.AzureSql &&
-                q.ItemType == ServiceClientModel.WorkloadType.AzureSqlDb);
+                q.ItemType == ServiceClientModel.DataSourceType.AzureSqlDb);
 
             List<ProtectedItemResource> protectedItems = new List<ProtectedItemResource>();
             string skipToken = null;
