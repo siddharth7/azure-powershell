@@ -7,7 +7,7 @@
   "targets": {
     ".NETStandard,Version=v1.1": {},
     ".NETStandard,Version=v1.1/": {
-      "Microsoft.Azure.Management.RecoveryServices.Backup/0.1.2": {
+      "Microsoft.Azure.Management.RecoveryServices.Backup/1.1.2": {
         "dependencies": {
           "System.Runtime.Serialization.Primitives": "4.1.1",
           "Microsoft.Rest.ClientRuntime.Azure": "3.3.1"
@@ -311,7 +311,7 @@
     }
   },
   "libraries": {
-    "Microsoft.Azure.Management.RecoveryServices.Backup/0.1.2": {
+    "Microsoft.Azure.Management.RecoveryServices.Backup/1.1.2": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
