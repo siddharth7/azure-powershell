@@ -47,9 +47,9 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
 
         List<CmdletModel.RecoveryPointBase> ListRecoveryPoints();
 
-        ProtectionPolicyResponse CreatePolicy();
+        ProtectionPolicyResource CreatePolicy();
 
-        ProtectionPolicyResponse ModifyPolicy();
+        Microsoft.Rest.Azure.AzureOperationResponse<ProtectionPolicyResource> ModifyPolicy();
 
         SchedulePolicyBase GetDefaultSchedulePolicyObject();
 

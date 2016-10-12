@@ -14,11 +14,9 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
-using Microsoft.Rest;
-using Microsoft.Rest.Azure;
-using Microsoft.Rest.Azure.OData;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers;
+using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
+using Microsoft.Rest.Azure.OData;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClientAdapterNS
 {
