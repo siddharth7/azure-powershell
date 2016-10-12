@@ -243,7 +243,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             return response;
         }
 
-        public Microsoft.Rest.Azure.AzureOperationResponse GetProtectedItem()
+        public ProtectedItemResource GetProtectedItem()
         {
             throw new NotImplementedException();
         }

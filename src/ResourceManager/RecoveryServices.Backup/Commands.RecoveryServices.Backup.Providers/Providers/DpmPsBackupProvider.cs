@@ -63,7 +63,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             throw new NotImplementedException();
         }
 
-        public Microsoft.Rest.Azure.AzureOperationResponse GetProtectedItem()
+        public ServiceClientModel.ProtectedItemResource GetProtectedItem()
         {
             throw new NotImplementedException();
         }

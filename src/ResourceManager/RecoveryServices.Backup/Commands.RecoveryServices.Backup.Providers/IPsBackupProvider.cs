@@ -41,7 +41,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
         Microsoft.Rest.Azure.AzureOperationResponse TriggerRestore();
 
         //ProtectedItemResponse GetProtectedItem();
-        Microsoft.Rest.Azure.AzureOperationResponse GetProtectedItem();
+        ProtectedItemResource GetProtectedItem();
 
         CmdletModel.RecoveryPointBase GetRecoveryPointDetails();
 
