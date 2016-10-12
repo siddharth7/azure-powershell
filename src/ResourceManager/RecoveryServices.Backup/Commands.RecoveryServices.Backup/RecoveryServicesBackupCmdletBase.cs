@@ -15,8 +15,8 @@
 using System;
 using System.Collections.Generic;
 using System.Management.Automation;
+using System.Linq;
 using System.Net;
-using Hyak.Common;
 using Microsoft.Azure.Commands.Common.Authentication;
 using Microsoft.Azure.Commands.Common.Authentication.Models;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClientAdapterNS;
@@ -27,6 +27,7 @@ using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
 using Microsoft.WindowsAzure.Management.Scheduler;
 using CmdletModel = Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
 using ResourcesNS = Microsoft.Azure.Management.Resources;
+using Microsoft.Rest.Azure;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
 {
@@ -50,15 +51,22 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
         /// </summary>
         protected void InitializeAzureBackupCmdlet()
         {
-            var cloudServicesClient = AzureSession.ClientFactory.CreateClient<CloudServiceManagementClient>(DefaultContext, AzureEnvironment.Endpoint.ResourceManager);
-            ServiceClientAdapter = new ServiceClientAdapter(cloudServicesClient.Credentials, cloudServicesClient.BaseUri);
+            ServiceClientAdapter = new ServiceClientAdapter(DefaultProfile.Context);
 
             WriteDebug("InsideRestore. going to create ResourceManager Client");
-            RmClient = AzureSession.ClientFactory.CreateClient<ResourcesNS.ResourceManagementClient>(DefaultContext, AzureEnvironment.Endpoint.ResourceManager);
+            RmClient = AzureSession.ClientFactory.CreateClient<ResourcesNS.ResourceManagementClient>(DefaultProfile.Context, AzureEnvironment.Endpoint.ResourceManager);
 
             WriteDebug("Client Created successfully");
 
             Logger.Instance = new Logger(WriteWarning, WriteDebug, WriteVerbose, ThrowTerminatingError);
+        }
+
+        protected override void SetupHttpClientPipeline()
+        {
+            base.SetupHttpClientPipeline();
+            AzureSession.ClientFactory.AddHandler(new RpNamespaceHandler(ServiceClientAdapter.ResourceProviderNamespace));
+            AzureSession.ClientFactory.AddHandler(new ClientRequestIdHandler());
+            //AzureSession.ClientFactory.AddHandler(new CultureHandler());
         }
 
         /// <summary>
@@ -138,9 +146,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
 
         protected override void BeginProcessing()
         {
-            base.BeginProcessing();
+            // TOOD: This order might NOT work. If that's the case, need to parse the resource namespace in base cmdlet itself.
 
             InitializeAzureBackupCmdlet();
+
+            base.BeginProcessing();
         }
 
         /// <summary>
@@ -171,15 +181,15 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
         /// <summary>
         /// Based on the response from the service, handles the job created in the service appropriately.
         /// </summary>
-        /// <param name="itemResponse">Response from service</param>
+        /// <param name="jobResponse">Response from service</param>
         /// <param name="operationName">Name of the operation</param>
-        protected void HandleCreatedJob(BaseRecoveryServicesJobResponse itemResponse, string operationName)
+        protected void HandleCreatedJob(JobResponse jobResponse, string operationName)
         {
             WriteDebug(Resources.TrackingOperationStatusURLForCompletion +
-                            itemResponse.AzureAsyncOperation);
+                            jobResponse.AzureAsyncOperation);
 
             var response = TrackingHelpers.WaitForOperationCompletionUsingStatusLink(
-                itemResponse.AzureAsyncOperation,
+                jobResponse.AzureAsyncOperation,
                 ServiceClientAdapter.GetProtectedItemOperationStatusByURL);
 
             if (response != null && response.OperationStatus != null)
@@ -193,7 +203,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
 
                     if (jobExtendedInfo.JobId != null)
                     {
-                        var jobStatusResponse = 
+                        var jobStatusResponse =
                             (OperationStatusJobExtendedInfo)response.OperationStatus.Properties;
                         WriteObject(GetJobObject(jobStatusResponse.JobId));
                     }
@@ -210,6 +220,20 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                     throw new Exception(errorMessage);
                 }
             }
+        }
+    }
+
+    public class JobResponse
+    {
+        public string AzureAsyncOperation { get; private set; }
+
+        public string Location { get; private set; }
+
+        public JobResponse(AzureOperationResponse response)
+        {
+            Location = response.Response.Headers.Location.ToString();
+
+            AzureAsyncOperation = response.Response.Headers.GetValues("Azure-AsyncOperation").FirstOrDefault();
         }
     }
 }

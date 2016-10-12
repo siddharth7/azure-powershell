@@ -38,7 +38,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
         /// <returns></returns>
         public static BackUpOperationStatusResponse WaitForOperationCompletionUsingStatusLink(
             string statusUrlLink,
-            Func<string, BackUpOperationStatusResponse> serviceClientMethod)
+            Func<string,  > serviceClientMethod)
         {
             // using this directly because it doesn't matter which function we use.
             // return type is same and currently we are using it in only two places.

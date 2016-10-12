@@ -72,7 +72,10 @@
     <Compile Include="BMSAPIs\RestoreDiskAPIs.cs" />
     <Compile Include="ClientProxy.cs" />
     <Compile Include="ClientProxyBase.cs" />
+    <Compile Include="CultureHandler.cs" />
     <Compile Include="CommonHelpers.cs" />
+    <Compile Include="ClientRequestIdHandler.cs" />
+    <Compile Include="DelegatingHandler.cs" />
     <Compile Include="ServiceClientAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

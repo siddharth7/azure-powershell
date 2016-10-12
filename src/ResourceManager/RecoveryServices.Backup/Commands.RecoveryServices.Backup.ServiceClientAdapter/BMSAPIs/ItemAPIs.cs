@@ -44,8 +44,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                                      containerName,
                                      protectedItemName,
                                      request,
-                                     BmsAdapter.GetCustomRequestHeaders(),
-                                     BmsAdapter.CmdletCancellationToken).Result;
+                                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
         }
 
         /// <summary>
@@ -67,8 +66,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                                      AzureFabricName,
                                      containerName,
                                      protectedItemName,
-                                     BmsAdapter.GetCustomRequestHeaders(),
-                                     BmsAdapter.CmdletCancellationToken).Result;
+                                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
         }
 
         /// <summary>
@@ -93,8 +91,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                                      containerName,
                                      protectedItemName,
                                      queryFilter,
-                                     BmsAdapter.GetCustomRequestHeaders(),
-                                     BmsAdapter.CmdletCancellationToken).Result;
+                                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
         }
 
         /// <summary>
