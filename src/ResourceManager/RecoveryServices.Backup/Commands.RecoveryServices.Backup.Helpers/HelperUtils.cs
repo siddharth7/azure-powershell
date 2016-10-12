@@ -296,6 +296,5 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 
             return resources;
         }
-
     }
 }
