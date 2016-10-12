@@ -62,7 +62,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             this.ServiceClientAdapter = serviceClientAdapter;
         }
 
-        public ServiceClientModel.BaseRecoveryServicesJobResponse EnableProtection()
+        public Microsoft.Rest.Azure.AzureOperationResponse EnableProtection()
         {
             throw new NotImplementedException();
         }
@@ -71,7 +71,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
         /// Triggers the disable protection operation for the given item
         /// </summary>
         /// <returns>The job response returned from the service</returns>
-        public ServiceClientModel.BaseRecoveryServicesJobResponse DisableProtection()
+        public Microsoft.Rest.Azure.AzureOperationResponse DisableProtection()
         {
             bool deleteBackupData = (bool)ProviderData[ItemParams.DeleteBackupData];
 
@@ -96,17 +96,17 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             }
         }
 
-        public ServiceClientModel.BaseRecoveryServicesJobResponse TriggerBackup()
+        public Microsoft.Rest.Azure.AzureOperationResponse TriggerBackup()
         {
             throw new NotImplementedException();
         }
 
-        public ServiceClientModel.BaseRecoveryServicesJobResponse TriggerRestore()
+        public Microsoft.Rest.Azure.AzureOperationResponse TriggerRestore()
         {
             throw new NotImplementedException();
         }
 
-        public ServiceClientModel.ProtectedItemResponse GetProtectedItem()
+        public Microsoft.Rest.Azure.AzureOperationResponse GetProtectedItem()
         {
             throw new NotImplementedException();
         }
