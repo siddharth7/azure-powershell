@@ -224,6 +224,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                 IdUtils.GetValueByName(iaasVmItem.Id, IdUtils.IdNames.ProtectedItemName),
                 expiryDateTime);
         }
+       
         /// <summary>
         /// Triggers the recovery operation for the given recovery point
         /// </summary>
