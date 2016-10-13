@@ -467,19 +467,19 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                 }
             }
 
-            ProtectionContainerListQueryParams queryParams = new ProtectionContainerListQueryParams();
-
-            // 1. Filter by Name
-            queryParams.FriendlyName = nameQueryFilter;
-
-            // 2. Filter by ContainerType
-            queryParams.BackupManagementType =
-                ServiceClientModel.BackupManagementType.AzureIaasVM.ToString();
-
-            // 3. Filter by Status
-            if (status != 0)
+            ODataQuery<BMSContainerQueryObject> queryParams = null;
+            if (status == 0)
             {
-                queryParams.RegistrationStatus = status.ToString();
+                queryParams = new ODataQuery<BMSContainerQueryObject>(
+                q => q.FriendlyName == nameQueryFilter && 
+                q.BackupManagementType == ServiceClientModel.BackupManagementType.AzureIaasVM.ToString());
+            }
+            else
+            {
+                queryParams = new ODataQuery<BMSContainerQueryObject>(
+                q => q.FriendlyName == nameQueryFilter && 
+                q.BackupManagementType == ServiceClientModel.BackupManagementType.AzureIaasVM.ToString() && 
+                q.Status == status.ToString());
             }
 
             var listResponse = ServiceClientAdapter.ListContainers(queryParams);

@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using ServiceClientModel = Microsoft.Azure.Management.RecoveryServices.Backup.Models;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClientAdapterNS;
+using Microsoft.Rest.Azure.OData;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
 {
@@ -101,7 +102,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
         {
             string name = (string)this.ProviderData[ContainerParams.Name];
 
-            ServiceClientModel.BackupEngineListQueryParams queryParams = new ServiceClientModel.BackupEngineListQueryParams();
+            ODataQuery<ServiceClientModel.BMSBackupEngineQueryObject> queryParams = new ODataQuery<ServiceClientModel.BMSBackupEngineQueryObject>();
 
             var listResponse = ServiceClientAdapter.ListBackupEngines(queryParams);
 

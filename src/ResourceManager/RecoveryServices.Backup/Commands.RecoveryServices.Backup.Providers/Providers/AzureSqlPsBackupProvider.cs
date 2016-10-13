@@ -246,11 +246,9 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
         {
             string name = (string)this.ProviderData[ContainerParams.Name];
 
-            ProtectionContainerListQueryParams queryParams =
-                new ProtectionContainerListQueryParams();
+            ODataQuery<BMSContainerQueryObject> queryParams = new ODataQuery<BMSContainerQueryObject>(
+                q => q.BackupManagementType == ServiceClientModel.BackupManagementType.AzureSql.ToString());
 
-            queryParams.BackupManagementType =
-                ServiceClientModel.BackupManagementType.AzureSql.ToString();
 
             var listResponse = ServiceClientAdapter.ListContainers(queryParams);
 

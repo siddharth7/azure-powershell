@@ -23,6 +23,7 @@ using Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers;
 using CmdletModel = Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClientAdapterNS;
+using Microsoft.Rest.Azure.OData;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
 {
@@ -98,13 +99,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
         {
             string name = (string)this.ProviderData[ContainerParams.Name];
 
-            ProtectionContainerListQueryParams queryParams = new ProtectionContainerListQueryParams();
-
-            // 1. Filter by Name
-            queryParams.FriendlyName = name;
-
-            // 2. Filter by ContainerType
-            queryParams.BackupManagementType = ServiceClientModel.BackupManagementType.MAB.ToString();
+            ODataQuery<BMSContainerQueryObject> queryParams = new ODataQuery<BMSContainerQueryObject>(
+                q => q.FriendlyName == name && q.BackupManagementType == ServiceClientModel.BackupManagementType.MAB.ToString());
 
             var listResponse = ServiceClientAdapter.ListContainers(queryParams);
 
