@@ -120,7 +120,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
         /// </summary>
         public string Name { get; set; }
 
-        public BackupEngineBase(ServiceClientModel.BackupEngineResource backupEngine)
+        public BackupEngineBase(ServiceClientModel.BackupEngineBaseResource backupEngine)
             : base(((ServiceClientModel.BackupEngineBase)backupEngine.Properties).BackupEngineType,
                    ((ServiceClientModel.BackupEngineBase)backupEngine.Properties).BackupManagementType)
         {

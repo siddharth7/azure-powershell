@@ -51,24 +51,6 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
             return HelperUtils.GetPagedList(listAsync, listNextAsync);
         }
 
-        ///// <summary>
-        ///// Fetches backup engines in the vault according to the query params
-        ///// </summary>
-        ///// <param name="parameters">Query parameters</param>
-        ///// <returns>List of backup engines</returns>
-        //public IEnumerable<BackupEngineResource> ListBackupEngines(BackupEngineListQueryParams queryParams)
-        //{
-        //    PaginationRequest paginationParam = new PaginationRequest();
-        //    paginationParam.Top = "200";
-        //    var listResponse = BmsAdapter.Client.BackupEngines.ListAsync(
-        //                                BmsAdapter.GetResourceGroupName(), 
-        //                                BmsAdapter.GetResourceName(), 
-        //                                queryParams, 
-        //                                paginationParam, 
-        //                                cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
-        //    return listResponse.ItemList.BackupEngines;
-        //}
-
         /// <summary>
         /// Fetches backup engines in the vault according to the query params
         /// </summary>
@@ -76,6 +58,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// <returns>List of backup engines</returns>
         public IEnumerable<BackupEngineBaseResource> ListBackupEngines(ODataQuery<BMSBackupEngineQueryObject> queryParams)
         {
+            queryParams.Top = 200;
             Func<IPage<BackupEngineBaseResource>> listAsync =
                 () => BmsAdapter.Client.BackupEngines.GetWithHttpMessagesAsync(
                     BmsAdapter.GetResourceName(),

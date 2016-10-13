@@ -62,9 +62,9 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
         /// <summary>
         /// Helper function to convert ps backup engine model from service response.
         /// </summary>
-        public static ServiceClientModel.BackupEngineBase GetBackupEngineModel(ServiceClientModel.BackupEngineBaseResource backupEngine)
+        public static BackupEngineBase GetBackupEngineModel(ServiceClientModel.BackupEngineBaseResource backupEngine)
         {
-            ServiceClientModel.BackupEngineBase backupEngineModel = null;
+            BackupEngineBase backupEngineModel = null;
 
             if (backupEngine != null &&
                 backupEngine.Properties != null)
@@ -78,13 +78,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 
                 if (backupEngine.Properties.GetType() == (typeof(ServiceClientModel.DpmBackupEngine)))
                 {
-                    backupEngineModel = new ServiceClientModel.DpmBackupEngine(friendlyName, backupManagementType,
-                        registrationStatus, healthStatus, canReRegister, backupEngineId);
+                    backupEngineModel = new DpmBackupEngine(backupEngine);
                 }
                 else if (backupEngine.Properties.GetType() == (typeof(ServiceClientModel.AzureBackupServerEngine)))
                 {
-                    backupEngineModel = new ServiceClientModel.AzureBackupServerEngine(friendlyName, backupManagementType,
-                        registrationStatus, healthStatus, canReRegister, backupEngineId);
+                    backupEngineModel = new AzureBackupServerEngine(backupEngine);
                 }
             }
 
@@ -109,9 +107,9 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
         /// <summary>
         /// Helper function to convert ps backup engine model list from service response.
         /// </summary>
-        public static List<ServiceClientModel.BackupEngineBase> GetBackupEngineModelList(IEnumerable<ServiceClientModel.BackupEngineBaseResource> backupEngines)
+        public static List<BackupEngineBase> GetBackupEngineModelList(IEnumerable<ServiceClientModel.BackupEngineBaseResource> backupEngines)
         {
-            List<ServiceClientModel.BackupEngineBase> backupEngineModel = new List<ServiceClientModel.BackupEngineBase>();
+            List<BackupEngineBase> backupEngineModel = new List<BackupEngineBase>();
 
             foreach (var backupEngine in backupEngines)
             {
