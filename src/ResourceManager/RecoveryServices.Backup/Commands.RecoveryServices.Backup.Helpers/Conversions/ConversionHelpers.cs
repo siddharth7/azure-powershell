@@ -109,9 +109,9 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
         /// <summary>
         /// Helper function to convert ps backup engine model list from service response.
         /// </summary>
-        public static List<BackupEngineBase> GetBackupEngineModelList(IEnumerable<ServiceClientModel.BackupEngineResource> backupEngines)
+        public static List<ServiceClientModel.BackupEngineBase> GetBackupEngineModelList(IEnumerable<ServiceClientModel.BackupEngineBaseResource> backupEngines)
         {
-            List<BackupEngineBase> backupEngineModel = new List<BackupEngineBase>();
+            List<ServiceClientModel.BackupEngineBase> backupEngineModel = new List<ServiceClientModel.BackupEngineBase>();
 
             foreach (var backupEngine in backupEngines)
             {
