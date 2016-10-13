@@ -311,7 +311,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
         /// Creates policy given the provider data
         /// </summary>
         /// <returns>Created policy object as returned by the service</returns>
-        public ProtectionPolicyResponse CreatePolicy()
+        public ProtectionPolicyResource CreatePolicy()
         {
             string policyName = (string)ProviderData[PolicyParams.PolicyName];
             Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models.WorkloadType workloadType =
@@ -346,30 +346,27 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             Logger.Instance.WriteDebug("Validation of Retention policy with Schedule policy is successful");
 
             // construct Service Client policy request            
-            ProtectionPolicyRequest serviceClientRequest = new ProtectionPolicyRequest()
+            ProtectionPolicyResource serviceClientRequest = new ProtectionPolicyResource()
             {
-                Item = new ProtectionPolicyResource()
+                Properties = new AzureIaaSVMProtectionPolicy()
                 {
-                    Properties = new AzureIaaSVMProtectionPolicy()
-                    {
-                        RetentionPolicy = PolicyHelpers.GetServiceClientLongTermRetentionPolicy(
+                    RetentionPolicy = PolicyHelpers.GetServiceClientLongTermRetentionPolicy(
                                                 (CmdletModel.LongTermRetentionPolicy)retentionPolicy),
-                        SchedulePolicy = PolicyHelpers.GetServiceClientSimpleSchedulePolicy(
+                    SchedulePolicy = PolicyHelpers.GetServiceClientSimpleSchedulePolicy(
                                                 (CmdletModel.SimpleSchedulePolicy)schedulePolicy)
-                    }
                 }
             };
 
             return ServiceClientAdapter.CreateOrUpdateProtectionPolicy(
                                  policyName,
-                                 serviceClientRequest);
+                                 serviceClientRequest).Body;
         }
 
         /// <summary>
         /// Modifies policy using the provider data
         /// </summary>
         /// <returns>Modified policy object as returned by the service</returns>
-        public ProtectionPolicyResponse ModifyPolicy()
+        public Rest.Azure.AzureOperationResponse<ProtectionPolicyResource> ModifyPolicy()
         {
             RetentionPolicyBase retentionPolicy =
                ProviderData.ContainsKey(PolicyParams.RetentionPolicy) ?
@@ -422,17 +419,14 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             Logger.Instance.WriteDebug("Validation of Retention policy with Schedule policy is successful");
 
             // construct Service Client policy request            
-            ProtectionPolicyRequest serviceClientRequest = new ProtectionPolicyRequest()
+            ProtectionPolicyResource serviceClientRequest = new ProtectionPolicyResource()
             {
-                Item = new ProtectionPolicyResource()
+                Properties = new AzureIaaSVMProtectionPolicy()
                 {
-                    Properties = new AzureIaaSVMProtectionPolicy()
-                    {
-                        RetentionPolicy = PolicyHelpers.GetServiceClientLongTermRetentionPolicy(
+                    RetentionPolicy = PolicyHelpers.GetServiceClientLongTermRetentionPolicy(
                                   (CmdletModel.LongTermRetentionPolicy)((AzureVmPolicy)policy).RetentionPolicy),
-                        SchedulePolicy = PolicyHelpers.GetServiceClientSimpleSchedulePolicy(
+                    SchedulePolicy = PolicyHelpers.GetServiceClientSimpleSchedulePolicy(
                                   (CmdletModel.SimpleSchedulePolicy)((AzureVmPolicy)policy).SchedulePolicy)
-                    }
                 }
             };
 

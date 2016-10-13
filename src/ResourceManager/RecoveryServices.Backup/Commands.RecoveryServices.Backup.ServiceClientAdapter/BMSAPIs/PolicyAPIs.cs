@@ -49,9 +49,9 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// </summary>
         /// <param name="policyName">Name of the policy</param>
         /// <returns>Policy response returned by the service</returns>
-        public Microsoft.Rest.Azure.AzureOperationResponse<ProtectionPolicyResource> GetWithHttpMessagesAsync(string policyName)
+        public ProtectionPolicyResource GetProtectionPolicy(string policyName)
         {
-            return BmsAdapter.Client.ProtectionPoliciesOperations.GetAsync(
+            return BmsAdapter.Client.ProtectionPoliciesOperations.GetWithHttpMessagesAsync(
                                      BmsAdapter.GetResourceGroupName(),
                                      BmsAdapter.GetResourceName(),
                                      policyName,
@@ -68,7 +68,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                                             string skipToken = default(string))
         {
             Func<Microsoft.Rest.Azure.IPage<ProtectionPolicyResource>> listAsync =
-                () => BmsAdapter.Client.ProtectionPolicy.ListWithHttpMessagesAsync(
+                () => BmsAdapter.Client.ProtectionPoliciesOperations.ListWithHttpMessagesAsync(
                                      BmsAdapter.GetResourceGroupName(),
                                      BmsAdapter.GetResourceName(),
                                      queryFilter,
@@ -76,24 +76,12 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                                      cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
 
             Func<string, Microsoft.Rest.Azure.IPage<ProtectionPolicyResource>> listNextAsync =
-                nextLink => BmsAdapter.Client.ProtectionPolicy.ListNextWithHttpMessagesAsync(
+                nextLink => BmsAdapter.Client.ProtectionPoliciesOperations.ListNextWithHttpMessagesAsync(
                                      nextLink,
                                      cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
 
             return HelperUtils.GetPagedList<ProtectionPolicyResource>(listAsync, listNextAsync);
-        }
-
-        /// <summary>
-        /// Gets protection policy operation status using the operation tracking URL
-        /// </summary>
-        /// <param name="url">Operation tracking URL</param>
-        /// <returns>Operation status response returned by the service</returns>
-        public BackUpOperationStatusResponse GetProtectionPolicyOperationStatusByURL(string url)
-        {
-            return BmsAdapter.Client.GetOperationStatusByURLAsync(
-                              url,
-                              cancellationToken: BmsAdapter.CmdletCancellationToken).Result;                              
-        }
+        }        
 
         /// <summary>
         /// Deletes protection policy from the vault specified by the name

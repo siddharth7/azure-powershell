@@ -164,7 +164,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
         /// Creates policy given the provider data
         /// </summary>
         /// <returns>Created policy object as returned by the service</returns>
-        public ProtectionPolicyResponse CreatePolicy()
+        public ProtectionPolicyResource CreatePolicy()
         {
             string policyName = (string)ProviderData[PolicyParams.PolicyName];
             CmdletModel.WorkloadType workloadType =
@@ -181,28 +181,25 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             Logger.Instance.WriteDebug("Validation of Retention policy is successful");
 
             // construct Hydra policy request            
-            ProtectionPolicyRequest hydraRequest = new ProtectionPolicyRequest()
+            ProtectionPolicyResource hydraRequest = new ProtectionPolicyResource()
             {
-                Item = new ProtectionPolicyResource()
+                Properties = new AzureSqlProtectionPolicy()
                 {
-                    Properties = new AzureSqlProtectionPolicy()
-                    {
-                        RetentionPolicy = PolicyHelpers.GetServiceClientSimpleRetentionPolicy(
+                    RetentionPolicy = PolicyHelpers.GetServiceClientSimpleRetentionPolicy(
                             (CmdletModel.SimpleRetentionPolicy)retentionPolicy)
-                    }
                 }
             };
 
             return ServiceClientAdapter.CreateOrUpdateProtectionPolicy(
                                  policyName,
-                                 hydraRequest);
+                                 hydraRequest).Body;
         }
 
         /// <summary>
         /// Modifies policy using the provider data
         /// </summary>
         /// <returns>Modified policy object as returned by the service</returns>
-        public ProtectionPolicyResponse ModifyPolicy()
+        public Microsoft.Rest.Azure.AzureOperationResponse<ProtectionPolicyResource> ModifyPolicy()
         {
             RetentionPolicyBase retentionPolicy =
               ProviderData.ContainsKey(PolicyParams.RetentionPolicy) ?
@@ -228,15 +225,12 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
 
             CmdletModel.SimpleRetentionPolicy sqlRetentionPolicy =
                 (CmdletModel.SimpleRetentionPolicy)((AzureSqlPolicy)policy).RetentionPolicy;
-            ProtectionPolicyRequest hydraRequest = new ProtectionPolicyRequest()
+            ProtectionPolicyResource hydraRequest = new ProtectionPolicyResource()
             {
-                Item = new ProtectionPolicyResource()
+                Properties = new AzureSqlProtectionPolicy()
                 {
-                    Properties = new AzureSqlProtectionPolicy()
-                    {
-                        RetentionPolicy =
+                    RetentionPolicy =
                             PolicyHelpers.GetServiceClientSimpleRetentionPolicy(sqlRetentionPolicy)
-                    }
                 }
             };
 
