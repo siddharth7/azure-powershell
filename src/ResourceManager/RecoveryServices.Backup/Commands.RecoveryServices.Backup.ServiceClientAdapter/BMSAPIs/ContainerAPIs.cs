@@ -51,35 +51,57 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
             return HelperUtils.GetPagedList(listAsync, listNextAsync);
         }
 
+        ///// <summary>
+        ///// Fetches backup engines in the vault according to the query params
+        ///// </summary>
+        ///// <param name="parameters">Query parameters</param>
+        ///// <returns>List of backup engines</returns>
+        //public IEnumerable<BackupEngineResource> ListBackupEngines(BackupEngineListQueryParams queryParams)
+        //{
+        //    PaginationRequest paginationParam = new PaginationRequest();
+        //    paginationParam.Top = "200";
+        //    var listResponse = BmsAdapter.Client.BackupEngines.ListAsync(
+        //                                BmsAdapter.GetResourceGroupName(), 
+        //                                BmsAdapter.GetResourceName(), 
+        //                                queryParams, 
+        //                                paginationParam, 
+        //                                cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
+        //    return listResponse.ItemList.BackupEngines;
+        //}
+
         /// <summary>
         /// Fetches backup engines in the vault according to the query params
         /// </summary>
         /// <param name="parameters">Query parameters</param>
         /// <returns>List of backup engines</returns>
-        public IEnumerable<BackupEngineResource> ListBackupEngines(BackupEngineListQueryParams queryParams)
+        public IEnumerable<BackupEngineBaseResource> ListBackupEngines(ODataQuery<BMSBackupEngineQueryObject> queryParams)
         {
-            PaginationRequest paginationParam = new PaginationRequest();
-            paginationParam.Top = "200";
-            var listResponse = BmsAdapter.Client.BackupEngines.ListAsync(
-                                        BmsAdapter.GetResourceGroupName(), 
-                                        BmsAdapter.GetResourceName(), 
-                                        queryParams, 
-                                        paginationParam, 
-                                        cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
-            return listResponse.ItemList.BackupEngines;
+            Func<IPage<BackupEngineBaseResource>> listAsync =
+                () => BmsAdapter.Client.BackupEngines.GetWithHttpMessagesAsync(
+                    BmsAdapter.GetResourceName(),
+                    BmsAdapter.GetResourceGroupName(),
+                    queryParams,
+                    cancellationToken: BmsAdapter.CmdletCancellationToken).Result.Body;
+
+            Func<string, IPage<BackupEngineBaseResource>> listNextAsync =
+                nextLink => BmsAdapter.Client.BackupEngines.GetNextWithHttpMessagesAsync(
+                    nextLink,
+                    cancellationToken: BmsAdapter.CmdletCancellationToken).Result.Body;
+            var listResponse = HelperUtils.GetPagedList(listAsync, listNextAsync);
+            return listResponse;
         }
 
         /// <summary>
         /// Triggers refresh of container catalog in service
         /// </summary>
         /// <returns>Response of the job created in the service</returns>
-        public BaseRecoveryServicesJobResponse RefreshContainers()
+        public Microsoft.Rest.Azure.AzureOperationResponse RefreshContainers()
         {
             string resourceName = BmsAdapter.GetResourceName();
             string resourceGroupName = BmsAdapter.GetResourceGroupName();
-            var response = BmsAdapter.Client.Containers.RefreshAsync(
+            var response = BmsAdapter.Client.ProtectionContainers.RefreshWithHttpMessagesAsync(
+                                        resourceName,
                                         resourceGroupName, 
-                                        resourceName, 
                                         AzureFabricName,
                                         cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
             return response;
@@ -88,14 +110,14 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// <summary>
         /// Triggers unregister of a container in service
         /// </summary>
-        public AzureOperationResponse UnregisterContainers(string containerName)
+        public Microsoft.Rest.Azure.AzureOperationResponse UnregisterContainers(string containerName)
         {
             string resourceName = BmsAdapter.GetResourceName();
             string resourceGroupName = BmsAdapter.GetResourceGroupName();
             
-            var response = BmsAdapter.Client.Containers.UnregisterAsync(
-                                        resourceGroupName, 
-                                        resourceName, 
+            var response = BmsAdapter.Client.ProtectionContainers.UnregisterWithHttpMessagesAsync(
+                                        resourceName,
+                                        resourceGroupName,
                                         containerName,
                                         cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
             return response;

@@ -41,16 +41,16 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
             if (protectionContainer != null &&
                 protectionContainer.Properties != null)
             {
-                if (protectionContainer.Properties.GetType().IsSubclassOf(typeof(ServiceClientModel.AzureIaaSVMProtectionContainer)))
+                if (protectionContainer.Properties.GetType().IsSubclassOf(typeof(ServiceClientModel.IaaSVMContainer)))
                 {
                     containerModel = new AzureVmContainer(protectionContainer);
                 }
-                if (protectionContainer.Properties.GetType() == typeof(ServiceClientModel.MabProtectionContainer))
+                if (protectionContainer.Properties.GetType() == typeof(ServiceClientModel.MabContainer))
                 {
                     containerModel = new MabContainer(protectionContainer);
                 }
                 else if (protectionContainer.Properties.GetType() ==
-                    typeof(ServiceClientModel.AzureSqlProtectionContainer))
+                    typeof(ServiceClientModel.AzureSqlContainer))
                 {
                     containerModel = new AzureSqlContainer(protectionContainer);
                 }
@@ -62,20 +62,29 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
         /// <summary>
         /// Helper function to convert ps backup engine model from service response.
         /// </summary>
-        public static BackupEngineBase GetBackupEngineModel(ServiceClientModel.BackupEngineResource backupEngine)
+        public static ServiceClientModel.BackupEngineBase GetBackupEngineModel(ServiceClientModel.BackupEngineBaseResource backupEngine)
         {
-            BackupEngineBase backupEngineModel = null;
+            ServiceClientModel.BackupEngineBase backupEngineModel = null;
 
             if (backupEngine != null &&
                 backupEngine.Properties != null)
             {
+                string friendlyName = backupEngine.Properties.FriendlyName;
+                string backupManagementType = backupEngine.Properties.BackupManagementType;
+                string registrationStatus = backupEngine.Properties.RegistrationStatus;
+                string healthStatus = backupEngine.Properties.HealthStatus;
+                bool? canReRegister = backupEngine.Properties.CanReRegister;
+                string backupEngineId = backupEngine.Properties.BackupEngineId;
+
                 if (backupEngine.Properties.GetType() == (typeof(ServiceClientModel.DpmBackupEngine)))
                 {
-                    backupEngineModel = new DpmBackupEngine(backupEngine);
+                    backupEngineModel = new ServiceClientModel.DpmBackupEngine(friendlyName, backupManagementType,
+                        registrationStatus, healthStatus, canReRegister, backupEngineId);
                 }
                 else if (backupEngine.Properties.GetType() == (typeof(ServiceClientModel.AzureBackupServerEngine)))
                 {
-                    backupEngineModel = new AzureBackupServerEngine(backupEngine);
+                    backupEngineModel = new ServiceClientModel.AzureBackupServerEngine(friendlyName, backupManagementType,
+                        registrationStatus, healthStatus, canReRegister, backupEngineId);
                 }
             }
 
