@@ -32,8 +32,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
             string resourceName = BmsAdapter.GetResourceName();
             string resourceGroupName = BmsAdapter.GetResourceGroupName();
             return BmsAdapter.Client.JobDetails.GetWithHttpMessagesAsync(
-                resourceGroupName,
                 resourceName,
+                resourceGroupName,
                 jobId,
                 cancellationToken: BmsAdapter.CmdletCancellationToken).Result.Body;
         }
@@ -95,8 +95,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
             string resourceGroupName = BmsAdapter.GetResourceGroupName();
 
             return BmsAdapter.Client.JobCancellations.TriggerWithHttpMessagesAsync(
-                resourceGroupName,
                 resourceName,
+                resourceGroupName,
                 jobId,
                 cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
         }
@@ -113,8 +113,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
             string resourceGroupName = BmsAdapter.GetResourceGroupName();
 
             return BmsAdapter.Client.JobOperationResults.GetWithHttpMessagesAsync(
-                resourceGroupName,
                 resourceName,
+                resourceGroupName,
                 jobId,
                 operationId,
                 cancellationToken: BmsAdapter.CmdletCancellationToken).Result;

@@ -37,8 +37,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                 ProtectionPolicyResource request)
         {           
             return BmsAdapter.Client.ProtectionPolicies.CreateOrUpdateWithHttpMessagesAsync(
+                                     BmsAdapter.GetResourceName(),
                                      BmsAdapter.GetResourceGroupName(),
-                                     BmsAdapter.GetResourceName(), 
                                      policyName, 
                                      request,
                                      cancellationToken: BmsAdapter.CmdletCancellationToken).Result;            
@@ -52,8 +52,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         public ProtectionPolicyResource GetProtectionPolicy(string policyName)
         {
             return BmsAdapter.Client.ProtectionPolicies.GetWithHttpMessagesAsync(
-                                     BmsAdapter.GetResourceGroupName(),
                                      BmsAdapter.GetResourceName(),
+                                     BmsAdapter.GetResourceGroupName(),
                                      policyName,
                                      cancellationToken: BmsAdapter.CmdletCancellationToken).Result.Body;
         }
@@ -69,8 +69,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         {
             Func<Microsoft.Rest.Azure.IPage<ProtectionPolicyResource>> listAsync =
                 () => BmsAdapter.Client.ProtectionPolicies.ListWithHttpMessagesAsync(
-                                     BmsAdapter.GetResourceGroupName(),
                                      BmsAdapter.GetResourceName(),
+                                     BmsAdapter.GetResourceGroupName(),
                                      queryFilter,
                                      cancellationToken: BmsAdapter.CmdletCancellationToken).Result.Body;
 
@@ -90,8 +90,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                 string policyName)
         {
             return BmsAdapter.Client.ProtectionPolicies.DeleteWithHttpMessagesAsync(
-                                     BmsAdapter.GetResourceGroupName(),
                                      BmsAdapter.GetResourceName(),
+                                     BmsAdapter.GetResourceGroupName(),
                                      policyName,
                                      cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
         }
