@@ -36,7 +36,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
         CSMTestEnvironmentFactory csmTestFactory;
         EnvironmentSetupHelper helper;
 
-        public RecoveryServicesBackupManagementClient RsBackupClient { get; private set; }
+        public RecoveryServicesBackupClient RsBackupClient { get; private set; }
 
         protected string ResourceNamespace { get; private set; }
 
@@ -102,7 +102,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
             }
         }
 
-        private RecoveryServicesBackupManagementClient GetRsBackupClient()
+        private RecoveryServicesBackupClient GetRsBackupClient()
         {
             var factory = (TestEnvironmentFactory)new CSMTestEnvironmentFactory();
 
@@ -110,30 +110,32 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
 
             ServicePointManager.ServerCertificateValidationCallback = IgnoreCertificateErrorHandler;
 
-            RecoveryServicesBackupManagementClient client;
+            RecoveryServicesBackupClient client;
             var credentials = new SubscriptionCredentialsAdapter(
                 testEnvironment.AuthorizationContext.TokenCredentials[TokenAudience.Management],
                 testEnvironment.SubscriptionId);
 
             if (testEnvironment.UsesCustomUri())
             {
-                client = new RecoveryServicesBackupManagementClient(
-                    credentials,
-                    testEnvironment.BaseUri);
+                client = TestBase.GetServiceClient<RecoveryServicesBackupClient>(this.csmTestFactory);
+                //client = new RecoveryServicesBackupClient(
+                //    credentials,
+                //    testEnvironment.BaseUri);
             }
 
             else
             {
-                client = new RecoveryServicesBackupManagementClient(
-                    credentials);
+                client = TestBase.GetServiceClient<RecoveryServicesBackupClient>(this.csmTestFactory);
+                //client = new RecoveryServicesBackupClient(
+                //    credentials);
             }
 
-            client.ResourceNamespace = this.ResourceNamespace;
+            // client.ResourceNamespace = this.ResourceNamespace;
 
-            return GetServiceClient<RecoveryServicesBackupManagementClient>(factory, client);
+            return GetServiceClient<RecoveryServicesBackupClient>(factory, client);
         }
 
-        public static T GetServiceClient<T>(TestEnvironmentFactory factory, RecoveryServicesBackupManagementClient client) where T : class
+        public static T GetServiceClient<T>(TestEnvironmentFactory factory, RecoveryServicesBackupClient client) where T : class
         {
             TestEnvironment testEnvironment = factory.GetTestEnvironment();
 
