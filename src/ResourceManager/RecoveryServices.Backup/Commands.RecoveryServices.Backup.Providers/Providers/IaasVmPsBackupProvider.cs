@@ -988,6 +988,9 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             var refreshContainerJobResponse = ServiceClientAdapter.RefreshContainers();
 
             // Add tracking part
+            var operationStatus = TrackingHelpers.GetOperationResult(
+                refreshContainerJobResponse,
+                operationId => ServiceClientAdapter.GetRefreshContainerOperationResult(operationId));
 
             //Now wait for the operation to Complete
             if (refreshContainerJobResponse.Response.StatusCode != System.Net.HttpStatusCode.NoContent)

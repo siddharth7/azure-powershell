@@ -79,5 +79,24 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 
             return opStatusResponse.Body;
         }
+
+        public static Microsoft.Rest.Azure.AzureOperationResponse GetOperationResult(Microsoft.Rest.Azure.AzureOperationResponse response,
+            Func<string, Microsoft.Rest.Azure.AzureOperationResponse> getOpStatus)
+        {
+            var operationId = response.Response.Headers.GetAzureAsyncOperationId();
+
+            var opStatusResponse = getOpStatus(operationId);
+
+            while (opStatusResponse.StatusCode == System.Net.HttpStatusCode.Accepted)
+            {
+                TestMockSupport.Delay(_defaultSleepForOperationTracking * 1000);
+
+                opStatusResponse = getOpStatus(operationId);
+            }
+
+            opStatusResponse = getOpStatus(operationId);
+
+            return opStatusResponse;
+        }
     }
 }

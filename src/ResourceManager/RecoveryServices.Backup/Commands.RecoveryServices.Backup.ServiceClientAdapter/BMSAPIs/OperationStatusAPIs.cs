@@ -43,5 +43,26 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
             return BmsAdapter.Client.ProtectionPolicyOperationStatuses.GetWithHttpMessagesAsync(
                 resourceName, resourceGroupName, policyName, operationId).Result;
         }
+
+        public Microsoft.Rest.Azure.AzureOperationResponse GetRefreshContainerOperationResult(
+                string operationId)
+        {
+            string resourceName = BmsAdapter.GetResourceName();
+            string resourceGroupName = BmsAdapter.GetResourceGroupName();
+
+            return BmsAdapter.Client.ProtectionContainerRefreshOperationResults.GetWithHttpMessagesAsync(
+                resourceName, resourceGroupName, AzureFabricName, operationId).Result;
+        }
+
+
+        public Microsoft.Rest.Azure.AzureOperationResponse GetCancelJobOperationResult(
+                string operationId)
+        {
+            string resourceName = BmsAdapter.GetResourceName();
+            string resourceGroupName = BmsAdapter.GetResourceGroupName();
+
+            return BmsAdapter.Client.JobOperationResults.GetWithHttpMessagesAsync(
+                resourceName, resourceGroupName, AzureFabricName, operationId).Result;
+        }
     }
 }

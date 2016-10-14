@@ -66,6 +66,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
 
                 var cancelResponse = ServiceClientAdapter.CancelJob(JobId);
 
+                // Add tracking part
+                var operationStatus = TrackingHelpers.GetOperationResult(
+                    cancelResponse,
+                    operationId => ServiceClientAdapter.GetCancelJobOperationResult(operationId));
+
                 if (cancelResponse.Response.StatusCode != HttpStatusCode.NoContent)
                 {
                     throw new Exception(string.Format(Resources.JobCouldNotCancelJob, 
