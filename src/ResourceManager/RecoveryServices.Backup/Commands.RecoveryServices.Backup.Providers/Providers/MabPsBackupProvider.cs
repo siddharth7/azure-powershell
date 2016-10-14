@@ -81,12 +81,12 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             throw new NotImplementedException();
         }
 
-        public Management.RecoveryServices.Backup.Models.ProtectionPolicyResponse CreatePolicy()
+        public ProtectionPolicyResource CreatePolicy()
         {
             throw new NotImplementedException();
         }
 
-        public ProtectionPolicyResponse ModifyPolicy()
+        public Microsoft.Rest.Azure.AzureOperationResponse<ProtectionPolicyResource> ModifyPolicy()
         {
             throw new NotImplementedException();
         }
@@ -100,7 +100,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             string name = (string)this.ProviderData[ContainerParams.Name];
 
             ODataQuery<BMSContainerQueryObject> queryParams = new ODataQuery<BMSContainerQueryObject>(
-                q => q.FriendlyName == name && q.BackupManagementType == ServiceClientModel.BackupManagementType.MAB.ToString());
+                q => q.FriendlyName == name && q.BackupManagementType == ServiceClientModel.BackupManagementType.MAB);
 
             var listResponse = ServiceClientAdapter.ListContainers(queryParams);
 
@@ -114,7 +114,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             throw new NotImplementedException();
         }
 
-        public Management.RecoveryServices.Backup.Models.ProtectionPolicyResponse GetPolicy()
+        public ProtectionPolicyResource GetPolicy()
         {
             throw new NotImplementedException();
         }

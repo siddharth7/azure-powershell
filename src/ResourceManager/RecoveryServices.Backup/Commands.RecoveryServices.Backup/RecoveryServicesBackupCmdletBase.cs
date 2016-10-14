@@ -181,7 +181,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
         /// </summary>
         /// <param name="jobResponse">Response from service</param>
         /// <param name="operationName">Name of the operation</param>
-        protected void HandleCreatedJob(AzureOperationResponse response, string operationName)
+        protected void HandleCreatedJob(Microsoft.Rest.Azure.AzureOperationResponse response, string operationName)
         {
             WriteDebug(Resources.TrackingOperationStatusURLForCompletion +
                             response.Response.Headers.GetAzureAsyncOperationHeader());

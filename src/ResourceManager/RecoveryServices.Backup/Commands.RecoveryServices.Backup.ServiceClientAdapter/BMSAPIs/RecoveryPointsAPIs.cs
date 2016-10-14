@@ -49,7 +49,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                 containerName, 
                 protectedItemName,
                 recoveryPointId,
-                cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
+                cancellationToken: BmsAdapter.CmdletCancellationToken).Result.Body;
 
             return response;
         }
@@ -79,11 +79,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                                      containerName,
                                      protectedItemName,
                                      queryFilter,
-                                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
+                                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result.Body;
 
             Func<string, Microsoft.Rest.Azure.IPage<RecoveryPointResource>> listNextAsync =
                 nextLink => BmsAdapter.Client.RecoveryPoints.ListNextWithHttpMessagesAsync(nextLink,
-                                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
+                                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result.Body;
 
             var response = HelperUtils.GetPagedList<RecoveryPointResource>(listAsync, listNextAsync);
             return response;

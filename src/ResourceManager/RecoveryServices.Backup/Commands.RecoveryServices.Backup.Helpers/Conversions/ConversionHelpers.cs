@@ -70,7 +70,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
                 backupEngine.Properties != null)
             {
                 string friendlyName = backupEngine.Properties.FriendlyName;
-                string backupManagementType = backupEngine.Properties.BackupManagementType;
+                string backupManagementType = backupEngine.Properties.BackupManagementType.ToString();
                 string registrationStatus = backupEngine.Properties.RegistrationStatus;
                 string healthStatus = backupEngine.Properties.HealthStatus;
                 bool? canReRegister = backupEngine.Properties.CanReRegister;

@@ -84,7 +84,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                     var cloudEx = exception.InnerException as CloudException;
                     if (cloudEx.Response != null)
                     {
-                        if (cloudEx.Response.StatusCode != HttpStatusCode.NotFound)
+                        if (cloudEx.Response.StatusCode != System.Net.HttpStatusCode.NotFound)
                         {
                             Logger.Instance.WriteDebug("CloudException Response statusCode: " +
                                                         cloudEx.Response.StatusCode);

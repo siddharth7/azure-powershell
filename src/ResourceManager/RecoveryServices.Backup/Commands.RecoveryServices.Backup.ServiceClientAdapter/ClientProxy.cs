@@ -53,12 +53,12 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         {
         }
 
-        internal Dictionary<string, List<string>> GetCustomRequestHeaders()
-        {
-            Dictionary<string, List<string>> dict = new Dictionary<string, List<string>>()
-            {
-                "x-ms-client-request-id"
-            };
-        }
+        //internal Dictionary<string, List<string>> GetCustomRequestHeaders()
+        //{
+        //    Dictionary<string, List<string>> dict = new Dictionary<string, List<string>>()
+        //    {
+        //        "x-ms-client-request-id"
+        //    };
+        //}
     }
 }

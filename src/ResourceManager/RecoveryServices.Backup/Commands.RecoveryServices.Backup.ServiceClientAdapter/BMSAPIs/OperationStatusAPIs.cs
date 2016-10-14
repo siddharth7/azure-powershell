@@ -12,7 +12,7 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
-using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
+using ServiceClientModel = Microsoft.Azure.Management.RecoveryServices.Backup.Models;
 using Microsoft.Rest.Azure;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClientAdapterNS
@@ -20,27 +20,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
     public partial class ServiceClientAdapter
     {
         /// <summary>
-        /// Gets result of the refresh container operation using the operation tracking URL
-        /// </summary>
-        /// <param name="operationResultLink">Operation tracking URL</param>
-        /// <returns>Job response returned by the service</returns>
-        public BaseRecoveryServicesJobResponse GetRefreshContainerOperationResultByURL(
-                string operationResultLink)
-        {
-            string resourceName = BmsAdapter.GetResourceName();
-            string resourceGroupName = BmsAdapter.GetResourceGroupName();
-
-            return BmsAdapter.Client.Containers.GetRefreshOperationResultByURLAsync(
-                                     operationResultLink,
-                                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
-        }
-
-        /// <summary>
         /// Gets result of a generic operation on the protected item using the operation tracking URL
         /// </summary>
         /// <param name="operationResultLink">Operation tracking URL</param>
         /// <returns>Operation status response returned by the service</returns>
-        public AzureOperationResponse<OperationStatus> GetProtectedItemOperationStatus(
+        public AzureOperationResponse<ServiceClientModel.OperationStatus> GetProtectedItemOperationStatus(
                 string operationId)
         {
             string resourceName = BmsAdapter.GetResourceName();
@@ -48,6 +32,16 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
 
             return BmsAdapter.Client.BackupOperationStatuses.GetWithHttpMessagesAsync(
                 resourceName, resourceGroupName, operationId).Result;
+        }
+
+        public AzureOperationResponse<ServiceClientModel.OperationStatus> GetProtectionPolicyOperationStatus(
+            string policyName, string operationId)
+        {
+            string resourceName = BmsAdapter.GetResourceName();
+            string resourceGroupName = BmsAdapter.GetResourceGroupName();
+
+            return BmsAdapter.Client.ProtectionPolicyOperationStatuses.GetWithHttpMessagesAsync(
+                resourceName, resourceGroupName, policyName, operationId).Result;
         }
     }
 }

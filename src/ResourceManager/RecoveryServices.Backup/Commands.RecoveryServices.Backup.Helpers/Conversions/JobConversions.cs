@@ -14,10 +14,9 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
+using CmdletModel = Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
 using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
-using Microsoft.Rest;
-using Microsoft.Rest.Azure;
+using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 {

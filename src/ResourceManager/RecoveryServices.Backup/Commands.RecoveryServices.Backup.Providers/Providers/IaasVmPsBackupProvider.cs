@@ -191,7 +191,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                 }
 
                 properties.PolicyId = string.Empty;
-                properties.ProtectionState = ItemProtectionState.ProtectionStopped.ToString();
+                properties.ProtectionState = ProtectionState.ProtectionStopped;
                 properties.SourceResourceId = item.SourceResourceId;
 
                 ProtectedItemResource serviceClientRequest = new ProtectedItemResource()
@@ -472,13 +472,13 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             {
                 queryParams = new ODataQuery<BMSContainerQueryObject>(
                 q => q.FriendlyName == nameQueryFilter && 
-                q.BackupManagementType == ServiceClientModel.BackupManagementType.AzureIaasVM.ToString());
+                q.BackupManagementType == ServiceClientModel.BackupManagementType.AzureIaasVM);
             }
             else
             {
                 queryParams = new ODataQuery<BMSContainerQueryObject>(
                 q => q.FriendlyName == nameQueryFilter && 
-                q.BackupManagementType == ServiceClientModel.BackupManagementType.AzureIaasVM.ToString() && 
+                q.BackupManagementType == ServiceClientModel.BackupManagementType.AzureIaasVM && 
                 q.Status == status.ToString());
             }
 
@@ -625,14 +625,15 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
         {
             CmdletModel.SimpleSchedulePolicy defaultSchedule = new CmdletModel.SimpleSchedulePolicy();
             //Default is daily scedule at 10:30 AM local time
-            defaultSchedule.ScheduleRunFrequency = ScheduleRunType.Daily;
+            defaultSchedule.ScheduleRunFrequency = CmdletModel.ScheduleRunType.Daily;
+            
 
             DateTime scheduleTime = GenerateRandomTime();
             defaultSchedule.ScheduleRunTimes = new List<DateTime>();
             defaultSchedule.ScheduleRunTimes.Add(scheduleTime);
 
-            defaultSchedule.ScheduleRunDays = new List<DayOfWeek>();
-            defaultSchedule.ScheduleRunDays.Add(DayOfWeek.Sunday);
+            defaultSchedule.ScheduleRunDays = new List<System.DayOfWeek>();
+            defaultSchedule.ScheduleRunDays.Add(System.DayOfWeek.Sunday);
 
             return defaultSchedule;
         }
@@ -658,8 +659,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             //Weekly Retention policy
             defaultRetention.IsWeeklyScheduleEnabled = true;
             defaultRetention.WeeklySchedule = new Models.WeeklyRetentionSchedule();
-            defaultRetention.WeeklySchedule.DaysOfTheWeek = new List<DayOfWeek>();
-            defaultRetention.WeeklySchedule.DaysOfTheWeek.Add(DayOfWeek.Sunday);
+            defaultRetention.WeeklySchedule.DaysOfTheWeek = new List<System.DayOfWeek>();
+            defaultRetention.WeeklySchedule.DaysOfTheWeek.Add(System.DayOfWeek.Sunday);
             defaultRetention.WeeklySchedule.DurationCountInWeeks = 104; //TBD make it const
             defaultRetention.WeeklySchedule.RetentionTimes = new List<DateTime>();
             defaultRetention.WeeklySchedule.RetentionTimes.Add(retentionTime);
@@ -708,12 +709,12 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
 
         private static Models.WeeklyRetentionFormat GetWeeklyRetentionFormat()
         {
-            Models.WeeklyRetentionFormat weeklyRetention = new Models.WeeklyRetentionFormat();
-            weeklyRetention.DaysOfTheWeek = new List<DayOfWeek>();
-            weeklyRetention.DaysOfTheWeek.Add(DayOfWeek.Sunday);
+            CmdletModel.WeeklyRetentionFormat weeklyRetention = new CmdletModel.WeeklyRetentionFormat();
+            weeklyRetention.DaysOfTheWeek = new List<System.DayOfWeek>();
+            weeklyRetention.DaysOfTheWeek.Add(System.DayOfWeek.Sunday);
 
-            weeklyRetention.WeeksOfTheMonth = new List<WeekOfMonth>();
-            weeklyRetention.WeeksOfTheMonth.Add(WeekOfMonth.First);
+            weeklyRetention.WeeksOfTheMonth = new List<CmdletModel.WeekOfMonth>();
+            weeklyRetention.WeeksOfTheMonth.Add(CmdletModel.WeekOfMonth.First);
             return weeklyRetention;
         }
 
@@ -986,50 +987,17 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             string errorMessage = string.Empty;
             var refreshContainerJobResponse = ServiceClientAdapter.RefreshContainers();
 
+            // Add tracking part
+
             //Now wait for the operation to Complete
-            if (refreshContainerJobResponse.StatusCode != System.Net.HttpStatusCode.NoContent)
+            if (refreshContainerJobResponse.Response.StatusCode != System.Net.HttpStatusCode.NoContent)
             {
                 errorMessage = String.Format(Resources.DiscoveryFailureErrorCode, 
-                    refreshContainerJobResponse.StatusCode);
+                    refreshContainerJobResponse.Response.StatusCode);
                 Logger.Instance.WriteDebug(errorMessage);
             }
         }
-
-        private HttpStatusCode TrackRefreshContainerOperation(string operationResultLink, 
-            int checkFrequency = defaultOperationStatusRetryTimeInMilliSec)
-        {
-            HttpStatusCode status = HttpStatusCode.Accepted;
-            while (status == HttpStatusCode.Accepted)
-            {
-                try
-                {
-                    var response = ServiceClientAdapter.GetRefreshContainerOperationResultByURL(operationResultLink);
-                    status = response.StatusCode;
-
-                    TestMockSupport.Delay(checkFrequency);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Instance.WriteDebug(ex.Message);
-                    status = HttpStatusCode.InternalServerError;
-                    break;
-                }
-            }
-
-            if (status == HttpStatusCode.NoContent)
-            {
-                Logger.Instance.WriteDebug("Refresh Container Job completed with success");
-            }
-            else
-            {
-                string msg = String.Format("Unexpected http status in response header {0}", status);
-                Logger.Instance.WriteDebug(msg);
-                throw new Exception(msg);
-            }
-
-            return status;
-        }
-
+  
         private static string GetAzureIaasVirtualMachineId(
             string resourceGroup, 
             string vmVersion, 

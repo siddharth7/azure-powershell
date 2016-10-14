@@ -12,7 +12,7 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
-using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
+using ServiceClientModel = Microsoft.Azure.Management.RecoveryServices.Backup.Models;
 using Microsoft.Rest.Azure;
 using Microsoft.WindowsAzure.Commands.Utilities.Common;
 using System;
@@ -33,15 +33,42 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
         /// <param name="statusUrlLink"></param>
         /// <param name="serviceClientMethod"></param>
         /// <returns></returns>
-        public static T GetOperationStatus<T>(AzureOperationResponse response,
+        public static T GetOperationStatus<T>(Microsoft.Rest.Azure.AzureOperationResponse response,
             Func<string, AzureOperationResponse<T>> getOpStatus)
-            where T : OperationStatus
+            where T : ServiceClientModel.OperationStatus
         {
             var operationId = response.Response.Headers.GetAzureAsyncOperationId();
 
             var opStatusResponse = getOpStatus(operationId);
 
-            while (opStatusResponse.Body.Status == OperationStatusValues.InProgress)
+            while (opStatusResponse.Body.Status == ServiceClientModel.OperationStatusValues.InProgress)
+            {
+                TestMockSupport.Delay(_defaultSleepForOperationTracking * 1000);
+
+                opStatusResponse = getOpStatus(operationId);
+            }
+
+            opStatusResponse = getOpStatus(operationId);
+
+            return opStatusResponse.Body;
+        }
+
+        /// <summary>
+        /// Block to track the operation to completion.
+        /// Waits till the status of the operation becomes something other than InProgress.
+        /// </summary>
+        /// <param name="statusUrlLink"></param>
+        /// <param name="serviceClientMethod"></param>
+        /// <returns></returns>
+        public static T GetOperationStatus<T, S>(Microsoft.Rest.Azure.AzureOperationResponse<S> response,
+            Func<string, AzureOperationResponse<T>> getOpStatus)
+            where T : ServiceClientModel.OperationStatus
+        {
+            var operationId = response.Response.Headers.GetAzureAsyncOperationId();
+
+            var opStatusResponse = getOpStatus(operationId);
+
+            while (opStatusResponse.Body.Status == ServiceClientModel.OperationStatusValues.InProgress)
             {
                 TestMockSupport.Delay(_defaultSleepForOperationTracking * 1000);
 
