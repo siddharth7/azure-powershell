@@ -12,12 +12,8 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
+using Microsoft.Rest.Azure;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClientAdapterNS
 {
@@ -44,15 +40,14 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// </summary>
         /// <param name="operationResultLink">Operation tracking URL</param>
         /// <returns>Operation status response returned by the service</returns>
-        public BackUpOperationStatusResponse GetProtectedItemOperationStatusByURL(
-                string operationResultLink)
+        public AzureOperationResponse<OperationStatus> GetProtectedItemOperationStatus(
+                string operationId)
         {
             string resourceName = BmsAdapter.GetResourceName();
             string resourceGroupName = BmsAdapter.GetResourceGroupName();
 
-            return BmsAdapter.Client.GetOperationStatusByURLAsync(
-                                     operationResultLink,
-                                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
+            return BmsAdapter.Client.BackupOperationStatuses.GetWithHttpMessagesAsync(
+                resourceName, resourceGroupName, operationId).Result;
         }
     }
 }
