@@ -87,7 +87,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 
             var opStatusResponse = getOpStatus(operationId);
 
-            while (opStatusResponse.StatusCode == System.Net.HttpStatusCode.Accepted)
+            while (opStatusResponse.Response.StatusCode == System.Net.HttpStatusCode.Accepted)
             {
                 TestMockSupport.Delay(_defaultSleepForOperationTracking * 1000);
 
