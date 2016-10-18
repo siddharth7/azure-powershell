@@ -33,21 +33,25 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
 
         ClientProxy<RecoveryServicesNS.RecoveryServicesBackupClient> BmsAdapter;
 
-        public string ResourceProviderNamespace { get; private set; }
+        public static string ResourceProviderNamespace
+        {
+            get
+            {
+                System.Configuration.Configuration exeConfiguration = System.Configuration.ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                System.Configuration.AppSettingsSection appSettings = (System.Configuration.AppSettingsSection)exeConfiguration.GetSection(AppSettingsSectionName);
+                string resourceProviderNamespace = ResourceProviderProductionNamespace;
+                if (appSettings.Settings[ProviderNamespaceKey] != null)
+                {
+                    resourceProviderNamespace = appSettings.Settings[ProviderNamespaceKey].Value;
+                }
+
+                return resourceProviderNamespace;
+            }
+        }
 
         public ServiceClientAdapter(AzureContext context)
         {
             BmsAdapter = new ClientProxy<RecoveryServicesNS.RecoveryServicesBackupClient>(context);
-
-            System.Configuration.Configuration exeConfiguration = System.Configuration.ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            System.Configuration.AppSettingsSection appSettings = (System.Configuration.AppSettingsSection)exeConfiguration.GetSection(AppSettingsSectionName);
-            string resourceProviderNamespace = ResourceProviderProductionNamespace;
-            if (appSettings.Settings[ProviderNamespaceKey] != null)
-            {
-                resourceProviderNamespace = appSettings.Settings[ProviderNamespaceKey].Value;
-            }
-
-            ResourceProviderNamespace = resourceProviderNamespace;
         }
     }
 }

@@ -49,10 +49,10 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
         /// </summary>
         protected void InitializeAzureBackupCmdlet()
         {
-            ServiceClientAdapter = new ServiceClientAdapter(DefaultProfile.Context);
+            ServiceClientAdapter = new ServiceClientAdapter(DefaultContext);
 
             WriteDebug("InsideRestore. going to create ResourceManager Client");
-            RmClient = AzureSession.ClientFactory.CreateClient<ResourcesNS.ResourceManagementClient>(DefaultProfile.Context, AzureEnvironment.Endpoint.ResourceManager);
+            RmClient = AzureSession.ClientFactory.CreateClient<ResourcesNS.ResourceManagementClient>(DefaultContext, AzureEnvironment.Endpoint.ResourceManager);
 
             WriteDebug("Client Created successfully");
 
@@ -144,11 +144,9 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
 
         protected override void BeginProcessing()
         {
-            // TOOD: This order might NOT work. If that's the case, need to parse the resource namespace in base cmdlet itself.
+            base.BeginProcessing();
 
             InitializeAzureBackupCmdlet();
-
-            base.BeginProcessing();
         }
 
         /// <summary>
