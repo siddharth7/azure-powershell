@@ -42,7 +42,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 
             SimpleSchedulePolicy psPolicy = new SimpleSchedulePolicy();
 
-            psPolicy.ScheduleRunDays = HelperUtils.GetEnumListFromStringList<DayOfWeek>(serviceClientPolicy.ScheduleRunDays);
+            psPolicy.ScheduleRunDays = HelperUtils.EnumListConverter<ServiceClientModel.DayOfWeek?, DayOfWeek>(serviceClientPolicy.ScheduleRunDays);
             psPolicy.ScheduleRunFrequency = (ScheduleRunType)Enum.Parse(typeof(ScheduleRunType),
                                                                         serviceClientPolicy.ScheduleRunFrequency.ToString());
             psPolicy.ScheduleRunTimes = ParseDateTimesToUTC(serviceClientPolicy.ScheduleRunTimes);
@@ -104,7 +104,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 
             if (psPolicy.ScheduleRunFrequency == ScheduleRunType.Weekly)
             {
-                serviceClientPolicy.ScheduleRunDays = HelperUtils.GetStringListFromEnumList<DayOfWeek>(psPolicy.ScheduleRunDays);
+                serviceClientPolicy.ScheduleRunDays = HelperUtils.EnumListConverter<DayOfWeek, ServiceClientModel.DayOfWeek?>(psPolicy.ScheduleRunDays);
             }
             serviceClientPolicy.ScheduleRunTimes = psPolicy.ScheduleRunTimes.ConvertAll(dateTime => (DateTime?) dateTime);
             return serviceClientPolicy;

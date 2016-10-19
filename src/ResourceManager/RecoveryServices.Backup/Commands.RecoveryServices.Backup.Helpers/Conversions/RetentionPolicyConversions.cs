@@ -259,7 +259,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 
             psWeekly.DurationCountInWeeks = GetRetentionDurationInWeeks(serviceClientWeekly.RetentionDuration);
             psWeekly.RetentionTimes = ParseDateTimesToUTC(serviceClientWeekly.RetentionTimes);
-            psWeekly.DaysOfTheWeek = HelperUtils.GetEnumListFromStringList<DayOfWeek>(serviceClientWeekly.DaysOfTheWeek);
+            psWeekly.DaysOfTheWeek = HelperUtils.EnumListConverter<ServiceClientModel.DayOfWeek?, DayOfWeek>(serviceClientWeekly.DaysOfTheWeek);
 
             return psWeekly;
         }
@@ -469,7 +469,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
             };
             serviceClientWeekly.RetentionTimes = GetNullableDateTimeListFromDateTimeList(
                                                  psWeekly.RetentionTimes);
-            serviceClientWeekly.DaysOfTheWeek = HelperUtils.GetStringListFromEnumList<DayOfWeek>(psWeekly.DaysOfTheWeek);
+            serviceClientWeekly.DaysOfTheWeek = HelperUtils.EnumListConverter<DayOfWeek, ServiceClientModel.DayOfWeek?>(psWeekly.DaysOfTheWeek);
 
             return serviceClientWeekly;
         }

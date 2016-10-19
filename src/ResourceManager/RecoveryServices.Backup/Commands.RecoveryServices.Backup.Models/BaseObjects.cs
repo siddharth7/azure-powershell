@@ -103,7 +103,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
         public string Name { get; set; }
 
         public ContainerBase(ServiceClientModel.ProtectionContainerResource protectionContainer)
-            : base(ConversionUtils.GetPsContainerType(((ServiceClientModel.ProtectionContainer)protectionContainer.Properties).ProtectableObjectType.ToString()),
+            : base(ConversionUtils.GetPsContainerType(((ServiceClientModel.ProtectionContainer)protectionContainer.Properties).ContainerType.ToString()),
                    ((ServiceClientModel.ProtectionContainer)protectionContainer.Properties).BackupManagementType.ToString())
         {
             Name = IdUtils.GetNameFromUri(protectionContainer.Name);

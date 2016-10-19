@@ -230,11 +230,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
             {
                 return ContainerType.AzureVM;
             }
-            else if (containerType == ServiceClientModel.ProtectableObjectType.Windows.ToString())
+            else if (containerType == ServiceClientModel.ContainerType.Windows.ToString())
             {
                 return ContainerType.Windows;
             }
-            else if (containerType == ServiceClientModel.ProtectableObjectType.AzureSqlContainer.ToString())
+            else if (containerType == ServiceClientModel.ContainerType.AzureSqlContainer.ToString())
             {
                 return ContainerType.AzureSQL;
             }
