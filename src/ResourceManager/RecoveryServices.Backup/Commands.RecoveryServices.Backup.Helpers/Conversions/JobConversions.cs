@@ -109,9 +109,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
             {
                 throw new ArgumentNullException("Job Start Time is null");
             }
-
             response.EndTime = vmJob.EndTime;
-            response.Duration = new TimeSpan(Convert.ToInt64(vmJob.Duration));
+            response.Duration = vmJob.Duration.HasValue ? (TimeSpan)vmJob.Duration : default(TimeSpan);
             response.Status = vmJob.Status;
             response.VmVersion = vmJob.VirtualMachineVersion;
             response.WorkloadName = vmJob.EntityFriendlyName;
