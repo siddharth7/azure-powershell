@@ -144,9 +144,6 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
             // currently we don't support any provider specific filters.
             // so we are initializing the object directly
 
-            startTime = CommonHelpers.GetDateTimeForService(startTime);
-            endTime = CommonHelpers.GetDateTimeForService(endTime);
-
             JobOperationType? operationType = string.IsNullOrEmpty(operation) ? null : operation.ToEnum<JobOperationType?>();
             ODataQuery<JobQueryObject> queryFilter = new ODataQuery<JobQueryObject>(
                q => q.BackupManagementType == backupManagementType &&
