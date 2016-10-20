@@ -154,7 +154,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
 
                     ODataQuery<ServiceClientModel.ProtectionPolicyQueryObject> queryParams
                     = new ODataQuery<ServiceClientModel.ProtectionPolicyQueryObject>(
-                    q => q.BackupManagementType.ToString() == serviceClientProviderType);
+                    q => q.BackupManagementType == ServiceClientHelpers.GetServiceClientBackupManagementType(serviceClientProviderType));
 
                     WriteDebug("going to query service to get list of policies");
                     List<ServiceClientModel.ProtectionPolicyResource> respList =

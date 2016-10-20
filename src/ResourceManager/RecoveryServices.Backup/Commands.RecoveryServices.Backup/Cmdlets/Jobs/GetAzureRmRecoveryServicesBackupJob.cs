@@ -144,13 +144,13 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                     BackupManagementType));
 
                 int resultCount = 0;
-                
+
                 var adapterResponse = ServiceClientAdapter.GetJobs(JobId,
-                    Status.ToEnum<ServiceClientModel.JobStatus>(),
+                    Status.HasValue ? Status.ToEnum<ServiceClientModel.JobStatus?>() : default(ServiceClientModel.JobStatus?),
                     Operation.ToString(),
                     rangeStart,
                     rangeEnd,
-                    BackupManagementType.ToEnum<ServiceClientModel.BackupManagementType>());
+                    ServiceClientHelpers.GetServiceClientBackupManagementType(BackupManagementType));
 
                 JobConversions.AddServiceClientJobsToPSList(adapterResponse, result, ref resultCount);
 
