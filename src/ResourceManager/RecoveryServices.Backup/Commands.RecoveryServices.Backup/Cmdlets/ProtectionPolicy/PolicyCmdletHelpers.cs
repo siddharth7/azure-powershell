@@ -72,16 +72,16 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
             ProtectionPolicyResource response = null;
 
             try
-            {                
+            {
                 response = serviceClientAdapter.GetProtectionPolicy(policyName);
                 Logger.Instance.WriteDebug("Successfully fetched policy from service: " + policyName);
             }
             catch (AggregateException exception)
             {
                 // if http response is NotFound - then ignore and return NULL response
-                if (exception.InnerException != null && exception.InnerException is CloudException)
+                if (exception.InnerException != null && exception.InnerException is Microsoft.Rest.Azure.CloudException)
                 {
-                    var cloudEx = exception.InnerException as CloudException;
+                    var cloudEx = exception.InnerException as Microsoft.Rest.Azure.CloudException;
                     if (cloudEx.Response != null)
                     {
                         if (cloudEx.Response.StatusCode != System.Net.HttpStatusCode.NotFound)
