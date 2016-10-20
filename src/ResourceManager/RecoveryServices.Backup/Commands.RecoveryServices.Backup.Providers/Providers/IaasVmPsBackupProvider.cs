@@ -288,6 +288,10 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
         {
             DateTime startDate = (DateTime)(ProviderData[RecoveryPointParams.StartDate]);
             DateTime endDate = (DateTime)(ProviderData[RecoveryPointParams.EndDate]);
+
+            startDate = CommonHelpers.GetDateTimeForService(startDate);
+            endDate = CommonHelpers.GetDateTimeForService(endDate);
+
             AzureVmItem item = ProviderData[RecoveryPointParams.Item]
                 as AzureVmItem;
 
