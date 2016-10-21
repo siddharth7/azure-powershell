@@ -31,5 +31,17 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
             var asyncHeader = headers.GetAzureAsyncOperationHeader();
             return asyncHeader.Segments.Last();
         }
+
+        public static Uri GetLocationHeader(this HttpResponseHeaders headers)
+        {
+            var asyncHeader = headers.GetValues("Location").FirstOrDefault();
+            return new Uri(asyncHeader);
+        }
+
+        public static string GetOperationResultId(this HttpResponseHeaders headers)
+        {
+            var asyncHeader = headers.GetLocationHeader();
+            return asyncHeader.Segments.Last();
+        }
     }
 }

@@ -83,7 +83,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
         public static Microsoft.Rest.Azure.AzureOperationResponse GetOperationResult(Microsoft.Rest.Azure.AzureOperationResponse response,
             Func<string, Microsoft.Rest.Azure.AzureOperationResponse> getOpStatus)
         {
-            var operationId = response.Response.Headers.GetAzureAsyncOperationId();
+            var operationId = response.Response.Headers.GetOperationResultId();
 
             var opStatusResponse = getOpStatus(operationId);
 

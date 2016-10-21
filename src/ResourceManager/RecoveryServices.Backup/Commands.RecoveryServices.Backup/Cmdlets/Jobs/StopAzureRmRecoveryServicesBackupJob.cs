@@ -71,7 +71,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                     cancelResponse,
                     operationId => ServiceClientAdapter.GetCancelJobOperationResult(operationId));
 
-                if (cancelResponse.Response.StatusCode != HttpStatusCode.NoContent)
+                if (operationStatus.Response.StatusCode != HttpStatusCode.NoContent)
                 {
                     throw new Exception(string.Format(Resources.JobCouldNotCancelJob, 
                         cancelResponse.Response.StatusCode.ToString()));

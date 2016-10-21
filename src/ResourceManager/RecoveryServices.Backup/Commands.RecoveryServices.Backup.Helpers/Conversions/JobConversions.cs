@@ -75,6 +75,10 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
                         jobsCount++;
                         psJobs.Add(convertedJob);
                     }
+                    else
+                    {
+                        Logger.Instance.WriteDebug("Ignoring some of the unexpected job while conversion");
+                    }
                 }
             }
         }
