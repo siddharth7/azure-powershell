@@ -305,11 +305,14 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
                 resources.Add(pagedResource);
             }
 
+            nextLink = pagedResources.NextPageLink;
+
             while (!string.IsNullOrEmpty(nextLink))
             {
+                pagedResources = listNext(nextLink);
                 nextLink = pagedResources.NextPageLink;
 
-                foreach (var pagedResource in listNext(nextLink))
+                foreach (var pagedResource in pagedResources)
                 {
                     resources.Add(pagedResource);
                 }
