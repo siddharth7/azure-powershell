@@ -303,7 +303,15 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             }
 
             //we need to fetch the list of RPs
-            ODataQuery<BMSRPQueryObject> queryFilter = new ODataQuery<BMSRPQueryObject>(qObj => qObj.StartDate == startDate && qObj.EndDate == endDate);
+            var queryFilterString = QueryBuilder.Instance.GetQueryString(new BMSRPQueryObject()
+            {
+                StartDate = startDate,
+                EndDate = endDate
+            });
+
+            ODataQuery<BMSRPQueryObject> queryFilter = new ODataQuery<BMSRPQueryObject>();
+            queryFilter.Filter = queryFilterString;
+
             List<RecoveryPointResource> rpListResponse = ServiceClientAdapter.GetRecoveryPoints(containerUri, protectedItemName, queryFilter);
             return RecoveryPointConversions.GetPSAzureRecoveryPoints(rpListResponse, item);
         }
