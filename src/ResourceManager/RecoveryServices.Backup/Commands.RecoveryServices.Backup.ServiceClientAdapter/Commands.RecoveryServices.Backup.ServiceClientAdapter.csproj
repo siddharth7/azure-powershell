@@ -75,6 +75,7 @@
     <Compile Include="CommonHelpers.cs" />
     <Compile Include="ClientRequestIdHandler.cs" />
     <Compile Include="DelegatingHandler.cs" />
+    <Compile Include="QueryBuilder.cs" />
     <Compile Include="ServiceClientAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

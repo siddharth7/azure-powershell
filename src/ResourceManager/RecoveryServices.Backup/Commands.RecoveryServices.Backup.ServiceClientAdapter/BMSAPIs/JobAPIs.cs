@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers;
 using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
 using Microsoft.Rest.Azure.OData;
+using System.Reflection;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClientAdapterNS
 {
@@ -60,7 +61,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         {
             string resourceName = BmsAdapter.GetResourceName();
             string resourceGroupName = BmsAdapter.GetResourceGroupName();
-                       
+
             ODataQuery<JobQueryObject> queryFilter = GetQueryObject(
                 backupManagementType,
                 startTime,
@@ -144,6 +145,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
             // currently we don't support any provider specific filters.
             // so we are initializing the object directly
 
+            // TODO: Drop this and use the QueryBuilder as shown below
             JobOperationType? operationType = string.IsNullOrEmpty(operation) ? null : operation.ToEnum<JobOperationType?>();
             ODataQuery<JobQueryObject> queryFilter = new ODataQuery<JobQueryObject>(
                q => q.BackupManagementType == backupManagementType &&
@@ -152,6 +154,16 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                q.JobId == jobId &&
                q.Status == status &&
                q.Operation == operationType);
+
+            var queryFilterString = QueryBuilder.Instance.GetQueryString(new JobQueryObject()
+            {
+                BackupManagementType = backupManagementType,
+                StartTime = startTime,
+                EndTime = endTime,
+                JobId = jobId,
+                Status = status,
+                Operation = operationType
+            });
 
             return queryFilter;
         }
