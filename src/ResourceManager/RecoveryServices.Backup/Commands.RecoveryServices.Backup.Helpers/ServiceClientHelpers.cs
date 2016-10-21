@@ -120,7 +120,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
                 return providerType;
             }
 
-            return GetServiceClientBackupManagementType(backupManagementType.ToEnum<CmdletModel.BackupManagementType>());
+            return GetServiceClientBackupManagementType(
+                backupManagementType.ToEnum<CmdletModel.BackupManagementType>());
             
         }
 

@@ -41,12 +41,14 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                     }
                     else if (genarg.Any(type => type.IsEnum))
                     {
-                        rhs = property.GetValue(queryObject).ToString();
+                        rhs = (property.GetValue(queryObject) != null) ?
+                        property.GetValue(queryObject).ToString() : null;
                     }
                 }
                 else
                 {
-                    rhs = property.GetValue(queryObject).ToString();
+                    rhs = (property.GetValue(queryObject) != null) ?
+                        property.GetValue(queryObject).ToString() : null;
                 }
 
                 if (!string.IsNullOrEmpty(queryString))
@@ -54,7 +56,10 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                     queryString += " and ";
                 }
 
-                queryString += lhs + " eq " + rhs;
+                if(!string.IsNullOrEmpty(rhs))
+                {
+                    queryString += lhs + " eq " + rhs;
+                }
             }
 
             return queryString;

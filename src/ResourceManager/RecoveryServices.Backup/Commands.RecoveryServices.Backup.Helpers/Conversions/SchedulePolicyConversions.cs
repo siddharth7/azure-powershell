@@ -98,13 +98,14 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
                 return null;
             }
 
-            ServiceClientModel.SimpleSchedulePolicy serviceClientPolicy = new ServiceClientModel.SimpleSchedulePolicy();            
+            ServiceClientModel.SimpleSchedulePolicy serviceClientPolicy = new ServiceClientModel.SimpleSchedulePolicy();
             serviceClientPolicy.ScheduleRunFrequency = 
                 psPolicy.ScheduleRunFrequency.ToEnum<ServiceClientModel.ScheduleRunType>();
 
             if (psPolicy.ScheduleRunFrequency == ScheduleRunType.Weekly)
             {
-                serviceClientPolicy.ScheduleRunDays = HelperUtils.EnumListConverter<DayOfWeek, ServiceClientModel.DayOfWeek?>(psPolicy.ScheduleRunDays);
+                serviceClientPolicy.ScheduleRunDays = HelperUtils.EnumListConverter<DayOfWeek, ServiceClientModel.DayOfWeek>(
+                    psPolicy.ScheduleRunDays).Cast<ServiceClientModel.DayOfWeek?>().ToList();
             }
             serviceClientPolicy.ScheduleRunTimes = psPolicy.ScheduleRunTimes.ConvertAll(dateTime => (DateTime?) dateTime);
             return serviceClientPolicy;
