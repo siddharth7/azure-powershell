@@ -25,7 +25,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
 
             foreach (var property in props)
             {
-                var lhs = property.Name;
+                var lhs = property.Name.ToCamelCase();
 
                 var rhs = string.Empty;
 
