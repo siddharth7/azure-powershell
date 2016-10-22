@@ -22,7 +22,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         {
             var props = queryObject.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
             string queryString = string.Empty;
-
+            List<string> queryStringList = new List<string>();
             foreach (var property in props)
             {
                 var lhs = property.Name.ToCamelCase();
@@ -51,16 +51,13 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                         property.GetValue(queryObject).ToString() : null;
                 }
 
-                if (!string.IsNullOrEmpty(queryString))
-                {
-                    queryString += " and ";
-                }
-
                 if(!string.IsNullOrEmpty(rhs))
                 {
-                    queryString += lhs + " eq " + rhs;
+                    queryStringList.Add(lhs + " eq " + rhs);
                 }
             }
+
+            queryString = string.Join(" and ", queryStringList);
 
             return queryString;
         }
