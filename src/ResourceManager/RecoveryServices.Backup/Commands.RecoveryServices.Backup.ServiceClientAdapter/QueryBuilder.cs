@@ -42,13 +42,13 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                     else if (genarg.Any(type => type.IsEnum))
                     {
                         rhs = (property.GetValue(queryObject) != null) ?
-                        property.GetValue(queryObject).ToString() : null;
+                        string.Format("'{0}'", property.GetValue(queryObject).ToString()) : null;
                     }
                 }
                 else
                 {
                     rhs = (property.GetValue(queryObject) != null) ?
-                        property.GetValue(queryObject).ToString() : null;
+                        string.Format("'{0}'", property.GetValue(queryObject).ToString()) : null;
                 }
 
                 if(!string.IsNullOrEmpty(rhs))
