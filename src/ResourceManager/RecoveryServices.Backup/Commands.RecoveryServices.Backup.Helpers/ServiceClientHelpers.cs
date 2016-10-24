@@ -183,7 +183,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
             switch (containerType)
             {
                 case CmdletModel.ContainerType.AzureVM:
-                    serviceClientContainerType = ServiceClientModel.ContainerType.IaasVMContainer.ToString();
+                    serviceClientContainerType = "IaasVMContainer";
                     break;
                 default:
                     break;
