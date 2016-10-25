@@ -33,6 +33,7 @@ using RestTestFramework = Microsoft.Rest.ClientRuntime.Azure.TestFramework;
 using RecoveryServicesNS = Microsoft.Azure.Management.RecoveryServices;
 using ResourceManagementNS = Microsoft.Azure.Management.Resources;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
+using HyakRmNS = Microsoft.Azure.Management.Internal.Resources;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
 {
@@ -46,6 +47,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
         public RecoveryServicesNS.RecoveryServicesManagementClient RsClient { get; private set; }
 
         public ResourceManagementNS.ResourceManagementClient RmClient { get; private set; }
+
+        public HyakRmNS.ResourceManagementClient HyakRmClient { get; private set; }
 
         protected string ResourceNamespace { get; private set; }
 
@@ -73,6 +76,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
             RsBackupClient = GetRsBackupClient(context);
             RsClient = GetRsClient();
             RmClient = GetResourceManagementClient();
+            HyakRmClient = GetHyakRmClient();
             //SubscriptionClient = GetSubscriptionClient();
             //CognitiveServicesClient = GetCognitiveServicesManagementClient(context);
             //GalleryClient = GetGalleryClient();
@@ -81,12 +85,18 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
             helper.SetupManagementClients(
                 RsBackupClient,
                 RsClient,
-                RmClient);
+                RmClient,
+                HyakRmClient);
         }
 
         private ResourceManagementNS.ResourceManagementClient GetResourceManagementClient()
         {
             return TestBase.GetServiceClient<ResourceManagementNS.ResourceManagementClient>(this.csmTestFactory);
+        }
+
+        private HyakRmNS.ResourceManagementClient GetHyakRmClient()
+        {
+            return TestBase.GetServiceClient<HyakRmNS.ResourceManagementClient>(this.csmTestFactory);
         }
 
         public void RunPsTest(PsBackupProviderTypes providerType, params string[] scripts)
