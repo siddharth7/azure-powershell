@@ -17,6 +17,7 @@ using Microsoft.Azure.Test.HttpRecorder;
 using Microsoft.WindowsAzure.Commands.ScenarioTest;
 using System;
 using System.Configuration;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Security;
@@ -29,19 +30,34 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.Azure.Test.Authentication;
 using RestTestFramework = Microsoft.Rest.ClientRuntime.Azure.TestFramework;
+using RecoveryServicesNS = Microsoft.Azure.Management.RecoveryServices;
+using ResourceManagementNS = Microsoft.Azure.Management.Resources;
+using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
 {
-    public abstract class TestsBase : RMTestBase
+    public class TestController
     {
         CSMTestEnvironmentFactory csmTestFactory;
         EnvironmentSetupHelper helper;
 
         public RecoveryServicesBackupClient RsBackupClient { get; private set; }
 
+        public RecoveryServicesNS.RecoveryServicesManagementClient RsClient { get; private set; }
+
+        public ResourceManagementNS.ResourceManagementClient RmClient { get; private set; }
+
         protected string ResourceNamespace { get; private set; }
 
-        protected TestsBase()
+        public static TestController NewInstance
+        {
+            get
+            {
+                return new TestController();
+            }
+        }
+
+        public TestController()
         {
             this.helper = new EnvironmentSetupHelper();
             ResourceNamespace = "Microsoft.RecoveryServices";
@@ -55,37 +71,79 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
         protected void SetupManagementClients(RestTestFramework.MockContext context)
         {
             RsBackupClient = GetRsBackupClient(context);
+            RsClient = GetRsClient();
+            RmClient = GetResourceManagementClient();
+            //SubscriptionClient = GetSubscriptionClient();
+            //CognitiveServicesClient = GetCognitiveServicesManagementClient(context);
+            //GalleryClient = GetGalleryClient();
+            //AuthorizationManagementClient = GetAuthorizationManagementClient();
 
-            helper.SetupManagementClients(RsBackupClient);
+            helper.SetupManagementClients(
+                RsBackupClient,
+                RsClient,
+                RmClient);
         }
 
-        protected void RunPowerShellTest(string testFolderName, params string[] scripts)
+        private ResourceManagementNS.ResourceManagementClient GetResourceManagementClient()
         {
-            Dictionary<string, string> providers = new Dictionary<string, string>();
-            providers.Add("Microsoft.Resources", null);
-            providers.Add("Microsoft.Features", null);
-            providers.Add("Microsoft.Authorization", null);
-            providers.Add("Microsoft.Compute", null);
+            return TestBase.GetServiceClient<ResourceManagementNS.ResourceManagementClient>(this.csmTestFactory);
+        }
+
+        public void RunPsTest(PsBackupProviderTypes providerType, params string[] scripts)
+        {
+            var callingClassType = TestUtilities.GetCallingClass(2);
+            var mockName = TestUtilities.GetCurrentMethodName(2);
+
+            RunPsTestWorkflow(
+                providerType,
+                () => scripts,
+                // no custom initializer
+                null,
+                // no custom cleanup 
+                null,
+                callingClassType,
+                mockName);
+        }
+
+        public void RunPsTestWorkflow(
+            PsBackupProviderTypes providerType,
+            Func<string[]> scriptBuilder,
+            Action<CSMTestEnvironmentFactory> initialize,
+            Action cleanup,
+            string callingClassType,
+            string mockName)
+        {
+            Dictionary<string, string> d = new Dictionary<string, string>();
+            d.Add("Microsoft.Resources", null);
+            d.Add("Microsoft.Features", null);
+            d.Add("Microsoft.Authorization", null);
+            d.Add("Microsoft.Compute", null);
             var providersToIgnore = new Dictionary<string, string>();
             providersToIgnore.Add("Microsoft.Azure.Management.Resources.ResourceManagementClient", "2016-02-01");
-            HttpMockServer.Matcher = new PermissiveRecordMatcherWithApiExclusion(true, providers, providersToIgnore);
+            HttpMockServer.Matcher = new PermissiveRecordMatcherWithApiExclusion(true, d, providersToIgnore);
 
-            using (RestTestFramework.MockContext context =
-                RestTestFramework.MockContext.Start(TestUtilities.GetCallingClass(2),
-                                                    TestUtilities.GetCurrentMethodName(2)))
+            HttpMockServer.RecordsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SessionRecords");
+
+            using (RestTestFramework.MockContext context = RestTestFramework.MockContext.Start(callingClassType, mockName))
             {
                 csmTestFactory = new CSMTestEnvironmentFactory();
 
-                string psFile = "ScenarioTests\\" + testFolderName + "\\" + this.GetType().Name + ".ps1";
+                initialize?.Invoke(csmTestFactory);
+
+                SetupManagementClients(context);
+
+                helper.SetupEnvironment(AzureModule.AzureResourceManager);
+
+                var testFolderName = providerType.ToString();
+                var callingClassName = callingClassType
+                                        .Split(new[] { "." }, StringSplitOptions.RemoveEmptyEntries)
+                                        .Last();
+                string psFile = "ScenarioTests\\" + testFolderName + "\\" + callingClassName + ".ps1";
                 string commonPsFile = "ScenarioTests\\" + testFolderName + "\\Common.ps1";
                 string rmProfileModule = helper.RMProfileModule;
                 string rmModulePath = helper.GetRMModulePath("AzureRM.RecoveryServices.Backup.psd1");
                 string recoveryServicesModulePath =
                     helper.GetRMModulePath("AzureRM.RecoveryServices.psd1");
-
-                SetupManagementClients(context);
-
-                helper.SetupEnvironment(AzureModule.AzureResourceManager);
 
                 List<string> modules = new List<string>();
 
@@ -100,46 +158,60 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
                 modules.Add(recoveryServicesModulePath);
 
                 helper.SetupModules(AzureModule.AzureResourceManager, modules.ToArray());
-                helper.RunPowerShellTest(scripts);
+
+                try
+                {
+                    if (scriptBuilder != null)
+                    {
+                        var psScripts = scriptBuilder();
+
+                        if (psScripts != null)
+                        {
+                            helper.RunPowerShellTest(psScripts);
+                        }
+                    }
+                }
+                finally
+                {
+                    cleanup?.Invoke();
+                }
             }
         }
 
-        private RecoveryServicesBackupClient GetRsBackupClient(RestTestFramework.MockContext context)
+        private RecoveryServicesNS.RecoveryServicesManagementClient GetRsClient()
         {
-            return context.GetServiceClient<RecoveryServicesBackupClient>(RestTestFramework.TestEnvironmentFactory.GetTestEnvironment());
-
-            //var factory = (TestEnvironmentFactory)new CSMTestEnvironmentFactory();
-
-            //var testEnvironment = factory.GetTestEnvironment();
-
-            //ServicePointManager.ServerCertificateValidationCallback = IgnoreCertificateErrorHandler;
-
-            //RecoveryServicesBackupClient client;
-            //var credentials = new SubscriptionCredentialsAdapter(
-            //    testEnvironment.AuthorizationContext.TokenCredentials[TokenAudience.Management],
-            //    testEnvironment.SubscriptionId);
-
-            //if (testEnvironment.UsesCustomUri())
-            //{
-            //    client = context.GetServiceClient<RecoveryServicesBackupClient>(RestTestFramework.TestEnvironmentFactory.GetTestEnvironment());
-            //    //client = new RecoveryServicesBackupClient(
-            //    //    credentials,
-            //    //    testEnvironment.BaseUri);
-            //}
-
-            //else
-            //{
-            //    client = TestBase.GetServiceClient<RecoveryServicesBackupClient>(this.csmTestFactory);
-            //    //client = new RecoveryServicesBackupClient(
-            //    //    credentials);
-            //}
-
-            //// client.ResourceNamespace = this.ResourceNamespace;
-
-            //return GetServiceClient<RecoveryServicesBackupClient>(factory, client);
+            return GetServiceClient<RecoveryServicesNS.RecoveryServicesManagementClient>();
         }
 
-        public static T GetServiceClient<T>(TestEnvironmentFactory factory, RecoveryServicesBackupClient client) where T : class
+        public static T GetServiceClient<T>() where T : class
+        {
+            var factory = (TestEnvironmentFactory)new CSMTestEnvironmentFactory();
+            var testEnvironment = factory.GetTestEnvironment();
+
+            ServicePointManager.ServerCertificateValidationCallback = IgnoreCertificateErrorHandler;
+
+            RecoveryServicesNS.RecoveryServicesManagementClient client;
+            var credentials = new SubscriptionCredentialsAdapter(
+                testEnvironment.AuthorizationContext.TokenCredentials[TokenAudience.Management],
+                testEnvironment.SubscriptionId);
+
+            if (testEnvironment.UsesCustomUri())
+            {
+                client = new RecoveryServicesNS.RecoveryServicesManagementClient(
+                    "Microsoft.RecoveryServices",
+                    credentials,
+                    testEnvironment.BaseUri);
+            }
+            else
+            {
+                client = new RecoveryServicesNS.RecoveryServicesManagementClient(
+                    "Microsoft.RecoveryServices",
+                    credentials);
+            }
+            return GetServiceClient<T>(factory, client);
+        }
+
+        public static T GetServiceClient<T>(TestEnvironmentFactory factory, RecoveryServicesNS.RecoveryServicesManagementClient client) where T : class
         {
             TestEnvironment testEnvironment = factory.GetTestEnvironment();
 
@@ -172,8 +244,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
                 PropertyInfo property2 = typeof(T).GetProperty("LongRunningOperationRetryTimeout", typeof(int));
                 if (property1 != (PropertyInfo)null && property2 != (PropertyInfo)null)
                 {
-                    property1.SetValue((object)obj2, (object)-1);
-                    property2.SetValue((object)obj2, (object)-1);
+                    property1.SetValue((object)obj2, (object)0);
+                    property2.SetValue((object)obj2, (object)0);
                 }
             }
             return obj2;
@@ -186,6 +258,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
            SslPolicyErrors sslPolicyErrors)
         {
             return true;
+        }
+
+        private RecoveryServicesBackupClient GetRsBackupClient(RestTestFramework.MockContext context)
+        {
+            return context.GetServiceClient<RecoveryServicesBackupClient>(RestTestFramework.TestEnvironmentFactory.GetTestEnvironment());
         }
     }
 }
