@@ -103,7 +103,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
 
                     // Track OperationStatus URL for operation completion
 
-                    string policyName = policyResponse.Body.Name;
+                    string policyName = Policy.Name;
 
                     ServiceClientModel.OperationStatus operationStatus =  
                         TrackingHelpers.GetOperationStatus<ServiceClientModel.OperationStatus, ServiceClientModel.ProtectionPolicyResource> (
