@@ -153,7 +153,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                     }
 
                     var backupManagementTypeFilter = string.IsNullOrEmpty(serviceClientProviderType) ?
-                            default(ServiceClientModel.BackupManagementType) :
+                            default(ServiceClientModel.BackupManagementType?) :
                             serviceClientProviderType.ToEnum<ServiceClientModel.BackupManagementType>();
 
                     ODataQuery<ServiceClientModel.ProtectionPolicyQueryObject> queryParams
