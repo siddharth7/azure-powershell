@@ -485,10 +485,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             }
             else
             {
+                var statusString = status.ToString();
                 queryParams = new ODataQuery<BMSContainerQueryObject>(
                 q => q.FriendlyName == nameQueryFilter && 
                 q.BackupManagementType == ServiceClientModel.BackupManagementType.AzureIaasVM && 
-                q.Status == status.ToString());
+                q.Status == statusString);
             }
 
             var listResponse = ServiceClientAdapter.ListContainers(queryParams);

@@ -34,6 +34,7 @@ using RecoveryServicesNS = Microsoft.Azure.Management.RecoveryServices;
 using ResourceManagementNS = Microsoft.Azure.Management.Resources;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
 using HyakRmNS = Microsoft.Azure.Management.Internal.Resources;
+using ResourceManagementRestNS = Microsoft.Azure.Management.ResourceManager;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
 {
@@ -47,6 +48,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
         public RecoveryServicesNS.RecoveryServicesManagementClient RsClient { get; private set; }
 
         public ResourceManagementNS.ResourceManagementClient RmClient { get; private set; }
+
+        public ResourceManagementRestNS.ResourceManagementClient RmRestClient { get; private set; }
 
         public HyakRmNS.ResourceManagementClient HyakRmClient { get; private set; }
 
@@ -75,7 +78,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
         {
             RsBackupClient = GetRsBackupClient(context);
             RsClient = GetRsClient();
-            RmClient = GetResourceManagementClient();
+            RmClient = GetRmClient();
+            RmRestClient = GetRmRestClient(context);
             HyakRmClient = GetHyakRmClient();
             //SubscriptionClient = GetSubscriptionClient();
             //CognitiveServicesClient = GetCognitiveServicesManagementClient(context);
@@ -86,12 +90,18 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
                 RsBackupClient,
                 RsClient,
                 RmClient,
+                RmRestClient,
                 HyakRmClient);
         }
 
-        private ResourceManagementNS.ResourceManagementClient GetResourceManagementClient()
+        private ResourceManagementNS.ResourceManagementClient GetRmClient()
         {
             return TestBase.GetServiceClient<ResourceManagementNS.ResourceManagementClient>(this.csmTestFactory);
+        }
+
+        private ResourceManagementRestNS.ResourceManagementClient GetRmRestClient(RestTestFramework.MockContext context)
+        {
+            return context.GetServiceClient<ResourceManagementRestNS.ResourceManagementClient>(RestTestFramework.TestEnvironmentFactory.GetTestEnvironment());
         }
 
         private HyakRmNS.ResourceManagementClient GetHyakRmClient()
