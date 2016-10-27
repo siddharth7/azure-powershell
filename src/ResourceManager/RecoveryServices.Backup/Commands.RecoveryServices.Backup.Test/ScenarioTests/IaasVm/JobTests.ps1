@@ -60,6 +60,61 @@ function Test-GetJobsTimeFilter
 		Assert-AreEqual $job.StartTime.ToUniversalTime().CompareTo($startTime) 1
 		Assert-AreEqual $endTime.CompareTo($job.StartTime.ToUniversalTime()) 1
 	}
+
+    #Negative test case
+    # rangeEnd <= rangeStart
+    [bool] $failed = $false
+	try
+    {
+        $filteredJobs = Get-AzureRmRecoveryServicesBackupJob -From $endTime -To $startTime
+        $failed = $true
+    }
+    catch
+    {
+        $failed = $false
+    }
+    Assert-True $failed
+
+    # rangeStart.Kind != DateTimeKind.Utc
+    $startTime = (Get-Date).AddDays(-20)
+	try
+    {
+        $filteredJobs = Get-AzureRmRecoveryServicesBackupJob -From $startTime -To $endTime
+        $failed = $true
+    }
+    catch
+    {
+        $failed = $false
+    }
+    Assert-True $failed
+
+    #rangeEnd.Subtract(rangeStart) > TimeSpan.FromDays(30)
+    $startTime = (Get-Date).ToUniversalTime().AddDays(-40)
+    $endTime = (Get-Date).ToUniversalTime()
+	try
+    {
+        $filteredJobs = Get-AzureRmRecoveryServicesBackupJob -From $startTime -To $endTime
+        $failed = $true
+    }
+    catch
+    {
+        $failed = $false
+    }
+    Assert-True $failed
+
+    #rangeStart > DateTime.UtcNow
+    $startTime = (Get-Date).ToUniversalTime().AddDays(2)
+    $endTime = (Get-Date).ToUniversalTime().AddDays(5)
+	try
+    {
+        $filteredJobs = Get-AzureRmRecoveryServicesBackupJob -From $startTime -To $endTime
+        $failed = $true
+    }
+    catch
+    {
+        $failed = $false
+    }
+    Assert-True $failed
 }
 
 function Test-GetJobsStatusFilter
