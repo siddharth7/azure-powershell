@@ -107,7 +107,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             throw new NotImplementedException();
         }
 
-        public Microsoft.Rest.Azure.AzureOperationResponse GetProtectedItem()
+        public ProtectedItemResource GetProtectedItem()
         {
             throw new NotImplementedException();
         }
@@ -154,7 +154,15 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             }
 
             //we need to fetch the list of RPs
-            ODataQuery<BMSRPQueryObject> queryFilter = new ODataQuery<BMSRPQueryObject>(qObj => qObj.StartDate == startDate && qObj.EndDate == endDate);
+            var queryFilterString = QueryBuilder.Instance.GetQueryString(new BMSRPQueryObject()
+            {
+                StartDate = startDate,
+                EndDate = endDate
+            });
+
+            ODataQuery<BMSRPQueryObject> queryFilter = new ODataQuery<BMSRPQueryObject>();
+            queryFilter.Filter = queryFilterString;
+
             List<RecoveryPointResource> rpListResponse = ServiceClientAdapter.GetRecoveryPoints(
                 containerUri, protectedItemName, queryFilter);
             return RecoveryPointConversions.GetPSAzureRecoveryPoints(rpListResponse, item);
@@ -247,7 +255,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             string name = (string)this.ProviderData[ContainerParams.Name];
 
             ODataQuery<BMSContainerQueryObject> queryParams = new ODataQuery<BMSContainerQueryObject>(
-                q => q.BackupManagementType == ServiceClientModel.BackupManagementType.AzureSql.ToString());
+                q => q.BackupManagementType == ServiceClientModel.BackupManagementType.AzureSql);
 
 
             var listResponse = ServiceClientAdapter.ListContainers(queryParams);
@@ -367,7 +375,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                 for (int i = 0; i < itemModels.Count; i++)
                 {
                     AzureSqlProtectedItem azureSqlProtectedItem =
-                        (AzureSqlProtectedItem)protectedItemGetResponses[i].Item.Properties;
+                        (AzureSqlProtectedItem)protectedItemGetResponses[i].Properties;
                     AzureSqlItemExtendedInfo extendedInfo = new AzureSqlItemExtendedInfo();
                     var hydraExtendedInfo = azureSqlProtectedItem.ExtendedInfo;
                     if (hydraExtendedInfo.OldestRecoveryPoint.HasValue)

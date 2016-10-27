@@ -36,9 +36,9 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                 string policyName,
                 ProtectionPolicyResource request)
         {           
-            return BmsAdapter.Client.ProtectionPoliciesOperations.CreateOrUpdateWithHttpMessagesAsync(
+            return BmsAdapter.Client.ProtectionPolicies.CreateOrUpdateWithHttpMessagesAsync(
+                                     BmsAdapter.GetResourceName(),
                                      BmsAdapter.GetResourceGroupName(),
-                                     BmsAdapter.GetResourceName(), 
                                      policyName, 
                                      request,
                                      cancellationToken: BmsAdapter.CmdletCancellationToken).Result;            
@@ -51,11 +51,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// <returns>Policy response returned by the service</returns>
         public ProtectionPolicyResource GetProtectionPolicy(string policyName)
         {
-            return BmsAdapter.Client.ProtectionPoliciesOperations.GetWithHttpMessagesAsync(
-                                     BmsAdapter.GetResourceGroupName(),
+            return BmsAdapter.Client.ProtectionPolicies.GetWithHttpMessagesAsync(
                                      BmsAdapter.GetResourceName(),
+                                     BmsAdapter.GetResourceGroupName(),
                                      policyName,
-                                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
+                                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result.Body;
         }
 
         /// <summary>
@@ -68,17 +68,16 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                                             string skipToken = default(string))
         {
             Func<Microsoft.Rest.Azure.IPage<ProtectionPolicyResource>> listAsync =
-                () => BmsAdapter.Client.ProtectionPoliciesOperations.ListWithHttpMessagesAsync(
-                                     BmsAdapter.GetResourceGroupName(),
+                () => BmsAdapter.Client.ProtectionPolicies.ListWithHttpMessagesAsync(
                                      BmsAdapter.GetResourceName(),
+                                     BmsAdapter.GetResourceGroupName(),
                                      queryFilter,
-                                     skipToken,
-                                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
+                                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result.Body;
 
             Func<string, Microsoft.Rest.Azure.IPage<ProtectionPolicyResource>> listNextAsync =
-                nextLink => BmsAdapter.Client.ProtectionPoliciesOperations.ListNextWithHttpMessagesAsync(
+                nextLink => BmsAdapter.Client.ProtectionPolicies.ListNextWithHttpMessagesAsync(
                                      nextLink,
-                                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
+                                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result.Body;
 
             return HelperUtils.GetPagedList<ProtectionPolicyResource>(listAsync, listNextAsync);
         }        
@@ -90,9 +89,9 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         public Microsoft.Rest.Azure.AzureOperationResponse RemoveProtectionPolicy(
                 string policyName)
         {
-            return BmsAdapter.Client.ProtectionPoliciesOperations.DeleteWithHttpMessagesAsync(
-                                     BmsAdapter.GetResourceGroupName(),
+            return BmsAdapter.Client.ProtectionPolicies.DeleteWithHttpMessagesAsync(
                                      BmsAdapter.GetResourceName(),
+                                     BmsAdapter.GetResourceGroupName(),
                                      policyName,
                                      cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
         }

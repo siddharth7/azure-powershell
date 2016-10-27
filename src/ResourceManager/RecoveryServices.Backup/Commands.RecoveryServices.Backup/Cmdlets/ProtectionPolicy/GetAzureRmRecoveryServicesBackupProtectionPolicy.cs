@@ -87,7 +87,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                     PolicyCmdletHelpers.ValidateProtectionPolicyName(Name);
 
                     // query service
-                    ServiceClientModel.ProtectionPolicyResponse policy =
+                    ServiceClientModel.ProtectionPolicyResource policy =
                         PolicyCmdletHelpers.GetProtectionPolicyByName(
                                                       Name,
                                                       ServiceClientAdapter);
@@ -96,7 +96,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                         throw new ArgumentException(string.Format(Resources.PolicyNotFoundException, Name));
                     }
 
-                    WriteObject(ConversionHelpers.GetPolicyModel(policy.Item));
+                    WriteObject(ConversionHelpers.GetPolicyModel(policy));
                 }
                 else
                 {
@@ -152,9 +152,13 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                             break;
                     }
 
+                    var backupManagementTypeFilter = string.IsNullOrEmpty(serviceClientProviderType) ?
+                            default(ServiceClientModel.BackupManagementType?) :
+                            serviceClientProviderType.ToEnum<ServiceClientModel.BackupManagementType>();
+
                     ODataQuery<ServiceClientModel.ProtectionPolicyQueryObject> queryParams
                     = new ODataQuery<ServiceClientModel.ProtectionPolicyQueryObject>(
-                    q => q.BackupManagementType == serviceClientProviderType);
+                    q => q.BackupManagementType == backupManagementTypeFilter);
 
                     WriteDebug("going to query service to get list of policies");
                     List<ServiceClientModel.ProtectionPolicyResource> respList =

@@ -24,6 +24,7 @@ using CmdletModel = Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Mod
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
+using ServiceClientModel = Microsoft.Azure.Management.RecoveryServices.Backup.Models;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
 {
@@ -101,31 +102,34 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                     //            policyResponse.Response.AzureAsyncOperation);
 
                     // Track OperationStatus URL for operation completion
-                    BackUpOperationStatusResponse operationResponse =  
-                        TrackingHelpers.WaitForOperationCompletionUsingStatusLink(
-                            policyResponse.AzureAsyncOperation,
-                            ServiceClientAdapter.GetProtectionPolicyOperationStatusByURL);
 
-                    WriteDebug("Final operation status: " + operationResponse.OperationStatus.Status);
+                    string policyName = Policy.Name;
 
-                    if (operationResponse.OperationStatus.Properties != null &&
-                       ((OperationStatusJobsExtendedInfo)operationResponse.OperationStatus.Properties).JobIds != null)
+                    ServiceClientModel.OperationStatus operationStatus =  
+                        TrackingHelpers.GetOperationStatus<ServiceClientModel.OperationStatus, ServiceClientModel.ProtectionPolicyResource> (
+                            policyResponse,
+                            operationId => ServiceClientAdapter.GetProtectionPolicyOperationStatus(policyName, operationId));
+
+                    WriteDebug("Final operation status: " + operationStatus.Status);
+
+                    if (operationStatus.Properties != null &&
+                       ((OperationStatusJobsExtendedInfo)operationStatus.Properties).JobIds != null)
                     {
                         // get list of jobIds and return jobResponses                    
                         WriteObject(GetJobObject(
-                            ((OperationStatusJobsExtendedInfo)operationResponse.OperationStatus.Properties).JobIds));
+                            ((OperationStatusJobsExtendedInfo)operationStatus.Properties).JobIds));
                     }
 
-                    if (operationResponse.OperationStatus.Status == OperationStatusValues.Failed.ToString())
+                    if (operationStatus.Status == OperationStatusValues.Failed)
                     {
                         // if operation failed, then trace error and throw exception
-                        if (operationResponse.OperationStatus.OperationStatusError != null)
+                        if (operationStatus.Error != null)
                         {
                             WriteDebug(string.Format(
                                          "OperationStatus Error: {0} " +
                                          "OperationStatus Code: {1}",
-                                         operationResponse.OperationStatus.OperationStatusError.Message,
-                                         operationResponse.OperationStatus.OperationStatusError.Code));
+                                         operationStatus.Error.Message,
+                                         operationStatus.Error.Code));
                         }                                     
                     }
                 }

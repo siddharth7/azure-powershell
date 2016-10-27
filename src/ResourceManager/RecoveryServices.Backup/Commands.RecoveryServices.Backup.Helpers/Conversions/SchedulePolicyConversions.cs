@@ -42,9 +42,9 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 
             SimpleSchedulePolicy psPolicy = new SimpleSchedulePolicy();
 
-            psPolicy.ScheduleRunDays = HelperUtils.GetEnumListFromStringList<DayOfWeek>(serviceClientPolicy.ScheduleRunDays);
+            psPolicy.ScheduleRunDays = HelperUtils.EnumListConverter<ServiceClientModel.DayOfWeek?, DayOfWeek>(serviceClientPolicy.ScheduleRunDays);
             psPolicy.ScheduleRunFrequency = (ScheduleRunType)Enum.Parse(typeof(ScheduleRunType),
-                                                                        serviceClientPolicy.ScheduleRunFrequency);
+                                                                        serviceClientPolicy.ScheduleRunFrequency.ToString());
             psPolicy.ScheduleRunTimes = ParseDateTimesToUTC(serviceClientPolicy.ScheduleRunTimes);
 
             // safe side validation
@@ -98,14 +98,16 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
                 return null;
             }
 
-            ServiceClientModel.SimpleSchedulePolicy serviceClientPolicy = new ServiceClientModel.SimpleSchedulePolicy();            
-            serviceClientPolicy.ScheduleRunFrequency = psPolicy.ScheduleRunFrequency.ToString();
+            ServiceClientModel.SimpleSchedulePolicy serviceClientPolicy = new ServiceClientModel.SimpleSchedulePolicy();
+            serviceClientPolicy.ScheduleRunFrequency = 
+                psPolicy.ScheduleRunFrequency.ToEnum<ServiceClientModel.ScheduleRunType>();
+
             if (psPolicy.ScheduleRunFrequency == ScheduleRunType.Weekly)
             {
-                serviceClientPolicy.ScheduleRunDays = HelperUtils.GetStringListFromEnumList<DayOfWeek>(psPolicy.ScheduleRunDays);
+                serviceClientPolicy.ScheduleRunDays = HelperUtils.EnumListConverter<DayOfWeek, ServiceClientModel.DayOfWeek>(
+                    psPolicy.ScheduleRunDays).Cast<ServiceClientModel.DayOfWeek?>().ToList();
             }
-            serviceClientPolicy.ScheduleRunTimes = psPolicy.ScheduleRunTimes;
-
+            serviceClientPolicy.ScheduleRunTimes = psPolicy.ScheduleRunTimes.ConvertAll(dateTime => (DateTime?) dateTime);
             return serviceClientPolicy;
         }
 

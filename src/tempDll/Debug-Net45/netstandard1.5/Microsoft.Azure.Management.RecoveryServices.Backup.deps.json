@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETStandard,Version=v1.5/",
-    "signature": "fc20fc9b8c58e5f6a2577c92466c9ca97acb3139"
+    "signature": "aadf3fbf6802e77c2b7ee6db84bd3950a8536955"
   },
   "compilationOptions": {},
   "targets": {
@@ -14,7 +14,7 @@
           "System.Net.Http": "4.1.0",
           "System.Runtime.Serialization.Primitives": "4.1.1",
           "System.Threading.Tasks": "4.0.11",
-          "Microsoft.Rest.ClientRuntime.Azure": "3.3.1"
+          "Microsoft.Rest.ClientRuntime.Azure": "3.3.3"
         },
         "runtime": {
           "Microsoft.Azure.Management.RecoveryServices.Backup.dll": {}
@@ -45,7 +45,7 @@
       },
       "Microsoft.NETCore.Platforms/1.0.1": {},
       "Microsoft.NETCore.Targets/1.0.1": {},
-      "Microsoft.Rest.ClientRuntime/2.3.1": {
+      "Microsoft.Rest.ClientRuntime/2.3.3": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.0.1",
           "Newtonsoft.Json": "9.0.1",
@@ -70,10 +70,10 @@
           "lib/netstandard1.5/Microsoft.Rest.ClientRuntime.dll": {}
         }
       },
-      "Microsoft.Rest.ClientRuntime.Azure/3.3.1": {
+      "Microsoft.Rest.ClientRuntime.Azure/3.3.3": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.0.1",
-          "Microsoft.Rest.ClientRuntime": "2.3.1",
+          "Microsoft.Rest.ClientRuntime": "2.3.3",
           "System.Collections": "4.0.11",
           "System.Diagnostics.Debug": "4.0.11",
           "System.Diagnostics.Tools": "4.0.1",
@@ -594,15 +594,15 @@
       "serviceable": true,
       "sha512": "sha512-rkn+fKobF/cbWfnnfBOQHKVKIOpxMZBvlSHkqDWgBpwGDcLRduvs3D9OLGeV6GWGvVwNlVi2CBbTjuPmtHvyNw=="
     },
-    "Microsoft.Rest.ClientRuntime/2.3.1": {
+    "Microsoft.Rest.ClientRuntime/2.3.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-J+A1lJDay/J72dLZlirqkH5ZKgbdnaNqZHej36WXAxoa8Tg8dPVeI8Sa/9+4hLcId7E142nQJMsKZSrAUepqxA=="
+      "sha512": "sha512-j3lSk5RFDismdIheeA0tCKuiNphDosqxCHZVx4JjFcpZ39Ym3dJE8siw5D8diOfGS3tYzsGFM6Xr5Z/f3nCQeQ=="
     },
-    "Microsoft.Rest.ClientRuntime.Azure/3.3.1": {
+    "Microsoft.Rest.ClientRuntime.Azure/3.3.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-+12LAysycsR2iQTdc41p+d8Z9axBse3+ljVGU6bJLtouDBGYYdOyFNahnZ+YUQ9k7wcTKUhwDwL/L+Hh5T77Fg=="
+      "sha512": "sha512-jVR2MvUhxMbgXD9qLRNY8VFkjkLHqHGx+A/0DfXfyMFIhW+RuJp/teFqKOQRUEZYu7dIK/3cA1kXbMgR3EvSQQ=="
     },
     "Microsoft.Win32.Primitives/4.0.1": {
       "type": "package",

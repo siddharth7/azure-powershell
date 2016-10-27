@@ -18,6 +18,7 @@ using System.Management.Automation;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
+using ServiceClientModel = Microsoft.Azure.Management.RecoveryServices.Backup.Models;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
 {
@@ -143,15 +144,17 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                     BackupManagementType));
 
                 int resultCount = 0;
-                
+
+                ServiceClientModel.JobStatus? jobStatus = null;
+                jobStatus = Status.HasValue ? (Status.ToEnum<ServiceClientModel.JobStatus>())
+                            : default(ServiceClientModel.JobStatus?);
+
                 var adapterResponse = ServiceClientAdapter.GetJobs(JobId,
-                    Status.HasValue ? (JobStatus?)Status : null,
-                    Operation.HasValue ?(JobOperation?)Operation : null,
+                    Status.HasValue ? Status.ToEnum<ServiceClientModel.JobStatus>() : default(ServiceClientModel.JobStatus?),
+                    Operation.ToString(),
                     rangeStart,
                     rangeEnd,
-                    BackupManagementType.HasValue ? (BackupManagementType?)
-                    Helpers.JobConversions.GetJobTypeForService(
-                        BackupManagementType.Value) : null);
+                    ServiceClientHelpers.GetServiceClientBackupManagementType(BackupManagementType));
 
                 JobConversions.AddServiceClientJobsToPSList(adapterResponse, result, ref resultCount);
 

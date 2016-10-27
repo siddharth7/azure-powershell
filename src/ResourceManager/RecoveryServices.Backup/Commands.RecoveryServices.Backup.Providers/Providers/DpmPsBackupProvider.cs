@@ -79,12 +79,12 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             throw new NotImplementedException();
         }
 
-        public Management.RecoveryServices.Backup.Models.ProtectionPolicyResponse CreatePolicy()
+        public ServiceClientModel.ProtectionPolicyResource CreatePolicy()
         {
             throw new NotImplementedException();
         }
 
-        public ServiceClientModel.ProtectionPolicyResponse ModifyPolicy()
+        public Microsoft.Rest.Azure.AzureOperationResponse<ServiceClientModel.ProtectionPolicyResource> ModifyPolicy()
         {
             throw new NotImplementedException();
         }
@@ -111,7 +111,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             return backupEngineModels;
         }
 
-        public Management.RecoveryServices.Backup.Models.ProtectionPolicyResponse GetPolicy()
+        public ServiceClientModel.ProtectionPolicyResource GetPolicy()
         {
             throw new NotImplementedException();
         }

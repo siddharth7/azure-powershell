@@ -88,7 +88,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
             if (hydraRetPolicy.RetentionDuration != null)
             {
                 simplePolicy.RetentionDurationType = EnumUtils.GetEnum<RetentionDurationType>(
-                    hydraRetPolicy.RetentionDuration.DurationType);
+                    hydraRetPolicy.RetentionDuration.DurationType.ToString());
                 simplePolicy.RetentionCount = hydraRetPolicy.RetentionDuration.Count.HasValue ?
                     (int)hydraRetPolicy.RetentionDuration.Count : default(int);
             }
@@ -259,7 +259,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 
             psWeekly.DurationCountInWeeks = GetRetentionDurationInWeeks(serviceClientWeekly.RetentionDuration);
             psWeekly.RetentionTimes = ParseDateTimesToUTC(serviceClientWeekly.RetentionTimes);
-            psWeekly.DaysOfTheWeek = HelperUtils.GetEnumListFromStringList<DayOfWeek>(serviceClientWeekly.DaysOfTheWeek);
+            psWeekly.DaysOfTheWeek = HelperUtils.EnumListConverter<ServiceClientModel.DayOfWeek?, DayOfWeek>(serviceClientWeekly.DaysOfTheWeek);
 
             return psWeekly;
         }
@@ -275,8 +275,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 
             psMonthly.DurationCountInMonths = GetRetentionDurationInMonths(serviceClientMonthly.RetentionDuration);
             psMonthly.RetentionTimes = ParseDateTimesToUTC(serviceClientMonthly.RetentionTimes);
-            psMonthly.RetentionScheduleFormatType = (RetentionScheduleFormat)Enum.Parse(typeof(RetentionScheduleFormat),
-                                                                                   serviceClientMonthly.RetentionScheduleFormatType);
+            psMonthly.RetentionScheduleFormatType =
+                serviceClientMonthly.RetentionScheduleFormatType.ToEnum<RetentionScheduleFormat>();
             psMonthly.RetentionScheduleDaily = GetPSLTRDailyRetentionFormat(serviceClientMonthly.RetentionScheduleDaily);
             psMonthly.RetentionScheduleWeekly = GetPSLTRWeeklyRetentionFormat(serviceClientMonthly.RetentionScheduleWeekly);
 
@@ -294,11 +294,12 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 
             psYearly.DurationCountInYears = GetRetentionDurationInYears(serviceClientYearly.RetentionDuration);
             psYearly.RetentionTimes = ParseDateTimesToUTC(serviceClientYearly.RetentionTimes);
-            psYearly.RetentionScheduleFormatType = (RetentionScheduleFormat)Enum.Parse(typeof(RetentionScheduleFormat),
-                                                                                   serviceClientYearly.RetentionScheduleFormatType);
+            psYearly.RetentionScheduleFormatType =
+                serviceClientYearly.RetentionScheduleFormatType.ToEnum<RetentionScheduleFormat>();
             psYearly.RetentionScheduleDaily = GetPSLTRDailyRetentionFormat(serviceClientYearly.RetentionScheduleDaily);
             psYearly.RetentionScheduleWeekly = GetPSLTRWeeklyRetentionFormat(serviceClientYearly.RetentionScheduleWeekly);
-            psYearly.MonthsOfYear = HelperUtils.GetEnumListFromStringList<Month>(serviceClientYearly.MonthsOfYear);
+            psYearly.MonthsOfYear = 
+                HelperUtils.EnumListConverter<ServiceClientModel.MonthOfYear?, Month>(serviceClientYearly.MonthsOfYear);
 
             return psYearly;
         }
@@ -344,11 +345,14 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
             WeeklyRetentionFormat psFormat = new WeeklyRetentionFormat();
             if (serviceClientFormat.DaysOfTheWeek != null)
             {
-                psFormat.DaysOfTheWeek = HelperUtils.GetEnumListFromStringList<DayOfWeek>(serviceClientFormat.DaysOfTheWeek);
+                psFormat.DaysOfTheWeek = HelperUtils.EnumListConverter<ServiceClientModel.DayOfWeek?, DayOfWeek>(
+                    serviceClientFormat.DaysOfTheWeek);
             }
             if (serviceClientFormat.WeeksOfTheMonth != null)
             {
-                psFormat.WeeksOfTheMonth = HelperUtils.GetEnumListFromStringList<WeekOfMonth>(serviceClientFormat.WeeksOfTheMonth);
+                psFormat.WeeksOfTheMonth = 
+                    HelperUtils.EnumListConverter<ServiceClientModel.WeekOfMonth?, WeekOfMonth>(
+                        serviceClientFormat.WeeksOfTheMonth);
             }
 
             return psFormat;
@@ -374,7 +378,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 
                 string durationType = psRetPolicy.RetentionDurationType.ToString();
                 simpleRetPolicy.RetentionDuration = new ServiceClientModel.RetentionDuration();
-                simpleRetPolicy.RetentionDuration.DurationType = durationType;
+                simpleRetPolicy.RetentionDuration.DurationType =
+                    durationType.ToEnum<ServiceClientModel.RetentionDurationType>();
                 simpleRetPolicy.RetentionDuration.Count = psRetPolicy.RetentionCount;
 
                 return simpleRetPolicy;
@@ -464,7 +469,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
             };
             serviceClientWeekly.RetentionTimes = GetNullableDateTimeListFromDateTimeList(
                                                  psWeekly.RetentionTimes);
-            serviceClientWeekly.DaysOfTheWeek = HelperUtils.GetStringListFromEnumList<DayOfWeek>(psWeekly.DaysOfTheWeek);
+            serviceClientWeekly.DaysOfTheWeek = HelperUtils.EnumListConverter<DayOfWeek, ServiceClientModel.DayOfWeek>(
+                psWeekly.DaysOfTheWeek).Cast<ServiceClientModel.DayOfWeek?>().ToList();
 
             return serviceClientWeekly;
         }
@@ -486,7 +492,9 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
             serviceClientMonthly.RetentionTimes = GetNullableDateTimeListFromDateTimeList(
                                                   psMonthly.RetentionTimes);
 
-            serviceClientMonthly.RetentionScheduleFormatType = psMonthly.RetentionScheduleFormatType.ToString();
+            serviceClientMonthly.RetentionScheduleFormatType =
+                psMonthly.RetentionScheduleFormatType.ToEnum<ServiceClientModel.RetentionScheduleFormat>();
+
             if (psMonthly.RetentionScheduleFormatType == RetentionScheduleFormat.Daily)
             {
                 serviceClientMonthly.RetentionScheduleDaily = GetServiceClientLTRDailyRetentionFormat(psMonthly.RetentionScheduleDaily);
@@ -516,7 +524,9 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
             serviceClientYearly.RetentionTimes = GetNullableDateTimeListFromDateTimeList(
                                                  psYearly.RetentionTimes);
 
-            serviceClientYearly.RetentionScheduleFormatType = psYearly.RetentionScheduleFormatType.ToString();
+            serviceClientYearly.RetentionScheduleFormatType =
+                    psYearly.RetentionScheduleFormatType.ToEnum<ServiceClientModel.RetentionScheduleFormat>();
+
             if (psYearly.RetentionScheduleFormatType == RetentionScheduleFormat.Daily)
             {
                 serviceClientYearly.RetentionScheduleDaily = GetServiceClientLTRDailyRetentionFormat(psYearly.RetentionScheduleDaily);
@@ -525,7 +535,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
             {
                 serviceClientYearly.RetentionScheduleWeekly = GetServiceClientLTRWeeklyRetentionFormat(psYearly.RetentionScheduleWeekly);
             }
-            serviceClientYearly.MonthsOfYear = HelperUtils.GetStringListFromEnumList<Month>(psYearly.MonthsOfYear);
+            serviceClientYearly.MonthsOfYear = HelperUtils.EnumListConverter<Month, ServiceClientModel.MonthOfYear>(
+                psYearly.MonthsOfYear).Cast<ServiceClientModel.MonthOfYear?>().ToList();
 
             return serviceClientYearly;
         }
@@ -570,11 +581,13 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
             ServiceClientModel.WeeklyRetentionFormat serviceClientFormat = new ServiceClientModel.WeeklyRetentionFormat();
             if (psFormat.DaysOfTheWeek != null)
             {
-                serviceClientFormat.DaysOfTheWeek = HelperUtils.GetStringListFromEnumList<DayOfWeek>(psFormat.DaysOfTheWeek);
+                serviceClientFormat.DaysOfTheWeek = HelperUtils.EnumListConverter<DayOfWeek, ServiceClientModel.DayOfWeek>(
+                    psFormat.DaysOfTheWeek).Cast<ServiceClientModel.DayOfWeek?>().ToList();
             }
             if (psFormat.WeeksOfTheMonth != null)
             {
-                serviceClientFormat.WeeksOfTheMonth = HelperUtils.GetStringListFromEnumList<WeekOfMonth>(psFormat.WeeksOfTheMonth);
+                serviceClientFormat.WeeksOfTheMonth = HelperUtils.EnumListConverter<WeekOfMonth, ServiceClientModel.WeekOfMonth>(
+                    psFormat.WeeksOfTheMonth).Cast<ServiceClientModel.WeekOfMonth?>().ToList();
             }
 
             return serviceClientFormat;

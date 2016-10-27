@@ -14,10 +14,9 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
+using CmdletModel = Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
 using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
-using Microsoft.Rest;
-using Microsoft.Rest.Azure;
+using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 {
@@ -76,6 +75,10 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
                         jobsCount++;
                         psJobs.Add(convertedJob);
                     }
+                    else
+                    {
+                        Logger.Instance.WriteDebug("Ignoring some of the unexpected job while conversion");
+                    }
                 }
             }
         }
@@ -110,9 +113,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
             {
                 throw new ArgumentNullException("Job Start Time is null");
             }
-
             response.EndTime = vmJob.EndTime;
-            response.Duration = new TimeSpan(Convert.ToInt64(vmJob.Duration));
+            response.Duration = vmJob.Duration.HasValue ? (TimeSpan)vmJob.Duration : default(TimeSpan);
             response.Status = vmJob.Status;
             response.VmVersion = vmJob.VirtualMachineVersion;
             response.WorkloadName = vmJob.EntityFriendlyName;

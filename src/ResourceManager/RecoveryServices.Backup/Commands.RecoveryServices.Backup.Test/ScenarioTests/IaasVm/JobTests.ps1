@@ -12,15 +12,20 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------------
 
+$resourceGroupName = "RecoveryServicesBackupTestRg";
+$resourceName = "PsTestRsVault";
+
 #Have to hard-code this because time keeps changing with every run and we cannot use recorded sessions
-$fixedStartDate = Get-Date -Date "2016-04-17 11:30:00Z"
+$fixedStartDate = Get-Date -Date "2016-10-26 11:30:00Z"
 $fixedStartDate = $fixedStartDate.ToUniversalTime()
-$fixedEndDate = Get-Date -Date "2016-04-18 11:30:00Z"
+$fixedEndDate = Get-Date -Date "2016-10-27 11:30:00Z"
 $fixedEndDate = $fixedEndDate.ToUniversalTime()
+$waitEndDate = Get-Date -Date "2016-10-28 11:30:00Z"
+$waitEndDate = $waitEndDate.ToUniversalTime()
 
 function SetVaultContext
 {
-	$vault = Get-AzureRmRecoveryServicesVault -ResourceGroupName "RsvTestRG" -Name "RsvTestRN";
+	$vault = Get-AzureRmRecoveryServicesVault -ResourceGroupName $resourceGroupName -Name $resourceName;
 	Set-AzureRmRecoveryServicesVaultContext -Vault $vault;
 }
 
@@ -123,7 +128,7 @@ function Test-GetJobDetails
 function Test-WaitJobScenario
 {
 	SetVaultContext;
-	$jobs = Get-AzureRmRecoveryServicesBackupJob -From $fixedStartDate -To $fixedEndDate
+	$jobs = Get-AzureRmRecoveryServicesBackupJob -From $fixedStartDate -To $waitEndDate
 	foreach ($job in $jobs)
 	{
 		$waitedJob = Wait-AzureRmRecoveryServicesBackupJob -Job $job
