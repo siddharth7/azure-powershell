@@ -249,47 +249,47 @@ function Test-GetAzureVMRecoveryPointsScenario
 	Assert-NotNull $recoveryPointDetail;
 
     #Negative test case
-#    # StartDate < EndDate
-#    $failed = 0
-#	try
-#    {
-#        $recoveryPoint = Get-AzureRmRecoveryServicesBackupRecoveryPoint `
-#		-StartDate $backupEndTime -EndDate $backupStartTime -Item $item
-#        $failed = 0
-#    }
-#    catch
-#    {
-#        $failed = 1
-#    }
-#    Assert-AreEqual $failed 1
-#
-#    # rangeStart > DateTime.UtcNow
-#    try
-#    {
-#        $backupStartTime = (Get-Date).ToUniversalTime().AddMinutes(30)
-#        $recoveryPoint = Get-AzureRmRecoveryServicesBackupRecoveryPoint `
-#		-StartDate $backupStartTime -Item $item
-#        $failed = 0
-#    }
-#    catch
-#    {
-#        $failed = 1
-#    }
-#    Assert-AreEqual $failed 1
-#
-#    # rangeStart.Kind != DateTimeKind.Utc
-#    try
-#    {
-#        $backupStartTime = (Get-Date).AddDays(-20)
-#        $recoveryPoint = Get-AzureRmRecoveryServicesBackupRecoveryPoint `
-#		-StartDate $backupStartTime -Item $item
-#        $failed = 0
-#    }
-#    catch
-#    {
-#        $failed = 1
-#    }
-#    Assert-AreEqual $failed 1
+    # StartDate < EndDate
+    $failed = 0
+	try
+    {
+        $recoveryPoint = Get-AzureRmRecoveryServicesBackupRecoveryPoint `
+		-StartDate $backupEndTime -EndDate $backupStartTime -Item $item
+        $failed = 0
+    }
+    catch
+    {
+        $failed = 1
+    }
+    Assert-AreEqual $failed 1
+
+    # rangeStart > DateTime.UtcNow
+    try
+    {
+        $backupStartTime = (Get-Date).ToUniversalTime().AddMinutes(30)
+        $recoveryPoint = Get-AzureRmRecoveryServicesBackupRecoveryPoint `
+		-StartDate $backupStartTime -Item $item
+        $failed = 0
+    }
+    catch
+    {
+        $failed = 1
+    }
+    Assert-AreEqual $failed 1
+
+    # rangeStart.Kind != DateTimeKind.Utc
+    try
+    {
+        $backupStartTime = (Get-Date).AddDays(-20)
+        $recoveryPoint = Get-AzureRmRecoveryServicesBackupRecoveryPoint `
+		-StartDate $backupStartTime -Item $item
+        $failed = 0
+    }
+    catch
+    {
+        $failed = 1
+    }
+    Assert-AreEqual $failed 1
 }
 
 function Test-RestoreAzureVMRItemScenario
