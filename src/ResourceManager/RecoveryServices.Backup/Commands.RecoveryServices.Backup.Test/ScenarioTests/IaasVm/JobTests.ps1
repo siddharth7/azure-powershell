@@ -141,7 +141,7 @@ function Test-WaitJobScenario
 function Test-WaitJobPipeScenario
 {
 	SetVaultContext;
-	$waitedJobs = Get-AzureRmRecoveryServicesBackupJob -From $fixedStartDate -To $fixedEndDate | Wait-AzureRmRecoveryServicesBackupJob
+	$waitedJobs = Get-AzureRmRecoveryServicesBackupJob -From $fixedStartDate -To $waitEndDate | Wait-AzureRmRecoveryServicesBackupJob
 	foreach ($waitedJob in $waitedJobs)
 	{
 		Assert-AreNotEqual $waitedJob.Status "InProgress"
