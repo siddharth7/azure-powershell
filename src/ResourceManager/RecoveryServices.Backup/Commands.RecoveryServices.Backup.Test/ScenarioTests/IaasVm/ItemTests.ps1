@@ -226,7 +226,7 @@ function Test-GetAzureVMRecoveryPointsScenario
 	$item = Get-AzureRmRecoveryServicesBackupItem `
 		-Container $global:container -WorkloadType AzureVM;
 	
-	# 6. Trigger backup and wait for completion
+	## 6. Trigger backup and wait for completion
 	$fixedExpiryDate = Get-Date;
 	$expiryDate = $fixedExpiryDate.AddDays(2).ToUniversalTime();
     $backupJob = Backup-AzureRmRecoveryServicesBackupItem `
@@ -290,6 +290,13 @@ function Test-GetAzureVMRecoveryPointsScenario
         $failed = 1
     }
     Assert-AreEqual $failed 1
+
+    # ACTION: Trigger restore and wait for completion
+	$restoreJob = Restore-AzureRMRecoveryServicesBackupItem `
+		-RecoveryPoint $recoveryPointDetail `
+		-StorageAccountName $vmStorageAccountName `
+		-StorageAccountResourceGroupName $vmStorageAccountResourceGroup
+	Wait-AzureRmRecoveryServicesBackupJob -Job $restoreJob;
 }
 
 function Test-RestoreAzureVMRItemScenario

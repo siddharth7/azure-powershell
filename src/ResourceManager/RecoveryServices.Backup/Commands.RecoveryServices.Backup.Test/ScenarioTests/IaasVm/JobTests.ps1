@@ -78,7 +78,7 @@ function Test-GetJobsTimeFilter
     {
         $failed = 0
     }
-#    Assert-AreEqual $failed 0
+    Assert-AreEqual $failed 0
 
     # rangeStart.Kind != DateTimeKind.Utc
     $startTime = (Get-Date).AddDays(-20)
