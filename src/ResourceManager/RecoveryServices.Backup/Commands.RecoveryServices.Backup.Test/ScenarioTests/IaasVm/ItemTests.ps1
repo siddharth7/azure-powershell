@@ -292,11 +292,11 @@ function Test-GetAzureVMRecoveryPointsScenario
     Assert-AreEqual $failed 1
 
     # ACTION: Trigger restore and wait for completion
-	$restoreJob = Restore-AzureRMRecoveryServicesBackupItem `
-		-RecoveryPoint $recoveryPointDetail `
-		-StorageAccountName $vmStorageAccountName `
-		-StorageAccountResourceGroupName $vmStorageAccountResourceGroup
-	Wait-AzureRmRecoveryServicesBackupJob -Job $restoreJob;
+	#$restoreJob = Restore-AzureRMRecoveryServicesBackupItem `
+	#	-RecoveryPoint $recoveryPointDetail `
+	#	-StorageAccountName $vmStorageAccountName `
+	#	-StorageAccountResourceGroupName $vmStorageAccountResourceGroup
+	#Wait-AzureRmRecoveryServicesBackupJob -Job $restoreJob;
 }
 
 function Test-RestoreAzureVMRItemScenario
