@@ -35,6 +35,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
+        [Trait(TestConstants.Workload, TestConstants.AzureVM)]
         public void TestGetItemScenario()
         {
             TestController.NewInstance.RunPsTest(PsBackupProviderTypes.IaasVm, "Test-GetItemScenario");
@@ -42,6 +43,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
+        [Trait(TestConstants.Workload, TestConstants.AzureVM)]
         public void TestEnableAzureVMProtectionScenario()
         {
             TestController.NewInstance.RunPsTest(PsBackupProviderTypes.IaasVm, "Test-EnableAzureVMProtectionScenario");
@@ -49,6 +51,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
+        [Trait(TestConstants.Workload, TestConstants.AzureVM)]
         public void TestDisableAzureVMProtectionScenario()
         {
             TestController.NewInstance.RunPsTest(PsBackupProviderTypes.IaasVm, "Test-DisableAzureVMProtectionScenario");
@@ -56,6 +59,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
+        [Trait(TestConstants.Workload, TestConstants.AzureVM)]
         public void TestBackupItemScenario()
         {
             TestController.NewInstance.RunPsTest(PsBackupProviderTypes.IaasVm, "Test-BackupItemScenario");
@@ -63,12 +67,14 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
+        [Trait(TestConstants.Workload, TestConstants.AzureVM)]
         public void TestGetAzureVMRecoveryPointsScenario()
         {
             TestController.NewInstance.RunPsTest(PsBackupProviderTypes.IaasVm, "Test-GetAzureVMRecoveryPointsScenario");
         }
 
         [Trait(Category.AcceptanceType, Category.CheckIn)]
+        [Trait(TestConstants.Workload, TestConstants.AzureVM)]
         public void TestRestoreAzureVMItemScenario()
         {
             TestController.NewInstance.RunPsTest(PsBackupProviderTypes.IaasVm, "Test-RestoreAzureVMRItemScenario");
