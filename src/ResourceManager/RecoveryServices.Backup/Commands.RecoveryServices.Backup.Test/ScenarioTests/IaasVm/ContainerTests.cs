@@ -28,6 +28,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
     {
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
+        [Trait(TestConstants.Workload, TestConstants.AzureVM)]
         public void TestGetContainerScenario()
         {
             TestController.NewInstance.RunPsTest(PsBackupProviderTypes.IaasVm, "Test-GetContainerScenario");
