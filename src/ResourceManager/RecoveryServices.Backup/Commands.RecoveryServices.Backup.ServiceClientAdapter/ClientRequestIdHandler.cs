@@ -12,7 +12,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            request.Headers.TryAddWithoutValidation("x-ms-client-request-id", Guid.NewGuid().ToString());
+            request.Headers.TryAddWithoutValidation("x-ms-client-request-id", Guid.NewGuid().ToString() + "-PS");
             
             return base.SendAsync(request, cancellationToken);
         }
