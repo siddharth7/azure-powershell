@@ -148,7 +148,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
             {
                 csmTestFactory = new CSMTestEnvironmentFactory();
 
-                initialize?.Invoke(csmTestFactory);
+                initialize.Invoke(csmTestFactory);
 
                 SetupManagementClients(context);
 
@@ -193,7 +193,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
                 }
                 finally
                 {
-                    cleanup?.Invoke();
+                    cleanup.Invoke();
                 }
             }
         }
