@@ -10,10 +10,18 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
 {
     public class ClientRequestIdHandler : DelegatingHandler, ICloneable
     {
+        const string RequestIdHeaderName = "x-ms-client-request-id";
+
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            request.Headers.TryAddWithoutValidation("x-ms-client-request-id", Guid.NewGuid().ToString() + "-PS");
-            
+            if (request.Headers.Contains(RequestIdHeaderName))
+            {
+                request.Headers.Remove(RequestIdHeaderName);
+            }
+
+            string headerValue = Guid.NewGuid().ToString() + "-PS";
+            request.Headers.TryAddWithoutValidation(RequestIdHeaderName, headerValue);
+
             return base.SendAsync(request, cancellationToken);
         }
 
