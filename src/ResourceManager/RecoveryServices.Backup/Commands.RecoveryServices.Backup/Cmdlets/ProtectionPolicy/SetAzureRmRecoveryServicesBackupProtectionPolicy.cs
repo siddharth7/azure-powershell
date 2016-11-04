@@ -12,18 +12,15 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
-using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Management.Automation;
-using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
-using Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers;
-using CmdletModel = Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel;
+using Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
+using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
+using Microsoft.Rest.Azure;
+using System;
+using System.Collections.Generic;
+using System.Management.Automation;
 using ServiceClientModel = Microsoft.Azure.Management.RecoveryServices.Backup.Models;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
@@ -32,7 +29,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
     /// Update existing protection policy in the recovery services vault
     /// </summary>
     [Cmdlet(VerbsCommon.Set, "AzureRmRecoveryServicesBackupProtectionPolicy"), 
-    OutputType(typeof(List<CmdletModel.JobBase>))]
+    OutputType(typeof(List<JobBase>))]
     public class SetAzureRmRecoveryServicesBackupProtectionPolicy : RecoveryServicesBackupCmdletBase
     {
         /// <summary>
@@ -92,7 +89,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                 IPsBackupProvider psBackupProvider = providerManager.GetProviderInstance(
                     Policy.WorkloadType,
                                                                                          Policy.BackupManagementType);
-                Microsoft.Rest.Azure.AzureOperationResponse<ProtectionPolicyResource> policyResponse = psBackupProvider.ModifyPolicy();
+                AzureOperationResponse<ProtectionPolicyResource> policyResponse = psBackupProvider.ModifyPolicy();
                 WriteDebug("ModifyPolicy http response from service: " + 
                     policyResponse.Response.StatusCode.ToString());
 
@@ -106,7 +103,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                     string policyName = Policy.Name;
 
                     ServiceClientModel.OperationStatus operationStatus =  
-                        TrackingHelpers.GetOperationStatus<ServiceClientModel.OperationStatus, ServiceClientModel.ProtectionPolicyResource> (
+                        TrackingHelpers.GetOperationStatus(
                             policyResponse,
                             operationId => ServiceClientAdapter.GetProtectionPolicyOperationStatus(policyName, operationId));
 

@@ -12,8 +12,8 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
+using RestAzureNS = Microsoft.Rest.Azure;
 using ServiceClientModel = Microsoft.Azure.Management.RecoveryServices.Backup.Models;
-using Microsoft.Rest.Azure;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClientAdapterNS
 {
@@ -24,7 +24,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// </summary>
         /// <param name="operationResultLink">Operation tracking URL</param>
         /// <returns>Operation status response returned by the service</returns>
-        public AzureOperationResponse<ServiceClientModel.OperationStatus> GetProtectedItemOperationStatus(
+        public RestAzureNS.AzureOperationResponse<ServiceClientModel.OperationStatus> GetProtectedItemOperationStatus(
                 string operationId)
         {
             string resourceName = BmsAdapter.GetResourceName();
@@ -34,7 +34,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                 resourceName, resourceGroupName, operationId).Result;
         }
 
-        public AzureOperationResponse<ServiceClientModel.OperationStatus> GetProtectionPolicyOperationStatus(
+        public RestAzureNS.AzureOperationResponse<ServiceClientModel.OperationStatus> GetProtectionPolicyOperationStatus(
             string policyName, string operationId)
         {
             string resourceName = BmsAdapter.GetResourceName();
@@ -44,7 +44,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                 resourceName, resourceGroupName, policyName, operationId).Result;
         }
 
-        public Microsoft.Rest.Azure.AzureOperationResponse GetRefreshContainerOperationResult(
+        public RestAzureNS.AzureOperationResponse GetRefreshContainerOperationResult(
                 string operationId)
         {
             string resourceName = BmsAdapter.GetResourceName();
@@ -55,7 +55,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         }
 
 
-        public Microsoft.Rest.Azure.AzureOperationResponse GetCancelJobOperationResult(
+        public RestAzureNS.AzureOperationResponse GetCancelJobOperationResult(
                 string operationId)
         {
             string resourceName = BmsAdapter.GetResourceName();

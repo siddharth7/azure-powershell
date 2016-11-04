@@ -12,15 +12,12 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
-using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers;
 using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
-using Microsoft.Rest;
-using Microsoft.Rest.Azure;
+using System;
+using System.Collections.Generic;
+using RestAzureNS = Microsoft.Rest.Azure;
+using RestAzureODataNS = Microsoft.Rest.Azure.OData;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClientAdapterNS
 {
@@ -32,7 +29,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// <param name="policyName">Name of the policy</param>
         /// <param name="request">Policy create or update request</param>
         /// <returns>Policy created by this operation</returns>
-        public Microsoft.Rest.Azure.AzureOperationResponse<ProtectionPolicyResource> CreateOrUpdateProtectionPolicy(
+        public RestAzureNS.AzureOperationResponse<ProtectionPolicyResource> CreateOrUpdateProtectionPolicy(
                 string policyName,
                 ProtectionPolicyResource request)
         {           
@@ -64,29 +61,29 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// <param name="queryFilter">Query filter</param>
         /// <returns>List of protection policies</returns>
         public List<ProtectionPolicyResource> ListProtectionPolicy(
-                                            Microsoft.Rest.Azure.OData.ODataQuery<ProtectionPolicyQueryObject> queryFilter,
+                                            RestAzureODataNS.ODataQuery<ProtectionPolicyQueryObject> queryFilter,
                                             string skipToken = default(string))
         {
-            Func<Microsoft.Rest.Azure.IPage<ProtectionPolicyResource>> listAsync =
+            Func<RestAzureNS.IPage<ProtectionPolicyResource>> listAsync =
                 () => BmsAdapter.Client.ProtectionPolicies.ListWithHttpMessagesAsync(
                                      BmsAdapter.GetResourceName(),
                                      BmsAdapter.GetResourceGroupName(),
                                      queryFilter,
                                      cancellationToken: BmsAdapter.CmdletCancellationToken).Result.Body;
 
-            Func<string, Microsoft.Rest.Azure.IPage<ProtectionPolicyResource>> listNextAsync =
+            Func<string, RestAzureNS.IPage<ProtectionPolicyResource>> listNextAsync =
                 nextLink => BmsAdapter.Client.ProtectionPolicies.ListNextWithHttpMessagesAsync(
                                      nextLink,
                                      cancellationToken: BmsAdapter.CmdletCancellationToken).Result.Body;
 
-            return HelperUtils.GetPagedList<ProtectionPolicyResource>(listAsync, listNextAsync);
+            return HelperUtils.GetPagedList(listAsync, listNextAsync);
         }        
 
         /// <summary>
         /// Deletes protection policy from the vault specified by the name
         /// </summary>
         /// <param name="policyName">Name of the policy to be deleted</param>
-        public Microsoft.Rest.Azure.AzureOperationResponse RemoveProtectionPolicy(
+        public RestAzureNS.AzureOperationResponse RemoveProtectionPolicy(
                 string policyName)
         {
             return BmsAdapter.Client.ProtectionPolicies.DeleteWithHttpMessagesAsync(

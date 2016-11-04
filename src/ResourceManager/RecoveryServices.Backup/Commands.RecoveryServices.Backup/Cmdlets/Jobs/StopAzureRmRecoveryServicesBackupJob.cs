@@ -12,15 +12,12 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Management.Automation;
-using System.Net;
-using System.Threading;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
-using Microsoft.WindowsAzure.Commands.Utilities.Common;
+using System;
+using System.Management.Automation;
+using System.Net;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
 {

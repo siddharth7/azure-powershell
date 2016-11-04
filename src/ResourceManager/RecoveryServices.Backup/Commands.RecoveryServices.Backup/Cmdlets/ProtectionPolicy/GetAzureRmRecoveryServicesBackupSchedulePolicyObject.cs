@@ -12,14 +12,11 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
-using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Management.Automation;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel;
+using System;
+using System.Collections.Generic;
+using System.Management.Automation;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
 {
@@ -54,7 +51,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                 base.ExecuteCmdlet();
 
                 PsBackupProviderManager providerManager = new PsBackupProviderManager(
-                    new Dictionary<System.Enum, object>(), ServiceClientAdapter);
+                    new Dictionary<Enum, object>(), ServiceClientAdapter);
 
                 IPsBackupProvider psBackupProvider = providerManager.GetProviderInstance(
                     WorkloadType, BackupManagementType);

@@ -12,14 +12,10 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
+using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
+using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
-using CmdletModels = Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
-using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
 using ServiceClientModel = Microsoft.Azure.Management.RecoveryServices.Backup.Models;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
@@ -158,8 +154,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 
                 policyModel = new AzureVmPolicy();
                 AzureVmPolicy iaasPolicyModel = policyModel as AzureVmPolicy;
-                iaasPolicyModel.WorkloadType = Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models.WorkloadType.AzureVM;
-                iaasPolicyModel.BackupManagementType = Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models.BackupManagementType.AzureVM;
+                iaasPolicyModel.WorkloadType = WorkloadType.AzureVM;
+                iaasPolicyModel.BackupManagementType = BackupManagementType.AzureVM;
                 iaasPolicyModel.RetentionPolicy = PolicyHelpers.GetPSLongTermRetentionPolicy((ServiceClientModel.LongTermRetentionPolicy)
                                                   ((ServiceClientModel.AzureIaaSVMProtectionPolicy)serviceClientResponse.Properties).RetentionPolicy);
                 iaasPolicyModel.SchedulePolicy = PolicyHelpers.GetPSSimpleSchedulePolicy((ServiceClientModel.SimpleSchedulePolicy)
@@ -182,8 +178,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 
                 policyModel = new AzureSqlPolicy();
                 AzureSqlPolicy sqlPolicyModel = policyModel as AzureSqlPolicy;
-                sqlPolicyModel.WorkloadType = CmdletModels.WorkloadType.AzureSQLDatabase;
-                sqlPolicyModel.BackupManagementType = CmdletModels.BackupManagementType.AzureSQL;
+                sqlPolicyModel.WorkloadType = WorkloadType.AzureSQLDatabase;
+                sqlPolicyModel.BackupManagementType = BackupManagementType.AzureSQL;
 
                 ServiceClientModel.SimpleRetentionPolicy azureSqlRetentionPolicy =
                     (ServiceClientModel.SimpleRetentionPolicy)azureSqlPolicy.RetentionPolicy;
@@ -266,7 +262,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
                     itemModel = new AzureVmItem(
                         protectedItem,
                         IdUtils.GetNameFromUri(containerUri),
-                        Cmdlets.Models.ContainerType.AzureVM,
+                        ContainerType.AzureVM,
                         policyName);
                 }
 
@@ -277,7 +273,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
                         (ServiceClientModel.AzureSqlProtectedItem)protectedItem.Properties;
                     string policyName = null;
                     string policyId = azureSqlProtectedItem.PolicyId;
-                    if (!String.IsNullOrEmpty(policyId))
+                    if (!string.IsNullOrEmpty(policyId))
                     {
                         Dictionary<UriEnums, string> keyVauleDict =
                         HelperUtils.ParseUri(policyId);
@@ -291,7 +287,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
                     itemModel = new AzureSqlItem(
                         protectedItem,
                         IdUtils.GetNameFromUri(containerUri),
-                        Cmdlets.Models.ContainerType.AzureSQL,
+                        ContainerType.AzureSQL,
                         policyName);
                 }
             }

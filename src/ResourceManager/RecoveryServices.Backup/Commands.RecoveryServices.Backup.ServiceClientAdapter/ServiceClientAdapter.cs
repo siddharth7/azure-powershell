@@ -13,13 +13,8 @@
 // ----------------------------------------------------------------------------------
 
 using Microsoft.Azure.Commands.Common.Authentication.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using RecoveryServicesModelsNS = Microsoft.Azure.Management.RecoveryServices.Backup.Models;
+using System.Configuration;
+using System.Reflection;
 using RecoveryServicesNS = Microsoft.Azure.Management.RecoveryServices.Backup;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClientAdapterNS
@@ -37,8 +32,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         {
             get
             {
-                System.Configuration.Configuration exeConfiguration = System.Configuration.ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                System.Configuration.AppSettingsSection appSettings = (System.Configuration.AppSettingsSection)exeConfiguration.GetSection(AppSettingsSectionName);
+                Configuration exeConfiguration = ConfigurationManager.OpenExeConfiguration(Assembly.GetExecutingAssembly().Location);
+                AppSettingsSection appSettings = (AppSettingsSection)exeConfiguration.GetSection(AppSettingsSectionName);
                 string resourceProviderNamespace = ResourceProviderProductionNamespace;
                 if (appSettings.Settings[ProviderNamespaceKey] != null)
                 {

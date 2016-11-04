@@ -17,6 +17,7 @@ using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
 using Microsoft.Rest.Azure.OData;
 using System;
 using System.Collections.Generic;
+using RestAzureNS = Microsoft.Rest.Azure;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClientAdapterNS
 {
@@ -29,7 +30,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// <param name="protectedItemName">Name of the item</param>
         /// <param name="request">Protected item create or update request</param>
         /// <returns>Job created in the service for this operation</returns>
-        public Microsoft.Rest.Azure.AzureOperationResponse CreateOrUpdateProtectedItem(
+        public RestAzureNS.AzureOperationResponse CreateOrUpdateProtectedItem(
                 string containerName,
                 string protectedItemName,
                 ProtectedItemResource request)
@@ -53,7 +54,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// <param name="containerName">Name of the container which this item belongs to</param>
         /// <param name="protectedItemName">Name of the item</param>
         /// <returns>Job created in the service for this operation</returns>
-        public Microsoft.Rest.Azure.AzureOperationResponse DeleteProtectedItem(
+        public RestAzureNS.AzureOperationResponse DeleteProtectedItem(
                 string containerName,
                 string protectedItemName)
         {
@@ -76,7 +77,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// <param name="protectedItemName">Name of the item</param>
         /// <param name="queryFilter">Query filter</param>
         /// <returns>Protected item</returns>
-        public Microsoft.Rest.Azure.AzureOperationResponse<ProtectedItemResource> GetProtectedItem(
+        public RestAzureNS.AzureOperationResponse<ProtectedItemResource> GetProtectedItem(
                 string containerName,
                 string protectedItemName,
            ODataQuery<GetProtectedItemQueryObject> queryFilter)
@@ -108,7 +109,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
             string resourceName = BmsAdapter.GetResourceName();
             string resourceGroupName = BmsAdapter.GetResourceGroupName();
 
-            Func<Microsoft.Rest.Azure.IPage<ProtectedItemResource>> listAsync =
+            Func<RestAzureNS.IPage<ProtectedItemResource>> listAsync =
                 () => BmsAdapter.Client.ProtectedItems.ListWithHttpMessagesAsync(
                     resourceName,
                     resourceGroupName,
@@ -116,12 +117,12 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                     skipToken,
                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result.Body;
 
-            Func<string, Microsoft.Rest.Azure.IPage<ProtectedItemResource>> listNextAsync =
+            Func<string, RestAzureNS.IPage<ProtectedItemResource>> listNextAsync =
                 nextLink => BmsAdapter.Client.ProtectedItems.ListNextWithHttpMessagesAsync(
                     nextLink,
                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result.Body;
 
-            return HelperUtils.GetPagedList<ProtectedItemResource>(listAsync, listNextAsync);
+            return HelperUtils.GetPagedList(listAsync, listNextAsync);
         }
 
         /// <summary>
@@ -130,7 +131,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// <param name="containerName">Name of the container which this item belongs to</param>
         /// <param name="itemName">Name of the item</param>
         /// <returns>Job created by this operation</returns>
-        public Microsoft.Rest.Azure.AzureOperationResponse TriggerBackup(
+        public RestAzureNS.AzureOperationResponse TriggerBackup(
             string containerName,
             string itemName,
             DateTime? expiryDateTimeUtc)
@@ -143,7 +144,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
             return BmsAdapter.Client.Backups.TriggerWithHttpMessagesAsync(
                 BmsAdapter.GetResourceName(),
                 BmsAdapter.GetResourceGroupName(),
-                ServiceClientAdapter.AzureFabricName,
+                AzureFabricName,
                 containerName,
                 itemName,
                 triggerBackupRequest,

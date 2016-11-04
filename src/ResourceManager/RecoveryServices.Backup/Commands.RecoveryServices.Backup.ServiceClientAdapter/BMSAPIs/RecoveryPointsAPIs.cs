@@ -17,9 +17,7 @@ using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
 using Microsoft.Rest.Azure.OData;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using RestAzureNS = Microsoft.Rest.Azure;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClientAdapterNS
 {
@@ -71,7 +69,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
             string resourceGroupName = BmsAdapter.GetResourceGroupName();
             string resourceName = BmsAdapter.GetResourceName();
 
-            Func<Microsoft.Rest.Azure.IPage<RecoveryPointResource>> listAsync =
+            Func<RestAzureNS.IPage<RecoveryPointResource>> listAsync =
                 () => BmsAdapter.Client.RecoveryPoints.ListWithHttpMessagesAsync(
                                      resourceName,
                                      resourceGroupName,
@@ -81,11 +79,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                                      queryFilter,
                                      cancellationToken: BmsAdapter.CmdletCancellationToken).Result.Body;
 
-            Func<string, Microsoft.Rest.Azure.IPage<RecoveryPointResource>> listNextAsync =
+            Func<string, RestAzureNS.IPage<RecoveryPointResource>> listNextAsync =
                 nextLink => BmsAdapter.Client.RecoveryPoints.ListNextWithHttpMessagesAsync(nextLink,
                                      cancellationToken: BmsAdapter.CmdletCancellationToken).Result.Body;
 
-            var response = HelperUtils.GetPagedList<RecoveryPointResource>(listAsync, listNextAsync);
+            var response = HelperUtils.GetPagedList(listAsync, listNextAsync);
             return response;
         }
     }

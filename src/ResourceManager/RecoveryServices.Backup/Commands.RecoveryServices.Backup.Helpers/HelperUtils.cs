@@ -12,14 +12,12 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
+using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
+using Microsoft.Rest.Azure;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
 using CmdletModel = Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
-using Microsoft.Rest.Azure;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 {
@@ -123,8 +121,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
                     CmdletModel.UriEnums value;
                     if (keyValuePair.Length == 2)
                     {
-                        if (Enum.TryParse<CmdletModel.UriEnums>(keyValuePair[0], true, out key) &&
-                            !Enum.TryParse<CmdletModel.UriEnums>(keyValuePair[1], true, out value))
+                        if (Enum.TryParse(keyValuePair[0], true, out key) &&
+                            !Enum.TryParse(keyValuePair[1], true, out value))
                         {
                             keyValuePairDict.Add(key, keyValuePair[1]);
                         }

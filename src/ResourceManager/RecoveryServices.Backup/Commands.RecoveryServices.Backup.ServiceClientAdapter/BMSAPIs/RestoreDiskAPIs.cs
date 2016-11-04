@@ -18,7 +18,7 @@ using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
 using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using RestAzureNS = Microsoft.Rest.Azure;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClientAdapterNS
 {
@@ -32,7 +32,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
         /// <param name="storageAccountLocation">Location of the storage account where to restore the disk</param>
         /// <param name="storageAccountType">Type of the storage account where to restore the disk</param>
         /// <returns>Job created by this operation</returns>
-        public Microsoft.Rest.Azure.AzureOperationResponse RestoreDisk(AzureVmRecoveryPoint rp, string storageAccountId, 
+        public RestAzureNS.AzureOperationResponse RestoreDisk(AzureVmRecoveryPoint rp, string storageAccountId, 
             string storageAccountLocation, string storageAccountType)
         {
             string resourceGroupName = BmsAdapter.GetResourceGroupName();
@@ -54,7 +54,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                 StringComparison.OrdinalIgnoreCase) ? "Classic" : "Compute";
             if(vmType != strType)
             {
-                throw new Exception(String.Format(Resources.RestoreDiskStorageTypeError, vmType));
+                throw new Exception(string.Format(Resources.RestoreDiskStorageTypeError, vmType));
             }
             
             IaasVMRestoreRequest restoreRequest = new IaasVMRestoreRequest()

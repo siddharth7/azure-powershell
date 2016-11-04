@@ -12,10 +12,10 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
-using ServiceClientModel = Microsoft.Azure.Management.RecoveryServices.Backup.Models;
-using Microsoft.Rest.Azure;
 using Microsoft.WindowsAzure.Commands.Utilities.Common;
 using System;
+using RestAzureNS = Microsoft.Rest.Azure;
+using ServiceClientModel = Microsoft.Azure.Management.RecoveryServices.Backup.Models;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 {
@@ -33,8 +33,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
         /// <param name="statusUrlLink"></param>
         /// <param name="serviceClientMethod"></param>
         /// <returns></returns>
-        public static T GetOperationStatus<T>(Microsoft.Rest.Azure.AzureOperationResponse response,
-            Func<string, AzureOperationResponse<T>> getOpStatus)
+        public static T GetOperationStatus<T>(RestAzureNS.AzureOperationResponse response,
+            Func<string, RestAzureNS.AzureOperationResponse<T>> getOpStatus)
             where T : ServiceClientModel.OperationStatus
         {
             var operationId = response.Response.Headers.GetAzureAsyncOperationId();
@@ -60,8 +60,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
         /// <param name="statusUrlLink"></param>
         /// <param name="serviceClientMethod"></param>
         /// <returns></returns>
-        public static T GetOperationStatus<T, S>(Microsoft.Rest.Azure.AzureOperationResponse<S> response,
-            Func<string, AzureOperationResponse<T>> getOpStatus)
+        public static T GetOperationStatus<T, S>(RestAzureNS.AzureOperationResponse<S> response,
+            Func<string, RestAzureNS.AzureOperationResponse<T>> getOpStatus)
             where T : ServiceClientModel.OperationStatus
         {
             var operationId = response.Response.Headers.GetAzureAsyncOperationId();
@@ -80,8 +80,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
             return opStatusResponse.Body;
         }
 
-        public static Microsoft.Rest.Azure.AzureOperationResponse GetOperationResult(Microsoft.Rest.Azure.AzureOperationResponse response,
-            Func<string, Microsoft.Rest.Azure.AzureOperationResponse> getOpStatus)
+        public static RestAzureNS.AzureOperationResponse GetOperationResult(RestAzureNS.AzureOperationResponse response,
+            Func<string, RestAzureNS.AzureOperationResponse> getOpStatus)
         {
             var operationId = response.Response.Headers.GetOperationResultId();
 

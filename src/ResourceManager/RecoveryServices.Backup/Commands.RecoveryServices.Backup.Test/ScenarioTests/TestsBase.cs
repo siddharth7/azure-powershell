@@ -12,29 +12,26 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
+using Microsoft.Azure.Commands.Common.Authentication;
+using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
+using Microsoft.Azure.Management.RecoveryServices.Backup;
 using Microsoft.Azure.Test;
+using Microsoft.Azure.Test.Authentication;
 using Microsoft.Azure.Test.HttpRecorder;
 using Microsoft.WindowsAzure.Commands.ScenarioTest;
 using System;
-using System.Configuration;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Security;
 using System.Reflection;
-using Microsoft.WindowsAzure.Commands.Test.Utilities.Common;
-using Microsoft.Azure.Management.RecoveryServices.Backup;
-using Hyak.Common;
-using Microsoft.Azure.Commands.Common.Authentication;
-using System.Collections.Generic;
-using System.IO;
-using Microsoft.Azure.Test.Authentication;
-using RestTestFramework = Microsoft.Rest.ClientRuntime.Azure.TestFramework;
+using HyakRmNS = Microsoft.Azure.Management.Internal.Resources;
 using RecoveryServicesNS = Microsoft.Azure.Management.RecoveryServices;
 using ResourceManagementNS = Microsoft.Azure.Management.Resources;
-using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
-using HyakRmNS = Microsoft.Azure.Management.Internal.Resources;
 using ResourceManagementRestNS = Microsoft.Azure.Management.ResourceManager;
+using RestTestFramework = Microsoft.Rest.ClientRuntime.Azure.TestFramework;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
 {
