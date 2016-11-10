@@ -95,8 +95,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
             string resourceGroupName = BmsAdapter.GetResourceGroupName();
             
             var response = BmsAdapter.Client.ProtectionContainers.UnregisterWithHttpMessagesAsync(
-                                        resourceName,
                                         resourceGroupName,
+                                        resourceName,
                                         containerName,
                                         cancellationToken: BmsAdapter.CmdletCancellationToken).Result;
             return response;

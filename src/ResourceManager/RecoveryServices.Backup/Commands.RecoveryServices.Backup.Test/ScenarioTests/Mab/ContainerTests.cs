@@ -32,7 +32,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Test.ScenarioTests
         [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestUnregisterMabContainer()
         {
-            TestController.NewInstance.RunPsTest(PsBackupProviderTypes.Mab, "Test-GetContainerScenario");
+            TestController.NewInstance.RunPsTest(PsBackupProviderTypes.Mab, "Test-UnregisterContainerScenario");
         }
     }
 }
