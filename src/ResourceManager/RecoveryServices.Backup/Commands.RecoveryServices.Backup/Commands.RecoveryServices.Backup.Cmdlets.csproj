@@ -43,6 +43,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Microsoft.Azure.Management.RecoveryServices.Backup.1.1.2-preview\lib\net45\Microsoft.Azure.Management.RecoveryServices.Backup.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Azure.Management.Storage">
+      <HintPath>..\..\..\packages\Microsoft.Azure.Management.Storage.5.0.2-preview\lib\net45\Microsoft.Azure.Management.Storage.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.WindowsAzure.Management.Scheduler">
       <HintPath>..\..\..\packages\Microsoft.WindowsAzure.Management.Scheduler.6.0.0\lib\net40\Microsoft.WindowsAzure.Management.Scheduler.dll</HintPath>
     </Reference>

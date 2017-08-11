@@ -27,6 +27,7 @@ using CmdletModel = Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Mod
 using ResourcesNS = Microsoft.Azure.Management.Internal.Resources;
 using SystemNet = System.Net;
 using Microsoft.Azure.Commands.Common.Authentication.Abstractions;
+using Microsoft.Azure.Management.Storage;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
 {
@@ -44,6 +45,25 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
         /// Resource management client is used to make calls to the Compute service
         /// </summary>
         protected ResourcesNS.ResourceManagementClient RmClient { get; set; }
+
+        /// <summary>
+        /// Resource management client is used to make calls to the Storage service
+        /// </summary>
+        protected IStorageManagementClient StorageClient
+        {
+            get
+            {
+                if (this.StorageClient == null)
+                {
+                    this.StorageClient =
+                        AzureSession.Instance.ClientFactory.CreateArmClient<StorageManagementClient>(DefaultContext, AzureEnvironment.Endpoint.ResourceManager);
+                }
+                return this.StorageClient;
+
+            }
+
+            set { StorageClient = value; }
+        }
 
         /// <summary>
         /// Initializes the service clients and the logging utility

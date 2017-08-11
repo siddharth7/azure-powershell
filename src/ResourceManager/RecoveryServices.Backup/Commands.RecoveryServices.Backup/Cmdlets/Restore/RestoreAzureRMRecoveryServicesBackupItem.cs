@@ -21,6 +21,7 @@ using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
 using Microsoft.Azure.Management.Internal.Resources;
 using Microsoft.Azure.Management.Internal.Resources.Models;
+using StorageModels = Microsoft.Azure.Management.Storage.Models;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
 {
@@ -59,44 +60,9 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
             ExecutionBlock(() =>
             {
                 base.ExecuteCmdlet();
-                StorageAccountName = StorageAccountName.ToLower();
-                ResourceIdentity identity = new ResourceIdentity();
-                identity.ResourceName = StorageAccountName;
-                identity.ResourceProviderNamespace = "Microsoft.ClassicStorage/storageAccounts";
-                identity.ResourceProviderApiVersion = "2015-12-01";
-                identity.ResourceType = string.Empty;
 
-                GenericResource resource = null;
-                try
-                {
-                    WriteDebug(string.Format("Query Microsoft.ClassicStorage with name = {0}",
-                        StorageAccountName));
-                    resource = RmClient.Resources.GetAsync(
-                        StorageAccountResourceGroupName,
-                        identity.ResourceProviderNamespace,
-                        identity.ParentResourcePath,
-                        identity.ResourceType,
-                        identity.ResourceName,
-                        identity.ResourceProviderApiVersion,
-                        CancellationToken.None).Result;
-                }
-                catch (Exception)
-                {
-                    identity.ResourceProviderNamespace = "Microsoft.Storage/storageAccounts";
-                    identity.ResourceProviderApiVersion = "2016-01-01";
-                    resource = RmClient.Resources.GetAsync(
-                        StorageAccountResourceGroupName,
-                        identity.ResourceProviderNamespace,
-                        identity.ParentResourcePath,
-                        identity.ResourceType,
-                        identity.ResourceName,
-                        identity.ResourceProviderApiVersion,
-                        CancellationToken.None).Result;
-                }
-
-                string storageAccountId = resource.Id;
-                string storageAccountlocation = resource.Location;
-                string storageAccountType = resource.Type;
+                string storageAccountId, storageAccountlocation, storageAccountType;
+                GetStorageAccountDetails(out storageAccountId, out storageAccountlocation, out storageAccountType);
 
                 WriteDebug(string.Format("StorageId = {0}", storageAccountId));
 
@@ -116,6 +82,62 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                 WriteDebug(string.Format("Restore submitted"));
                 HandleCreatedJob(jobResponse, Resources.RestoreOperation);
             });
+        }
+
+        private void GetStorageAccountDetails(out string storageAccountId, out string storageAccountlocation, out string storageAccountType)
+        {
+            try
+            {
+                TryGetClassicStorageAccount(out storageAccountId, out storageAccountlocation, out storageAccountType);
+            }
+            catch (Exception)
+            {
+                TryGetComputeStorageAccount(out storageAccountId, out storageAccountlocation, out storageAccountType);
+            }
+        }
+
+        private void TryGetClassicStorageAccount(out string storageAccountId, out string storageAccountlocation, out string storageAccountType)
+        {
+            var storageAccountName = StorageAccountName.ToLower();
+            ResourceIdentity identity = new ResourceIdentity();
+            identity.ResourceName = storageAccountName;
+            identity.ResourceProviderNamespace = "Microsoft.ClassicStorage/storageAccounts";
+            identity.ResourceProviderApiVersion = "2015-12-01";
+            identity.ResourceType = string.Empty;
+
+            GenericResource resource = null;
+            WriteDebug(string.Format("Query Microsoft.ClassicStorage with name = {0}",
+                    storageAccountName));
+            resource = RmClient.Resources.GetAsync(
+                StorageAccountResourceGroupName,
+                identity.ResourceProviderNamespace,
+                identity.ParentResourcePath,
+                identity.ResourceType,
+                identity.ResourceName,
+                identity.ResourceProviderApiVersion,
+                CancellationToken.None).Result;
+
+            storageAccountId = resource.Id;
+            storageAccountlocation = resource.Location;
+            storageAccountType = resource.Type;
+        }
+
+        private void TryGetComputeStorageAccount(out string storageAccountId, out string storageAccountlocation, out string storageAccountType)
+        {
+            StorageModels.StorageAccount storageAccountDetails = null;
+            storageAccountDetails = this.StorageClient.StorageAccounts.GetPropertiesWithHttpMessagesAsync(
+                       StorageAccountResourceGroupName,
+                       StorageAccountName).Result.Body;
+
+            if (storageAccountDetails.Kind == StorageModels.Kind.BlobStorage)
+            {
+                throw new ArgumentException(String.Format(Resources.UnsupportedStorageAccountException,
+                storageAccountDetails.Kind.ToString(), StorageAccountName));
+            }
+
+            storageAccountId = storageAccountDetails.Id;
+            storageAccountlocation = storageAccountDetails.Location;
+            storageAccountType = storageAccountDetails.Type;
         }
     }
 }
