@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
+using Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
 using ServiceClientModel = Microsoft.Azure.Management.RecoveryServices.Backup.Models;
 
@@ -378,10 +379,9 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
                 ServiceClientModel.SimpleRetentionPolicy simpleRetPolicy =
                     new ServiceClientModel.SimpleRetentionPolicy();
 
-                string durationType = psRetPolicy.RetentionDurationType.ToString();
                 simpleRetPolicy.RetentionDuration = new ServiceClientModel.RetentionDuration();
                 simpleRetPolicy.RetentionDuration.DurationType =
-                    durationType.ToEnum<ServiceClientModel.RetentionDurationType>();
+                    ServiceClientHelpers.GetServiceClientRetentionDurationType(psRetPolicy.RetentionDurationType);
                 simpleRetPolicy.RetentionDuration.Count = psRetPolicy.RetentionCount;
 
                 return simpleRetPolicy;
@@ -496,8 +496,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
                                                   psMonthly.RetentionTimes);
 
             serviceClientMonthly.RetentionScheduleFormatType =
-                psMonthly.RetentionScheduleFormatType
-                    .ToEnum<ServiceClientModel.RetentionScheduleFormat>();
+                ServiceClientHelpers.GetServiceClientRetentionScheduleFormat(
+                    psMonthly.RetentionScheduleFormatType);
 
             if (psMonthly.RetentionScheduleFormatType == RetentionScheduleFormat.Daily)
             {
@@ -529,8 +529,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
                                                  psYearly.RetentionTimes);
 
             serviceClientYearly.RetentionScheduleFormatType =
-                    psYearly.RetentionScheduleFormatType
-                        .ToEnum<ServiceClientModel.RetentionScheduleFormat>();
+                    ServiceClientHelpers.GetServiceClientRetentionScheduleFormat(
+                    psYearly.RetentionScheduleFormatType);
 
             if (psYearly.RetentionScheduleFormatType == RetentionScheduleFormat.Daily)
             {

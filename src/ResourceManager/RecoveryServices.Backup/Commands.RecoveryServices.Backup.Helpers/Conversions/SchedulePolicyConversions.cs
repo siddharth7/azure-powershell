@@ -101,7 +101,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
 
             ServiceClientModel.SimpleSchedulePolicy serviceClientPolicy = new ServiceClientModel.SimpleSchedulePolicy();
             serviceClientPolicy.ScheduleRunFrequency =
-                psPolicy.ScheduleRunFrequency.ToEnum<ServiceClientModel.ScheduleRunType>();
+                ServiceClientHelpers.GetServiceClientScheduleRunType(
+                    psPolicy.ScheduleRunFrequency);
 
             if (psPolicy.ScheduleRunFrequency == ScheduleRunType.Weekly)
             {
