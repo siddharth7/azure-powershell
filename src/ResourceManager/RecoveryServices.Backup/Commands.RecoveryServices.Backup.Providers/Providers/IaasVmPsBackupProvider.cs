@@ -288,7 +288,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
         /// Provisioning Item Level Recovery Access for the given recovery point
         /// </summary>
         /// <returns>Azure VM client script info as returned by the service</returns>
-        public AzureVmClientScriptInfo ProvisionItemLevelRecoveryAccess()
+        public AzureVmRecoveryPointAccessInfo ProvisionItemLevelRecoveryAccess()
         {
             string content = string.Empty;
             AzureVmRecoveryPoint rp = ProviderData[RestoreBackupItemParams.RecoveryPoint]
@@ -316,7 +316,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                 asyncHeader = s;
             }
 
-            AzureVmClientScriptInfo result = null;
+            AzureVmRecoveryPointAccessInfo result = null;
             var response = TrackingHelpers.GetOperationStatus(
                 ilRResponse,
                 operationId => ServiceClientAdapter.GetProtectedItemOperationStatus(operationId));
@@ -348,7 +348,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             }
 
             string scriptDownloadLocation =
-                    (string)ProviderData[RecoveryPointParams.KeyFileDownloadLocation];
+                    (string)ProviderData[RecoveryPointParams.FileDownloadLocation];
             string absoluteFilePath = string.Empty;
             if (string.IsNullOrEmpty(scriptDownloadLocation))
             {
@@ -1177,7 +1177,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
         /// </summary>
         /// <param name="clientScriptForConnection"></param>
         /// <returns></returns>
-        private AzureVmClientScriptInfo GenerateILRResponseForWindowsVMs(
+        private AzureVmRecoveryPointAccessInfo GenerateILRResponseForWindowsVMs(
             ClientScriptForConnect clientScriptForConnection, out string content)
         {
             try
@@ -1206,8 +1206,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                         string fileName = this.ConstructFileName(
                             suffix, clientScriptForConnection.ScriptExtension);
 
-                        return new AzureVmClientScriptInfo(
-                            clientScriptForConnection.OsType, password, fileName);
+                        return new AzureVmRecoveryPointAccessInfo(
+                            clientScriptForConnection.OsType, fileName, password);
                     }
                 }
                 throw new Exception(
@@ -1228,7 +1228,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
         /// <param name="protectedItemName"></param>
         /// <param name="recoveryPointTime"></param>
         /// <returns></returns>
-        private AzureVmClientScriptInfo GenerateILRResponseForLinuxVMs(
+        private AzureVmRecoveryPointAccessInfo GenerateILRResponseForLinuxVMs(
             ClientScriptForConnect clientScriptForConnection,
             string protectedItemName, string recoveryPointTime, out string content)
         {
@@ -1256,8 +1256,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                 }
                 password = this.ReplacePasswordInScriptContentAndReturn(ref content);
 
-                return new AzureVmClientScriptInfo(
-                    clientScriptForConnection.OsType, password, fileName);
+                return new AzureVmRecoveryPointAccessInfo(
+                    clientScriptForConnection.OsType, fileName, password);
             }
             catch (Exception e)
             {

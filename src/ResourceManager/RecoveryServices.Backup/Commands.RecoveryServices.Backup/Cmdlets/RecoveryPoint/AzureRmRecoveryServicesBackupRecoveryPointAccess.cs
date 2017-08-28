@@ -23,7 +23,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
     /// <summary>
     /// Grant access to recovery point of an item for item level recovery.
     /// </summary>
-    [Cmdlet(VerbsSecurity.Grant, "AzureRmRecoveryServicesBackupRecoveryPointAccess"), OutputType(typeof(ClientScriptInfo))]
+    [Cmdlet(VerbsSecurity.Grant, "AzureRmRecoveryServicesBackupRecoveryPointAccess"), OutputType(typeof(AzureVmRecoveryPointAccessInfo))]
     public class GrantAzureRmRecoveryServicesBackupRecoveryPointAccess : RecoveryServicesBackupCmdletBase
     {
         /// <summary>
@@ -38,7 +38,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
             Mandatory = false,
             ValueFromPipeline = false,
             Position = 2,
-            HelpMessage = ParamHelpMsgs.RecoveryPoint.KeyFileDownloadLocation)]
+            HelpMessage = ParamHelpMsgs.RecoveryPoint.FileDownloadLocation)]
         [ValidateNotNullOrEmpty]
         public string FileDownloadLocation { get; set; }
 
@@ -52,7 +52,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                     new Dictionary<Enum, object>()
                 {
                     {RestoreBackupItemParams.RecoveryPoint, RecoveryPoint},
-                        { RecoveryPointParams.KeyFileDownloadLocation, FileDownloadLocation }
+                        { RecoveryPointParams.FileDownloadLocation, FileDownloadLocation }
                 }, ServiceClientAdapter);
 
                 IPsBackupProvider psBackupProvider = providerManager.GetProviderInstance(

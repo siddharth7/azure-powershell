@@ -231,11 +231,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
     }
 
     /// <summary>
-    /// Client Script Details for Connection
+    /// Recovery Point Access Info for Connection
     /// </summary>
-    public class ClientScriptInfo : ObjectBase
+    public class RecoveryPointAccessInfo : ObjectBase
     {
-        public ClientScriptInfo()
+        public RecoveryPointAccessInfo()
             : base()
         {
         }

@@ -58,7 +58,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
 
         List<ItemBase> ListProtectedItems();
 
-        AzureVmClientScriptInfo ProvisionItemLevelRecoveryAccess();
+        AzureVmRecoveryPointAccessInfo ProvisionItemLevelRecoveryAccess();
 
         void RevokeItemLevelRecoveryAccess();
     }
