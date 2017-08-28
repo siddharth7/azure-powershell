@@ -300,12 +300,12 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
 
             IaasVMILRRegistrationRequest registrationRequest =
                 new IaasVMILRRegistrationRequest();
-            registrationRequest.RecoveryPointId = rp.Id;
+            registrationRequest.RecoveryPointId = rp.RecoveryPointId;
             registrationRequest.VirtualMachineId = rp.SourceResourceId;
             registrationRequest.RenewExistingRegistration = (rp.IlrSessionActive == false) ? false : true;
 
             var ilRResponse = ServiceClientAdapter.ProvisioninItemLevelRecovery(
-                containerUri, protectedItemName, rp.Id, registrationRequest);
+                containerUri, protectedItemName, rp.RecoveryPointId, registrationRequest);
 
             IEnumerable<string> ie =
                     ilRResponse.Response.Headers.GetValues("Azure-AsyncOperation");
