@@ -97,7 +97,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
             string resourceName = BmsAdapter.GetResourceName();
             string resourceGroupName = BmsAdapter.GetResourceGroupName();
 
-            var response = BmsAdapter.Client.ProtectionContainers.RefreshWithHttpMessagesAsync(
+            var response = RSAdapter.Client.RegisteredIdentities.DeleteWithHttpMessagesAsync(
                 resourceGroupName,
                 resourceName,
                 containerName,

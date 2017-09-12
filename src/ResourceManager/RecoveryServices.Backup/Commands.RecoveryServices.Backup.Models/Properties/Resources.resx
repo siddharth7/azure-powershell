@@ -318,7 +318,7 @@
 2. The VM name or the Service name needs to be case sensitive
 3. VM is already Protected with same or other Vault. Please Unprotect VM first and then try to protect it again.
 
-Please contact Microsoft for further assistant.</value>
+Please contact Microsoft for further assistance.</value>
   </data>
   <data name="InvalidAzureVMName" xml:space="preserve">
     <value>Azure VM name can not be null or empty</value>

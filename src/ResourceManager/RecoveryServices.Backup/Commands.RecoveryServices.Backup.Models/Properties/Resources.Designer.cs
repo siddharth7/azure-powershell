@@ -120,7 +120,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Properties {
         ///2. The VM name or the Service name needs to be case sensitive
         ///3. VM is already Protected with same or other Vault. Please Unprotect VM first and then try to protect it again.
         ///
-        ///Please contact Microsoft for further assistant..
+        ///Please contact Microsoft for further assistance..
         /// </summary>
         public static string AzureVMNotFound {
             get {

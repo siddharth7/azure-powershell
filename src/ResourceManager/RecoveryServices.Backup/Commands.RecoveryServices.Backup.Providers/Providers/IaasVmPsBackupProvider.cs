@@ -476,8 +476,10 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                     RetentionPolicy = PolicyHelpers.GetServiceClientLongTermRetentionPolicy(
                                                 (CmdletModel.LongTermRetentionPolicy)retentionPolicy),
                     SchedulePolicy = PolicyHelpers.GetServiceClientSimpleSchedulePolicy(
-                                                (CmdletModel.SimpleSchedulePolicy)schedulePolicy)
+                                                (CmdletModel.SimpleSchedulePolicy)schedulePolicy),
+                    TimeZone = TimeZone.CurrentTimeZone.ToString()
                 }
+
             };
 
             return ServiceClientAdapter.CreateOrUpdateProtectionPolicy(
@@ -1044,7 +1046,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                         azureVMRGName,
                         vmversion);
                     Logger.Instance.WriteDebug(errMsg);
-                    Logger.Instance.ThrowTerminatingError(
+                    Logger.Instance.WriteError(
                         new ErrorRecord(new Exception(Resources.AzureVMNotFound),
                             string.Empty,
                             ErrorCategory.InvalidArgument,
@@ -1062,7 +1064,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                     azureVMRGName,
                     vmversion);
                 Logger.Instance.WriteDebug(errMsg);
-                Logger.Instance.ThrowTerminatingError(
+                Logger.Instance.WriteError(
                     new ErrorRecord(new Exception(Resources.AzureVMNotFound),
                         string.Empty, ErrorCategory.InvalidArgument, null));
             }
