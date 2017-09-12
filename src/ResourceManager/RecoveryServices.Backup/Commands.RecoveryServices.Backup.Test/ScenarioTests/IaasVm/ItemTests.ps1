@@ -290,8 +290,21 @@ function Test-GetAzureVMRecoveryPointsScenario
     Assert-AreEqual $failed 1
 }
 
+function Create-Test-VM
+{
+
+}
+
 function Test-RestoreAzureVMRItemScenario
 {
+	$Suffix = Get-Random
+	$User = "User01"
+	$PwordStr = (New-Guid).Guid
+	$PWord = ConvertTo-SecureString -String $PwordStr -AsPlainText -Force
+	$Credential = New-Object -TypeName "System.Management.Automation.PSCredential" -ArgumentList $User, $PWord
+	$vmConfig = New-AzureRmVMConfig -VMName myVM -VMSize Standard_DS2 | Set-AzureRmVMOperatingSystem -Windows -ComputerName myVM -Credential $Credential | Set-AzureRmVMSourceImage -PublisherName MicrosoftWindowsServer -Offer WindowsServer -Skus 2016-Datacenter -Version latest | Add-AzureRmVMNetworkInterface -Id $nic.Id
+	New-AzureRmVM -ResourceGroupName $rg -Location westus -VM $vmConfig
+
 	# 1. Create / update and get vault
     $vaultLocation = get_available_location;
 	$vault = New-AzureRmRecoveryServicesVault `
