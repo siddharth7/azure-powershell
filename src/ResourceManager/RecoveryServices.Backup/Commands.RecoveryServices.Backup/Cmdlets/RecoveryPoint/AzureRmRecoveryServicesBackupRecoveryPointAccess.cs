@@ -21,10 +21,10 @@ using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel;
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
 {
     /// <summary>
-    /// Grant access to recovery point of an item for item level recovery.
+    /// Mount recovery point of an item for item level recovery.
     /// </summary>
-    [Cmdlet(VerbsSecurity.Grant, "AzureRmRecoveryServicesBackupRecoveryPointAccess"), OutputType(typeof(AzureVmRecoveryPointAccessInfo))]
-    public class GrantAzureRmRecoveryServicesBackupRecoveryPointAccess : RecoveryServicesBackupCmdletBase
+    [Cmdlet(VerbsData.Mount, "AzureRmRecoveryServicesBackupRecoveryPoint "), OutputType(typeof(AzureVmRecoveryPointAccessInfo))]
+    public class MountAzureRmRecoveryServicesBackupRecoveryPoint : RecoveryServicesBackupCmdletBase
     {
         /// <summary>
         /// Recovery point of the item to be explored
@@ -37,10 +37,10 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
         [Parameter(
             Mandatory = false,
             ValueFromPipeline = false,
-            Position = 2,
+            Position = 1,
             HelpMessage = ParamHelpMsgs.RecoveryPoint.FileDownloadLocation)]
         [ValidateNotNullOrEmpty]
-        public string FileDownloadLocation { get; set; }
+        public string Path { get; set; }
 
         public override void ExecuteCmdlet()
         {
@@ -52,7 +52,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                     new Dictionary<Enum, object>()
                 {
                     {RestoreBackupItemParams.RecoveryPoint, RecoveryPoint},
-                        { RecoveryPointParams.FileDownloadLocation, FileDownloadLocation }
+                        { RecoveryPointParams.FileDownloadLocation, Path }
                 }, ServiceClientAdapter);
 
                 IPsBackupProvider psBackupProvider = providerManager.GetProviderInstance(
@@ -60,19 +60,23 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                 var response = psBackupProvider.ProvisionItemLevelRecoveryAccess();
 
                 WriteDebug(string.Format("ILR Script download completed"));
+                WriteInformation("Run this script on the machine where you want to copy the files" + 
+                                 "\nPath of the file along with filename:" + 
+                                 "\nPassword to run the file: "+ response.Password + 
+                                 "\nDownloaded to the current location(user can specify path)", null);
                 WriteObject(response);
             });
         }
     }
 
     /// <summary>
-    /// Revoke access to recovery point of an item for item level recovery.
+    /// Dismount to recovery point of an item for item level recovery.
     /// </summary>
-    [Cmdlet(VerbsSecurity.Revoke, "AzureRmRecoveryServicesBackupRecoveryPointAccess")]
-    public class RevokeAzureRmRecoveryServicesBackupRecoveryPointAccess : RecoveryServicesBackupCmdletBase
+    [Cmdlet(VerbsData.Dismount, "AzureRmRecoveryServicesBackupRecoveryPoint")]
+    public class DismountAzureRmRecoveryServicesBackupRecoveryPoint : RecoveryServicesBackupCmdletBase
     {
         /// <summary>
-        /// Recovery point of the item fo
+        /// Recovery point of the item to be dismounted
         /// </summary>
         [Parameter(Mandatory = true, ValueFromPipeline = true, Position = 0,
             HelpMessage = ParamHelpMsgs.RestoreDisk.RecoveryPoint)]
@@ -96,7 +100,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                 string content = string.Empty;
                 psBackupProvider.RevokeItemLevelRecoveryAccess();
 
-                WriteDebug(string.Format("Revoking of recovery point access is completed"));
+                WriteDebug(string.Format("Dismount of recovery point"));
             });
         }
     }
