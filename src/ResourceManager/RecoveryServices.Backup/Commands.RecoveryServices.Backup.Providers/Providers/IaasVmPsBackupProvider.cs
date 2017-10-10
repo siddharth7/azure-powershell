@@ -477,7 +477,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                                                 (CmdletModel.LongTermRetentionPolicy)retentionPolicy),
                     SchedulePolicy = PolicyHelpers.GetServiceClientSimpleSchedulePolicy(
                                                 (CmdletModel.SimpleSchedulePolicy)schedulePolicy),
-                    TimeZone = TimeZone.CurrentTimeZone.ToString()
+                    TimeZone = DateTimeKind.Utc.ToString()
                 }
 
             };
@@ -551,7 +551,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                     RetentionPolicy = PolicyHelpers.GetServiceClientLongTermRetentionPolicy(
                                   (CmdletModel.LongTermRetentionPolicy)((AzureVmPolicy)policy).RetentionPolicy),
                     SchedulePolicy = PolicyHelpers.GetServiceClientSimpleSchedulePolicy(
-                                  (CmdletModel.SimpleSchedulePolicy)((AzureVmPolicy)policy).SchedulePolicy)
+                                  (CmdletModel.SimpleSchedulePolicy)((AzureVmPolicy)policy).SchedulePolicy),
+                    TimeZone = DateTimeKind.Utc.ToString()
                 }
             };
 
