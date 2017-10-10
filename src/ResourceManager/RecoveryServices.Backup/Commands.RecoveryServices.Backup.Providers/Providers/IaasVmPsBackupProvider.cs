@@ -293,6 +293,10 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             string content = string.Empty;
             AzureVmRecoveryPoint rp = ProviderData[RestoreBackupItemParams.RecoveryPoint]
                 as AzureVmRecoveryPoint;
+            if (rp.EncryptionEnabled == true)
+            {
+                throw new ArgumentException(Resources.ILREncryptedVmError);
+            }
             content = string.Empty;
 
             Dictionary<UriEnums, string> uriDict = HelperUtils.ParseUri(rp.Id);
@@ -352,7 +356,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             string absoluteFilePath = string.Empty;
             if (string.IsNullOrEmpty(scriptDownloadLocation))
             {
-                scriptDownloadLocation = Path.GetTempPath();
+                scriptDownloadLocation = Directory.GetCurrentDirectory();
             }
             absoluteFilePath = Path.Combine(scriptDownloadLocation, result.Filename);
             File.WriteAllBytes(absoluteFilePath, Convert.FromBase64String(content));

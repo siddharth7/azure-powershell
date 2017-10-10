@@ -491,4 +491,14 @@ Please contact Microsoft for further assistance.</value>
   <data name="JobStartTimeShouldBeLessThanCurrent" xml:space="preserve">
     <value>From date should be less than current UTC time</value>
   </data>
+  <data name="ILREncryptedVmError" xml:space="preserve">
+    <value>File recovery from encrypted VM backups is not supported</value>
+  </data>
+  <data name="MountRecoveryPointInfoMessage" xml:space="preserve">
+    <value>Run this script on the machine where you want to copy the files
+
+Path of the file along with filename: 
+
+Password to run the file: {0}</value>
+  </data>
 </root>

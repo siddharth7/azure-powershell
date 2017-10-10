@@ -81,7 +81,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Helpers
                 if (!string.IsNullOrEmpty(timeZone))
                 {
                     TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZone);
-                    temp = TimeZoneInfo.ConvertTimeToUtc(localTime, timeZoneInfo);
+                    temp = DateTime.SpecifyKind(temp, DateTimeKind.Unspecified);
+                    temp = TimeZoneInfo.ConvertTimeToUtc(temp, timeZoneInfo);
                 }
                 utcTimes.Add(temp);
             }

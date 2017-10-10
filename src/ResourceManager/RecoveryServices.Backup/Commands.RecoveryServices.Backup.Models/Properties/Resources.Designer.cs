@@ -426,6 +426,15 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File recovery from encrypted VM backups is not supported.
+        /// </summary>
+        public static string ILREncryptedVmError {
+            get {
+                return ResourceManager.GetString("ILREncryptedVmError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Service didn&apos;t return any client scripts for this file / folder restore operation.
         /// </summary>
         public static string ILRNoClientScriptsReturned {
@@ -701,6 +710,19 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Properties {
         public static string MonthlyYearlyRetentionWeeklySchedulePolicyNULLException {
             get {
                 return ResourceManager.GetString("MonthlyYearlyRetentionWeeklySchedulePolicyNULLException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run this script on the machine where you want to copy the files
+        ///
+        ///Path of the file along with filename: 
+        ///
+        ///Password to run the file: {0}.
+        /// </summary>
+        public static string MountRecoveryPointInfoMessage {
+            get {
+                return ResourceManager.GetString("MountRecoveryPointInfoMessage", resourceCulture);
             }
         }
         

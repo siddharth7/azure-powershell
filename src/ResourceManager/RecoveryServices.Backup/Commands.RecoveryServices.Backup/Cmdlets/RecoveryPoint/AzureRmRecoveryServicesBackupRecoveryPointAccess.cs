@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Management.Automation;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
+using Microsoft.Azure.Commands.RecoveryServices.Backup.Properties;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
@@ -60,10 +61,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                 var response = psBackupProvider.ProvisionItemLevelRecoveryAccess();
 
                 WriteDebug(string.Format("ILR Script download completed"));
-                WriteInformation("Run this script on the machine where you want to copy the files" + 
-                                 "\nPath of the file along with filename:" + 
-                                 "\nPassword to run the file: "+ response.Password + 
-                                 "\nDownloaded to the current location(user can specify path)", null);
+                WriteInformation(string.Format(Resources.MountRecoveryPointInfoMessage, response.Password),
+                    null);
                 WriteObject(response);
             });
         }
