@@ -11,7 +11,7 @@ Checks whether your ARM resource is backed up or not.
 
 ## SYNTAX
 
-### Name
+### Name (Default)
 ```
 Get-AzureRmRecoveryServicesBackupStatus [-Name <String>] [-ResourceGroupName <String>] [-Type <String>]
  [-DefaultProfile <IAzureContextContainer>] [<CommonParameters>]
