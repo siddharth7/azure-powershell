@@ -14,12 +14,13 @@ Checks whether your ARM resource is backed up or not.
 ### Name
 ```
 Get-AzureRmRecoveryServicesBackupStatus [-Name <String>] [-ResourceGroupName <String>] [-Type <String>]
- [-DefaultProfile <IAzureContextContainer>]
+ [-DefaultProfile <IAzureContextContainer>] [<CommonParameters>]
 ```
 
 ### Id
 ```
 Get-AzureRmRecoveryServicesBackupStatus [-ResourceId <String>] [-DefaultProfile <IAzureContextContainer>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -30,13 +31,12 @@ If it is protected, the relevant vault details will be returned.
 
 ### Example 1
 ```
-PS C:\> $isVMBackedUp = Get-AzureRmRecoveryServicesBackupStatus -Name “myAzureVM” -ResourceGroupName “myAzureVMRG” -ResourceType “AzureVM”
-PS C:\> If ($isVMBackedUp -eq “”) {
+PS C:\> $isVMBackedUp = Get-AzureRmRecoveryServicesBackupStatus -Name "myAzureVM" -ResourceGroupName "myAzureVMRG" -ResourceType "AzureVM"
+PS C:\> If ($isVMBackedUp -eq "") {
 Get-AzureRmRecoveryServicesVault -Name "testvault"  -ResourceGroupName "vaultResourceGroup" | Set-AzureRmRecoveryServicesVaultContext
 $defPolicy = Get-AzureRmRecoveryServicesBackupProtectionPolicy -WorkloadType "AzureVM"
 Enable-AzureRmRecoveryServicesBackupProtection -Policy $defpol -Name "myAzureVM" -ResourceGroupName "myAzureVMRG"
 }
-
 ```
 
 ## PARAMETERS
@@ -117,15 +117,16 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### CommonParameters
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+
 ## INPUTS
 
 ### System.String
 
-
 ## OUTPUTS
 
 ### System.Collections.Generic.List`1[[Microsoft.Azure.Commands.RecoveryServices.ARSVault, Microsoft.Azure.Commands.RecoveryServices.ARM, Version=4.1.1.0, Culture=neutral, PublicKeyToken=null]]
-
 
 ## NOTES
 
