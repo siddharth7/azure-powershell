@@ -13,13 +13,13 @@ Checks whether your ARM resource is backed up or not.
 
 ### Name (Default)
 ```
-Get-AzureRmRecoveryServicesBackupStatus [-Name <String>] [-ResourceGroupName <String>] [-Type <String>]
+Get-AzureRmRecoveryServicesBackupStatus -Name <String> -ResourceGroupName <String> -Type <String>
  [-DefaultProfile <IAzureContextContainer>] [<CommonParameters>]
 ```
 
 ### Id
 ```
-Get-AzureRmRecoveryServicesBackupStatus [-ResourceId <String>] [-DefaultProfile <IAzureContextContainer>]
+Get-AzureRmRecoveryServicesBackupStatus -ResourceId <String> [-DefaultProfile <IAzureContextContainer>]
  [<CommonParameters>]
 ```
 
@@ -64,7 +64,7 @@ Type: String
 Parameter Sets: Name
 Aliases: 
 
-Required: False
+Required: True
 Position: Named
 Default value: None
 Accept pipeline input: False
@@ -79,7 +79,7 @@ Type: String
 Parameter Sets: Name
 Aliases: 
 
-Required: False
+Required: True
 Position: Named
 Default value: None
 Accept pipeline input: False
@@ -94,7 +94,7 @@ Type: String
 Parameter Sets: Id
 Aliases: 
 
-Required: False
+Required: True
 Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName)
@@ -110,7 +110,7 @@ Type: String
 Parameter Sets: Name
 Aliases: 
 
-Required: False
+Required: True
 Position: Named
 Default value: None
 Accept pipeline input: False
@@ -126,7 +126,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
-### System.Collections.Generic.List`1[[Microsoft.Azure.Commands.RecoveryServices.ARSVault, Microsoft.Azure.Commands.RecoveryServices.ARM, Version=4.1.1.0, Culture=neutral, PublicKeyToken=null]]
+### [Microsoft.Azure.Commands.RecoveryServices.ARSVault, Microsoft.Azure.Commands.RecoveryServices.ARM, Version=4.1.1.0, Culture=neutral, PublicKeyToken=null]
 
 ## NOTES
 

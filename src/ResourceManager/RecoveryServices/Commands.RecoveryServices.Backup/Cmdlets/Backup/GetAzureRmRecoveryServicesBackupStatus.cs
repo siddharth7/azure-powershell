@@ -36,7 +36,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
         /// Name of the Azure Resource whose representative item needs to be checked 
         /// if it is already protected by some Recovery Services Vault in the subscription.
         /// </summary>
-        [Parameter(ParameterSetName = NameParamSet,
+        [Parameter(ParameterSetName = NameParamSet, Mandatory = true,
             HelpMessage = ParamHelpMsgs.ProtectionCheck.Name)]
         public string Name { get; set; }
 
@@ -45,7 +45,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
         /// needs to be checked if it is already protected by some RecoveryServices Vault 
         /// in the subscription.
         /// </summary>
-        [Parameter(ParameterSetName = NameParamSet,
+        [Parameter(ParameterSetName = NameParamSet, Mandatory = true,
             HelpMessage = ParamHelpMsgs.ProtectionCheck.ResourceGroupName)]
         public string ResourceGroupName { get; set; }
 
@@ -53,12 +53,13 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
         /// Type of the Azure Resource whose representative item needs to be checked 
         /// if it is already protected by some Recovery Services Vault in the subscription.
         /// </summary>
-        [Parameter(ParameterSetName = NameParamSet,
+        [Parameter(ParameterSetName = NameParamSet, Mandatory = true,
             HelpMessage = ParamHelpMsgs.ProtectionCheck.Type)]
+        [ValidateSet("AzureVM")]
         public string Type { get; set; }
 
         [Parameter(ParameterSetName = IdParamSet, ValueFromPipelineByPropertyName = true,
-            HelpMessage = ParamHelpMsgs.ProtectionCheck.ResourceId)]
+            HelpMessage = ParamHelpMsgs.ProtectionCheck.ResourceId, Mandatory = true)]
         public string ResourceId { get; set; }
 
         public override void ExecuteCmdlet()
