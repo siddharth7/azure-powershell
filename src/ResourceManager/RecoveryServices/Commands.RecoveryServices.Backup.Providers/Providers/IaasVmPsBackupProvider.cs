@@ -263,6 +263,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
             string storageAccountType =
                 ProviderData[RestoreBackupItemParams.StorageAccountType].ToString();
             bool osaOption = (bool)ProviderData[RestoreBackupItemParams.OsaOption];
+            string targetResourceGroupName =
+                (string)ProviderData[RestoreBackupItemParams.TargetResourceGroupName];
 
             var response = ServiceClientAdapter.RestoreDisk(
                 rp,

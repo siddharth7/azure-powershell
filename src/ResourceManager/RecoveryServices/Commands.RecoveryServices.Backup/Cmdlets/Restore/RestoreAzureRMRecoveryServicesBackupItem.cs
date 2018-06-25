@@ -72,6 +72,14 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
         [Parameter(Mandatory = false, HelpMessage = ParamHelpMsgs.RestoreDisk.OsaOption)]
         public SwitchParameter UseOriginalStorageAccount { get; set; }
 
+        /// <summary>
+        /// The resource group under which managed disks will be restored.
+        /// </summary>
+        [Parameter(Mandatory = true,
+            HelpMessage = ParamHelpMsgs.RestoreDisk.TargetResourceGroupName)]
+        [ValidateNotNullOrEmpty]
+        public string TargetResourceGroupName { get; set; }
+
         public override void ExecuteCmdlet()
         {
             ExecutionBlock(() =>
@@ -95,7 +103,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                         { RestoreBackupItemParams.StorageAccountId, storageAccountResource.Id },
                         { RestoreBackupItemParams.StorageAccountLocation, storageAccountResource.Location },
                         { RestoreBackupItemParams.StorageAccountType, storageAccountResource.Type },
-                        { RestoreBackupItemParams.OsaOption, UseOriginalStorageAccount.IsPresent }
+                        { RestoreBackupItemParams.OsaOption, UseOriginalStorageAccount.IsPresent },
+                        { RestoreBackupItemParams.TargetResourceGroupName, TargetResourceGroupName },
                     }, ServiceClientAdapter);
 
                 IPsBackupProvider psBackupProvider = providerManager.GetProviderInstance(

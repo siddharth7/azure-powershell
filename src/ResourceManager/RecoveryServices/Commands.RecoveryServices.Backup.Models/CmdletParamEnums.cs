@@ -53,7 +53,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models
         StorageAccountId,
         StorageAccountLocation,
         StorageAccountType,
-        OsaOption
+        OsaOption,
+        TargetResourceGroupName
     }
 
     public enum PolicyParams
