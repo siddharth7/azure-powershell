@@ -734,6 +734,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                 (ItemProtectionState)ProviderData[ItemParams.ProtectionState];
             CmdletModel.WorkloadType workloadType =
                 (CmdletModel.WorkloadType)ProviderData[ItemParams.WorkloadType];
+            string policyName = (string)ProviderData[PolicyParams.PolicyName];
 
             ODataQuery<ProtectedItemQueryObject> queryParams =
                 new ODataQuery<ProtectedItemQueryObject>(
@@ -843,7 +844,16 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel
                 }).ToList();
             }
 
-            return itemModels;
+            //6. Filter by policy name
+            if (!string.IsNullOrEmpty(policyName))
+            {
+                itemModels = itemModels.Where(itemModel =>
+                {
+                    return ((AzureVmItem)itemModel).ProtectionPolicyName == policyName;
+                }).ToList();
+            }
+
+                return itemModels;
         }
 
         /// <summary>
