@@ -102,6 +102,12 @@ function Test-AzureVMGetItems
 			-ProtectionState IRPending `
 			-ProtectionStatus Healthy;
 		Assert-True { $items.VirtualMachineId -contains $vm.Id }
+
+		# VARIATION-9: Get items for Vault Id and Policy Name
+		$items = Get-AzureRmRecoveryServicesBackupItem `
+			-VaultId $vault.ID `
+			-PolicyName "DefaultPolicy";
+		Assert-True { $items.VirtualMachineId -contains $vm.Id }
 	}
 	finally
 	{

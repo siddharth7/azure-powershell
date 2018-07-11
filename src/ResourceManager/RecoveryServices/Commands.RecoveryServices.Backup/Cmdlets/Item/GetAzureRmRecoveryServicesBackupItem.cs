@@ -71,8 +71,8 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
         /// <summary>
         /// Policiy Name of the item to be returned.
         /// </summary>
-        [Parameter(Mandatory =false, Position = 2, HelpMessage = ParamHelpMsgs.Policy.Name,
-            ParameterSetName =GetItemsForVaultIdParamSet)]
+        [Parameter(Mandatory = false, Position = 2, HelpMessage = ParamHelpMsgs.Policy.Name,
+            ParameterSetName = GetItemsForVaultIdParamSet)]
         public string PolicyName { get; set; }
 
         /// <summary>
