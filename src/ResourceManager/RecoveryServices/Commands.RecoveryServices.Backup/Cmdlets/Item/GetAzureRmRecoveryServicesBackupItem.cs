@@ -55,18 +55,18 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
         public BackupManagementType BackupManagementType { get; set; }
 
         /// <summary>
+        /// Policy of the item to be returned.
+        /// </summary>
+        [Parameter(Mandatory = true, Position = 1, HelpMessage = ParamHelpMsgs.Policy.ProtectionPolicy,
+            ParameterSetName = GetItemsForPolicyParamSet)]
+        public PolicyBase Policy { get; set; }
+
+        /// <summary>
         /// Friendly name of the item to be returned.
         /// </summary>
         [Parameter(Mandatory = false, Position = 2, HelpMessage = ParamHelpMsgs.Item.AzureVMName)]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
-
-        /// <summary>
-        /// Policy of the item to be returned.
-        /// </summary>
-        [Parameter(Mandatory = true, Position = 2, HelpMessage = ParamHelpMsgs.Policy.ProtectionPolicy,
-            ParameterSetName = GetItemsForPolicyParamSet)]
-        public PolicyBase Policy { get; set; }
 
         /// <summary>
         /// Status of protection of the item to be returned.
