@@ -25,6 +25,9 @@ function Test-AzureVMGetItems
 		$vault = Create-RecoveryServicesVault $resourceGroupName $location
 		Enable-Protection $vault $vm
 		Enable-Protection $vault $vm2
+		$policy = Get-AzureRmRecoveryServicesBackupProtectionPolicy `
+			-VaultId $vault.ID `
+			-Name "DefaultPolicy";
 
 		$container = Get-AzureRmRecoveryServicesBackupContainer `
 			-VaultId $vault.ID `
@@ -106,7 +109,7 @@ function Test-AzureVMGetItems
 		# VARIATION-9: Get items for Vault Id and Policy Name
 		$items = Get-AzureRmRecoveryServicesBackupItem `
 			-VaultId $vault.ID `
-			-PolicyName "DefaultPolicy";
+			-Policy $policy;
 		Assert-True { $items.VirtualMachineId -contains $vm.Id }
 	}
 	finally

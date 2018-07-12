@@ -32,7 +32,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
     {
         internal const string GetItemsForContainerParamSet = "GetItemsForContainer";
         internal const string GetItemsForVaultParamSet = "GetItemsForVault";
-        internal const string GetItemsForVaultIdParamSet = "GetItemsForVaultId";
+        internal const string GetItemsForPolicyParamSet = "GetItemsForPolicy";
 
         /// <summary>
         /// When this option is specified, only those items which belong to this container will be returned.
@@ -55,13 +55,6 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
         public BackupManagementType BackupManagementType { get; set; }
 
         /// <summary>
-        /// Vault Id to be returned.
-        /// </summary>
-        [Parameter(Mandatory = true, Position = 1, HelpMessage = ParamHelpMsgs.Common.VaultId,
-            ParameterSetName = GetItemsForVaultIdParamSet)]
-        public string VaultIdName { get; set; }
-
-        /// <summary>
         /// Friendly name of the item to be returned.
         /// </summary>
         [Parameter(Mandatory = false, Position = 2, HelpMessage = ParamHelpMsgs.Item.AzureVMName)]
@@ -69,11 +62,11 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
         public string Name { get; set; }
 
         /// <summary>
-        /// Policiy Name of the item to be returned.
+        /// Policy of the item to be returned.
         /// </summary>
-        [Parameter(Mandatory = false, Position = 2, HelpMessage = ParamHelpMsgs.Policy.Name,
-            ParameterSetName = GetItemsForVaultIdParamSet)]
-        public string PolicyName { get; set; }
+        [Parameter(Mandatory = true, Position = 2, HelpMessage = ParamHelpMsgs.Policy.ProtectionPolicy,
+            ParameterSetName = GetItemsForPolicyParamSet)]
+        public PolicyBase Policy { get; set; }
 
         /// <summary>
         /// Status of protection of the item to be returned.
@@ -114,7 +107,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                         { ItemParams.Container, Container },
                         { ItemParams.BackupManagementType, BackupManagementType },
                         { ItemParams.AzureVMName, Name },
-                        { PolicyParams.PolicyName, PolicyName},
+                        { PolicyParams.ProtectionPolicy, Policy},
                         { ItemParams.ProtectionStatus, ProtectionStatus },
                         { ItemParams.ProtectionState, ProtectionState },
                         { ItemParams.WorkloadType, WorkloadType },
@@ -134,7 +127,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                 }
                 else
                 {
-                    psBackupProvider = providerManager.GetProviderInstance("AzureVM");
+                    psBackupProvider = providerManager.GetProviderInstance(Policy.WorkloadType);
                 }
                 var itemModels = psBackupProvider.ListProtectedItems();
 
