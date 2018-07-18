@@ -59,6 +59,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
         /// </summary>
         [Parameter(Mandatory = true, Position = 1, HelpMessage = ParamHelpMsgs.Policy.ProtectionPolicy,
             ParameterSetName = GetItemsForPolicyParamSet)]
+        [ValidateNotNullOrEmpty]
         public PolicyBase Policy { get; set; }
 
         /// <summary>
@@ -85,7 +86,10 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
         /// <summary>
         /// Workload type of the item to be returned.
         /// </summary>
-        [Parameter(Mandatory = true, Position = 5, HelpMessage = ParamHelpMsgs.Common.WorkloadType)]
+        [Parameter(Mandatory = true, Position = 5, HelpMessage = ParamHelpMsgs.Common.WorkloadType,
+            ParameterSetName = GetItemsForVaultParamSet)]
+        [Parameter(Mandatory = true, Position = 5, HelpMessage = ParamHelpMsgs.Common.WorkloadType,
+            ParameterSetName = GetItemsForContainerParamSet)]
         [ValidateNotNullOrEmpty]
         public WorkloadType WorkloadType { get; set; }
 
