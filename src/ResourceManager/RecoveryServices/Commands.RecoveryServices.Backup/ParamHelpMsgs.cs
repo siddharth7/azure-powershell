@@ -79,6 +79,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
             public const string ForceOption = "Force disables backup protection (prevents confirmation dialog). This parameter is optional.";
             public const string ExpiryDateTimeUTC = "Date and time specified in UTC after which" +
                 " the recovery points created by this backup will no longer be available for restore";
+            public const string ProtectionPolicy = "The id of the backup policy which is used to protect the backup items";
         }
 
         internal static class RecoveryPoint

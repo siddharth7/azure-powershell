@@ -18,7 +18,6 @@ using System.Management.Automation;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.Models;
 using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ProviderModel;
 using Microsoft.Azure.Management.Internal.Resources.Utilities.Models;
-using Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets;
 
 namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
 {
@@ -55,9 +54,9 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
         public BackupManagementType BackupManagementType { get; set; }
 
         /// <summary>
-        /// Policy of the item to be returned.
+        /// The command returns the list of backup Items protected by the given policy id.
         /// </summary>
-        [Parameter(Mandatory = true, Position = 1, HelpMessage = ParamHelpMsgs.Policy.ProtectionPolicy,
+        [Parameter(Mandatory = true, Position = 1, HelpMessage = ParamHelpMsgs.Item.ProtectionPolicy,
             ParameterSetName = GetItemsForPolicyParamSet)]
         [ValidateNotNullOrEmpty]
         public PolicyBase Policy { get; set; }
@@ -111,7 +110,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                         { ItemParams.Container, Container },
                         { ItemParams.BackupManagementType, BackupManagementType },
                         { ItemParams.AzureVMName, Name },
-                        { PolicyParams.ProtectionPolicy, Policy},
+                        { PolicyParams.ProtectionPolicy, Policy },
                         { ItemParams.ProtectionStatus, ProtectionStatus },
                         { ItemParams.ProtectionState, ProtectionState },
                         { ItemParams.WorkloadType, WorkloadType },
@@ -124,7 +123,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets
                     psBackupProvider =
                         providerManager.GetProviderInstance(WorkloadType, BackupManagementType);
                 }
-                else if(this.ParameterSetName == GetItemsForContainerParamSet)
+                else if (this.ParameterSetName == GetItemsForContainerParamSet)
                 {
                     psBackupProvider = providerManager.GetProviderInstance(WorkloadType,
                     (Container as ManagementContext).BackupManagementType);

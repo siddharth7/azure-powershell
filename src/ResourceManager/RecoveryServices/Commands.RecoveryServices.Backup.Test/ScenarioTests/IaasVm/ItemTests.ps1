@@ -36,14 +36,14 @@ function Test-AzureVMGetItems
 			-Name $vm.Name
 		
 		# VARIATION-1: Get all items for container
-		$items = get-azurermrecoveryservicesbackupitem `
-			-vaultid $vault.id `
-			-container $container `
-			-workloadtype azurevm;
-		assert-true { $items.VirtualMachineId -contains $vm.Id }
+		$items = Get-AzureRmRecoveryServicesBackupItem `
+			-VaultId $vault.ID `
+			-Container $container `
+			-WorkloadType azureVM;
+		Assert-True { $items.VirtualMachineId -contains $vm.Id }
 
-		## VARIATION-2: Get items for container with friendly name filter.
-		## Here we will be testing a case when two VMs with overlapping names are protected.
+		# VARIATION-2: Get items for container with friendly name filter.
+		# Here we will be testing a case when two VMs with overlapping names are protected.
 		$items = Get-AzureRmRecoveryServicesBackupItem `
 			-VaultId $vault.ID `
 			-Container $container `
@@ -53,7 +53,7 @@ function Test-AzureVMGetItems
 		Assert-True { $items.VirtualMachineId -contains $vm.Id }
 		Assert-NotNull $items[0].LastBackupTime
 
-		## VARIATION-3: Get items for container with ProtectionStatus filter
+		# VARIATION-3: Get items for container with ProtectionStatus filter
 		$items = Get-AzureRmRecoveryServicesBackupItem `
 			-VaultId $vault.ID `
 			-Container $container `
@@ -61,7 +61,7 @@ function Test-AzureVMGetItems
 			-ProtectionStatus Healthy;
 		Assert-True { $items.VirtualMachineId -contains $vm.Id }
 
-		## VARIATION-4: Get items for container with Status filter
+		# VARIATION-4: Get items for container with Status filter
 		$items = Get-AzureRmRecoveryServicesBackupItem `
 			-VaultId $vault.ID `
 			-Container $container `
@@ -69,16 +69,16 @@ function Test-AzureVMGetItems
 			-ProtectionState IRPending;
 		Assert-True { $items.VirtualMachineId -contains $vm.Id }
 
-		## VARIATION-5: Get items for container with friendly name and ProtectionStatus filters
-		$items = get-azurermrecoveryservicesbackupitem `
-			-vaultid $vault.id `
-			-container $container `
-			-workloadtype azurevm `
-			-name $vm.name `
-			-protectionstatus healthy;
-		assert-true { $items.virtualmachineid -contains $vm.id }
+		# VARIATION-5: Get items for container with friendly name and ProtectionStatus filters
+		$items = Get-AzureRmRecoveryServicesBackupItem `
+			-VaultId $vault.ID `
+			-Container $container `
+			-WorkloadType azureVM `
+			-Name $vm.Name `
+			-ProtectionStatus Healthy;
+		Assert-True { $items.VirtualMachineId -contains $vm.ID }
 
-		## VARIATION-6: Get items for container with friendly name and Status filters
+		# VARIATION-6: Get items for container with friendly name and Status filters
 		$items = Get-AzureRmRecoveryServicesBackupItem `
 			-VaultId $vault.ID `
 			-Container $container `
@@ -87,7 +87,7 @@ function Test-AzureVMGetItems
 			-ProtectionState IRPending;
 		Assert-True { $items.VirtualMachineId -contains $vm.Id }
 
-		## VARIATION-7: Get items for container with Status and ProtectionStatus filters
+		# VARIATION-7: Get items for container with Status and ProtectionStatus filters
 		$items = Get-AzureRmRecoveryServicesBackupItem `
 			-VaultId $vault.ID `
 			-Container $container `
@@ -96,7 +96,7 @@ function Test-AzureVMGetItems
 			-ProtectionStatus Healthy;
 		Assert-True { $items.VirtualMachineId -contains $vm.Id }
 
-		## VARIATION-8: Get items for container with friendly name, Status and ProtectionStatus filters
+		# VARIATION-8: Get items for container with friendly name, Status and ProtectionStatus filters
 		$items = Get-AzureRmRecoveryServicesBackupItem `
 			-VaultId $vault.ID `
 			-Container $container `
