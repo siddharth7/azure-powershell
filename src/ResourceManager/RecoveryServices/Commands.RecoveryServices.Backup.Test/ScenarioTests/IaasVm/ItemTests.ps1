@@ -39,7 +39,7 @@ function Test-AzureVMGetItems
 		$items = Get-AzureRmRecoveryServicesBackupItem `
 			-VaultId $vault.ID `
 			-Container $container `
-			-WorkloadType azureVM;
+			-WorkloadType AzureVM;
 		Assert-True { $items.VirtualMachineId -contains $vm.Id }
 
 		# VARIATION-2: Get items for container with friendly name filter.
@@ -73,10 +73,10 @@ function Test-AzureVMGetItems
 		$items = Get-AzureRmRecoveryServicesBackupItem `
 			-VaultId $vault.ID `
 			-Container $container `
-			-WorkloadType azureVM `
+			-WorkloadType AzureVM `
 			-Name $vm.Name `
 			-ProtectionStatus Healthy;
-		Assert-True { $items.VirtualMachineId -contains $vm.ID }
+		Assert-True { $items.VirtualMachineId -contains $vm.Id }
 
 		# VARIATION-6: Get items for container with friendly name and Status filters
 		$items = Get-AzureRmRecoveryServicesBackupItem `
