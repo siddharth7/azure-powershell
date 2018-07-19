@@ -112,7 +112,7 @@ namespace Microsoft.Azure.Commands.RecoveryServices.Backup.Cmdlets.ServiceClient
                     queryFilter,
                     skipToken,
                     cancellationToken: BmsAdapter.CmdletCancellationToken).Result.Body;
-       
+
             Func<string, RestAzureNS.IPage<ProtectedItemResource>> listNextAsync =
                 nextLink => BmsAdapter.Client.BackupProtectedItems.ListNextWithHttpMessagesAsync(
                     nextLink,
